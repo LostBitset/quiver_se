@@ -14,6 +14,11 @@ template <typename E, typename R>
 SimpleQuiverEdge<E, R>::SimpleQuiverEdge() {}
 
 template <typename E, typename R>
+void SimpleQuiverEdge<E, R>::foreach_key(std::function<void (E)> func) {
+    // *TODO* all
+}
+
+template <typename E, typename R>
 void SimpleQuiverEdge<E, R>::insert(E edge, R node_ref) {
     if (!this->backing_map.contains(edge)) {
         this->backing_map[edge] = node_ref;
