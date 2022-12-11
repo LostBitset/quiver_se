@@ -9,7 +9,9 @@
 #pragma once
 #include <concepts>
 #include <cstddef>
+#include <iterator>
 #include <map>
+#include <set>
 #include <sys/types.h>
 #include <utility>
 #include <vector>
@@ -87,6 +89,9 @@ struct QuiverNodeRef {
     requires ReversibleAssoc<C, E, QuiverNodeRef>
     QuiverNode<N, E, C>* find_in_quiver(Quiver<N, E, C>* quiver);
 
+    /*! Needed for storing QuiverNodeRef objects in an std::set. */
+    inline bool operator<(const QuiverNodeRef& other);
+
 };
 
 /*! A node inside a quiver. Not usable without the Quiver object. */
@@ -96,7 +101,7 @@ struct QuiverNode {
 
     N value;
     C edge_container;
-    std::vector<QuiverNodeRef> parents;
+    std::set<QuiverNodeRef> parents;
 
     QuiverNodeRef* follow_edge_fwd(E edge);
 
