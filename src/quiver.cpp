@@ -15,7 +15,9 @@ SimpleQuiverEdge<E, R>::SimpleQuiverEdge() {}
 
 template <typename E, typename R>
 void SimpleQuiverEdge<E, R>::foreach_key(std::function<void(E)> func) {
-    // *TODO* all
+    for (std::pair<E, R> kv : this->backing_map) {
+        func(kv.first);
+    }
 }
 
 template <typename E, typename R>
@@ -74,7 +76,16 @@ requires ReversibleAssoc<C, E, QuiverNodeRef>
 std::vector<std::pair<QuiverNodeRef, E>> Quiver<N, E, C>::follow_all_fwd(
     QuiverNodeRef node_ref
 ) {
-    // *TODO* all
+    std::vector<std::pair<QuiverNodeRef, E>> res;
+    QuiverNode<N, E, C>* node = node_ref.find_in_quiver(this);
+    auto xproc = [=, &res](E edge) {
+        res.push_back(std::make_pair(
+            *(node->edge_container.lookup_fwd(edge)),
+            edge
+        ));
+    };
+    node->edge_container.foreach_key(xproc);
+    return res;
 }
 
 template <typename N, typename E, typename C>
