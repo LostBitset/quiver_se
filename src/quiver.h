@@ -36,7 +36,7 @@ class SimpleQuiverEdge;
 
 template <typename N, typename E, typename C>
 requires ReversibleAssoc<C, E, QuiverNodeRef>
-struct QuiverNode;
+class QuiverNode;
 
 template <typename N, typename E, typename C = SimpleQuiverEdge<E>>
 requires ReversibleAssoc<C, E, QuiverNodeRef>
