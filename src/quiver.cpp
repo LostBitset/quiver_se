@@ -58,9 +58,37 @@ std::vector<E> SimpleQuiverEdge<E, R>::rev_lookup(R node_ref) {
 
 template <typename N, typename E, typename C>
 requires ReversibleAssoc<C, E, QuiverNodeRef>
+QuiverNode<N, E, C>::QuiverNode(N set_value)
+    : value(set_value)
+{}
+
+template <typename N, typename E, typename C>
+requires ReversibleAssoc<C, E, QuiverNodeRef>
+N QuiverNode<N, E, C>::get_value() {
+    return this->value;
+}
+
+template <typename N, typename E, typename C>
+requires ReversibleAssoc<C, E, QuiverNodeRef>
+C QuiverNode<N, E, C>::get_edge_container() {
+    return this->edge_container;
+}
+
+template <typename N, typename E, typename C>
+requires ReversibleAssoc<C, E, QuiverNodeRef>
+std::set<QuiverNodeRef> QuiverNode<N, E, C>::get_parents() {
+    return this->parents;
+}
+
+template <typename N, typename E, typename C>
+requires ReversibleAssoc<C, E, QuiverNodeRef>
 QuiverNodeRef* QuiverNode<N, E, C>::follow_edge_fwd(E edge) {
     return this->edge_container.fwd_lookup(edge);
 }
+
+template <typename N, typename E, typename C>
+requires ReversibleAssoc<C, E, QuiverNodeRef>
+Quiver<N, E, C>::Quiver() {}
 
 template <typename N, typename E, typename C>
 requires ReversibleAssoc<C, E, QuiverNodeRef>
