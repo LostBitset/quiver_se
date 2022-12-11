@@ -1,3 +1,5 @@
+// <quiver> -*- C++ -*-
+
 #include "quiver.h"
 
 #include <algorithm>
