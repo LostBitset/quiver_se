@@ -14,7 +14,7 @@ template <typename E, typename R>
 SimpleQuiverEdge<E, R>::SimpleQuiverEdge() {}
 
 template <typename E, typename R>
-void SimpleQuiverEdge<E, R>::foreach_key(std::function<void (E)> func) {
+void SimpleQuiverEdge<E, R>::foreach_key(std::function<void(E)> func) {
     // *TODO* all
 }
 
