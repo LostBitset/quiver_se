@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <iterator>
+#include <utility>
 
 template <typename N, typename E, typename C>
 requires ReversibleAssoc<C, E, QuiverNodeRef>
@@ -56,12 +57,25 @@ QuiverNodeRef* QuiverNode<N, E, C>::follow_edge_fwd(E edge) {
 
 template <typename N, typename E, typename C>
 requires ReversibleAssoc<C, E, QuiverNodeRef>
-std::vector<std::pair<QuiverNodeRef, E>> QuiverNode<N, E, C>::follow_all_rev(
-    Quiver<N, E, C>* quiver
+std::vector<std::pair<QuiverNodeRef, E>> Quiver<N, E, C>::follow_all_rev(
+    QuiverNodeRef node_ref
 ) {
     std::vector<std::pair<QuiverNodeRef, E>> res;
-    for (QuiverNodeRef parent : this->parents) {
-        QuiverNode parent_node = parent.find_in_quiver(quiver);
-        std::vector<E> edges = parent_node.edge_container.rev_lookup(this.)
+    QuiverNode<N, E, C>* node = node_ref.find_in_quiver(this);
+    for (QuiverNodeRef parent : node->parents) {
+        QuiverNode parent_node = parent.find_in_quiver(this);
+        std::vector<E> edges = parent_node.edge_container.rev_lookup(node_ref);
+        auto xform = [=](E edge) {
+            return std::make_pair(parent, edge);
+        };
+        std::transform(
+            edges.begin(),
+            edges.end(),
+            edges.begin(),
+            xform
+        );
+        res.reserve(edges.size());
+        res.insert(res.end(), edges.begin(), edges.end());
     }
+    return res;
 }

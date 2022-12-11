@@ -71,6 +71,7 @@ class Quiver {
 
     QuiverNodeRef insert_node(N node);
     void insert_edge(QuiverNodeRef src, QuiverNodeRef dst, E edge);
+    std::vector<std::pair<QuiverNodeRef, E>> follow_all_rev(QuiverNodeRef node_ref);
 
     private:
     std::vector<QuiverNode<N, E, C>> arena;
@@ -98,6 +99,5 @@ struct QuiverNode {
     std::vector<QuiverNodeRef> parents;
 
     QuiverNodeRef* follow_edge_fwd(E edge);
-    std::vector<std::pair<QuiverNodeRef, E>> follow_all_rev(Quiver<N, E, C>* quiver);
 
 };
