@@ -57,7 +57,12 @@ QuiverNodeRef* QuiverNode<N, E, C>::follow_edge_fwd(E edge) {
 
 // *TODO* Quiver<N, E, C>::insert_node
 
-// *TODO* Quiver<N, E, C>::insert_edge
+template <typename N, typename E, typename C>
+requires ReversibleAssoc<C, E, QuiverNodeRef>
+void Quiver<N, E, C>::insert_edge(QuiverNodeRef src, QuiverNodeRef dst, E edge) {
+    src.find_in_quiver(this)->edge_container.insert(edge, dst);
+    dst.find_in_quiver(this)->parents.insert(src);
+}
 
 template <typename N, typename E, typename C>
 requires ReversibleAssoc<C, E, QuiverNodeRef>
