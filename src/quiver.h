@@ -73,6 +73,7 @@ class Quiver {
 
     QuiverNodeRef insert_node(N node);
     void insert_edge(QuiverNodeRef src, QuiverNodeRef dst, E edge);
+    std::vector<std::pair<QuiverNodeRef, E>> follow_all_fwd(QuiverNodeRef node_ref);
     std::vector<std::pair<QuiverNodeRef, E>> follow_all_rev(QuiverNodeRef node_ref);
 
     private:

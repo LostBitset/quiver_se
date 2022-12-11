@@ -66,6 +66,14 @@ void Quiver<N, E, C>::insert_edge(QuiverNodeRef src, QuiverNodeRef dst, E edge) 
 
 template <typename N, typename E, typename C>
 requires ReversibleAssoc<C, E, QuiverNodeRef>
+std::vector<std::pair<QuiverNodeRef, E>> Quiver<N, E, C>::follow_all_fwd(
+    QuiverNodeRef node_ref
+) {
+    // *TODO* all
+}
+
+template <typename N, typename E, typename C>
+requires ReversibleAssoc<C, E, QuiverNodeRef>
 std::vector<std::pair<QuiverNodeRef, E>> Quiver<N, E, C>::follow_all_rev(
     QuiverNodeRef node_ref
 ) {
