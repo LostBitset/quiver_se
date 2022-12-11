@@ -60,6 +60,7 @@ template <typename N, typename E, typename C>
 requires ReversibleAssoc<C, E, QuiverNodeRef>
 QuiverNode<N, E, C>::QuiverNode(N set_value)
     : value(set_value)
+    , edge_container(C::empty())
 {}
 
 template <typename N, typename E, typename C>
@@ -92,8 +93,9 @@ Quiver<N, E, C>::Quiver() {}
 
 template <typename N, typename E, typename C>
 requires ReversibleAssoc<C, E, QuiverNodeRef>
-QuiverNodeRef Quiver<N, E, C>::insert_node(N node) {
-    // *TODO* All
+QuiverNodeRef Quiver<N, E, C>::insert_node(N node_value) {
+    QuiverNode<N, E, C> new_node {node_value};
+    this->arena.push_back(new_node);
 }
 
 template <typename N, typename E, typename C>
