@@ -10,6 +10,10 @@ QuiverNode<N, E, C>* QuiverNodeRef::find_in_quiver(Quiver<N, E, C> *quiver) {
     quiver->get_node(this->index);
 }
 
+inline bool QuiverNodeRef::operator<(const QuiverNodeRef& other) {
+    return this->index < other.index;
+}
+
 template <typename E, typename R>
 SimpleQuiverEdge<E, R>::SimpleQuiverEdge() {}
 
