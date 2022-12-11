@@ -62,13 +62,17 @@ QuiverNodeRef* QuiverNode<N, E, C>::follow_edge_fwd(E edge) {
     return this->edge_container.fwd_lookup(edge);
 }
 
-// *TODO* Quiver<N, E, C>::insert_node
+template <typename N, typename E, typename C>
+requires ReversibleAssoc<C, E, QuiverNodeRef>
+QuiverNodeRef Quiver<N, E, C>::insert_node(N node) {
+    // *TODO* All
+}
 
 template <typename N, typename E, typename C>
 requires ReversibleAssoc<C, E, QuiverNodeRef>
 void Quiver<N, E, C>::insert_edge(QuiverNodeRef src, QuiverNodeRef dst, E edge) {
-    src.find_in_quiver(this)->edge_container.insert(edge, dst);
-    dst.find_in_quiver(this)->parents.insert(src);
+    src.find_in_quiver(this)->get_edge_container().insert(edge, dst);
+    dst.find_in_quiver(this)->get_parents().insert(src);
 }
 
 template <typename N, typename E, typename C>
@@ -80,11 +84,11 @@ std::vector<std::pair<QuiverNodeRef, E>> Quiver<N, E, C>::follow_all_fwd(
     QuiverNode<N, E, C>* node = node_ref.find_in_quiver(this);
     auto xproc = [=, &res](E edge) {
         res.push_back(std::make_pair(
-            *(node->edge_container.lookup_fwd(edge)),
+            *(node->get_edge_container().lookup_fwd(edge)),
             edge
         ));
     };
-    node->edge_container.foreach_key(xproc);
+    node->get_edge_container().foreach_key(xproc);
     return res;
 }
 
@@ -95,9 +99,9 @@ std::vector<std::pair<QuiverNodeRef, E>> Quiver<N, E, C>::follow_all_rev(
 ) {
     std::vector<std::pair<QuiverNodeRef, E>> res;
     QuiverNode<N, E, C>* node = node_ref.find_in_quiver(this);
-    for (QuiverNodeRef parent : node->parents) {
+    for (QuiverNodeRef parent : node->get_parents()) {
         QuiverNode parent_node = parent.find_in_quiver(this);
-        std::vector<E> edges = parent_node.edge_container.rev_lookup(node_ref);
+        std::vector<E> edges = parent_node.get_edge_container().rev_lookup(node_ref);
         auto xform = [=](E edge) {
             return std::make_pair(parent, edge);
         };

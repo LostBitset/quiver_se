@@ -101,12 +101,21 @@ struct QuiverNodeRef {
 /*! A node inside a quiver. Not usable without the Quiver object. */
 template <typename N, typename E, typename C>
 requires ReversibleAssoc<C, E, QuiverNodeRef>
-struct QuiverNode {
+class QuiverNode {
 
-    N value;
-    C edge_container;
-    std::set<QuiverNodeRef> parents;
+    public:
+    explicit QuiverNode(N set_value);
+    QuiverNode(QuiverNode<N, E, C>& other) = default;
+    QuiverNode(QuiverNode<N, E, C>&& other) = default;
 
     QuiverNodeRef* follow_edge_fwd(E edge);
 
+    N get_value();
+    C get_edge_container();
+    std::set<QuiverNodeRef> get_parents();
+
+    private:
+    N value;
+    C edge_container;
+    std::set<QuiverNodeRef> parents;
 };
