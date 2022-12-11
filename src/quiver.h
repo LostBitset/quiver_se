@@ -98,6 +98,6 @@ struct QuiverNode {
     std::vector<QuiverNodeRef> parents;
 
     QuiverNodeRef* follow_edge_fwd(E edge);
-    std::vector<std::pair<QuiverNodeRef, E>> follow_all_rev();
+    std::vector<std::pair<QuiverNodeRef, E>> follow_all_rev(Quiver<N, E, C>* quiver);
 
 };
