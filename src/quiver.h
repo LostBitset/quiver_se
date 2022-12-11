@@ -17,7 +17,6 @@
 /*! A concept representing a reversible (think doubly-linked) associative data structure. */
 template <typename T, typename K, typename V>
 concept ReversibleAssoc = requires(T item, K key, V value) {
-    { T::empty() } -> std::convertible_to<T>;
     { item.insert(key, value) };
     { item.fwd_lookup(key) } -> std::convertible_to<V*>;
     { item.rev_lookup(value) } -> std::convertible_to<std::vector<K>>;
@@ -50,7 +49,6 @@ class SimpleQuiverEdge {
     SimpleQuiverEdge(SimpleQuiverEdge<E, R>&& other) = default;
 
     // begin ReversibleAssoc methods
-    static SimpleQuiverEdge<E, R> empty();
     void insert(E edge, R node_ref);
     R* fwd_lookup(E edge);
     std::vector<E> rev_lookup(R node_ref);
