@@ -47,3 +47,16 @@ std::vector<E> SimpleQuiverEdge<E, R>::rev_lookup(R node_ref) {
     );
     return res;
 }
+
+template <typename N, typename E, typename C>
+requires ReversibleAssoc<C, E, QuiverNodeRef>
+QuiverNodeRef* QuiverNode<N, E, C>::follow_edge_fwd(E edge) {
+    return this->edge_container.fwd_lookup(edge);
+}
+
+template <typename N, typename E, typename C>
+requires ReversibleAssoc<C, E, QuiverNodeRef>
+std::vector<std::pair<QuiverNodeRef, E>> QuiverNode<N, E, C>::follow_all_rev() {
+    std::vector<std::pair<QuiverNodeRef, E>> res;
+    // *TODO* Rest
+}

@@ -29,13 +29,13 @@ struct QuiverNodeRef;
 template <typename E, typename R = QuiverNodeRef>
 class SimpleQuiverEdge;
 
-template <typename N, typename E, typename C = SimpleQuiverEdge<E>>
-requires ReversibleAssoc<C, E, QuiverNodeRef>
-class Quiver;
-
 template <typename N, typename E, typename C>
 requires ReversibleAssoc<C, E, QuiverNodeRef>
 struct QuiverNode;
+
+template <typename N, typename E, typename C = SimpleQuiverEdge<E>>
+requires ReversibleAssoc<C, E, QuiverNodeRef>
+class Quiver;
 
 // end forward declarations
 
