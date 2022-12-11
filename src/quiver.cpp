@@ -14,6 +14,12 @@ template <typename E, typename R>
 SimpleQuiverEdge<E, R>::SimpleQuiverEdge() {}
 
 template <typename E, typename R>
+static SimpleQuiverEdge<E, R> empty() {
+    SimpleQuiverEdge<E, R> res;
+    return res;
+}
+
+template <typename E, typename R>
 void SimpleQuiverEdge<E, R>::foreach_key(std::function<void(E)> func) {
     for (std::pair<E, R> kv : this->backing_map) {
         func(kv.first);

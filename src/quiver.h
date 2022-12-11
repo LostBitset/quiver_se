@@ -20,6 +20,7 @@
 /*! A concept representing a reversible (think doubly-linked) associative data structure. */
 template <typename T, typename K, typename V>
 concept ReversibleAssoc = requires(T item, K key, V value, std::function<void(K)> func) {
+    { T::empty() } -> std::convertible_to<T>;
     { item.foreach_key(func) } -> std::same_as<void>;
     { item.insert(key, value) } -> std::same_as<void>;
     { item.fwd_lookup(key) } -> std::convertible_to<V*>;
@@ -53,6 +54,7 @@ class SimpleQuiverEdge {
     SimpleQuiverEdge(SimpleQuiverEdge<E, R>&& other) = default;
 
     // begin ReversibleAssoc methods
+    static SimpleQuiverEdge<E, R> empty();
     void foreach_key(std::function<void(E)> func);
     void insert(E edge, R node_ref);
     R* fwd_lookup(E edge);
