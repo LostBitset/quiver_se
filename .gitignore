@@ -30,3 +30,11 @@
 *.exe
 *.out
 *.app
+
+# BEGIN (Added / Not in template)
+
+# Directories used by the xmake build system
+.xmake/*
+build/*
+
+# END (Added / Not in template)
