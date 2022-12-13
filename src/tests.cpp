@@ -4,7 +4,7 @@
 // ~~no_header~~ TU
 // REASON target("test")
 
-#include "../../lib/quiver.h"
+#include "lib/quiver.h"
 
 // begin external includes
 
