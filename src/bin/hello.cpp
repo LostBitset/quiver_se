@@ -1,10 +1,13 @@
 // <hello> -*- C++ -*-
+// ~~nonstandard_tu~~
 
-// ~~noheader~~ reason: target("bincode")
+// ~~noheader~~ TU
+// REASON target("bincode")
 
 #include <cstdio>
 
-// ~~forward_def_main~~ reason: target("bincode")
+// ~~forward_def_main~~ NEXT_ITEM
+// REASON target("bincode")
 int main(int argc, const char** argv);
 
 void hello_world() {
