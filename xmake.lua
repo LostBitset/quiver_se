@@ -5,7 +5,7 @@ target("libcode")
 
 target("bincode_artifact")
     set_kind("binary")
-    add_files("src/bin/artifact/*.cpp")
+    add_files("src/bin/for_artifact/*.cpp")
     add_deps("libcode")
     set_languages("cxx20")
 
