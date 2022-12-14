@@ -33,7 +33,7 @@
 
 # BEGIN (Added / Not in template)
 
-# Directories used by the xmake build system
+# Directories used by the bazel build system
 bazel-*/
 
 # END (Added / Not in template)
