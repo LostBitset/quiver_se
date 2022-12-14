@@ -10,7 +10,7 @@
 #pragma once
 
 // @result_of(~~impl_tu~~)
-#include "quiver_h.hpp"
+#include "quiver_hdr.h"
 
 template <typename N, typename E, typename C>
 requires ReversibleAssoc<C, E, QuiverNodeRef>

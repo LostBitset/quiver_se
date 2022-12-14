@@ -1,4 +1,4 @@
-// <quiver_h> -*- C++ -*-
+// <quiver_hdr> -*- C++ -*-
 // ~~internal_header_tu~~
 
 #pragma once
