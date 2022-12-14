@@ -34,7 +34,6 @@
 # BEGIN (Added / Not in template)
 
 # Directories used by the xmake build system
-.xmake/*
-build/*
+bazel-*/
 
 # END (Added / Not in template)

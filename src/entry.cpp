@@ -1,13 +1,8 @@
 // <entry> -*- C++ -*-
-// ~~nonstandard_tu~~
-
-// ~~no_header~~ TU
-// REASON cc_binary
+// ~~nonstandard_tu~~ CPP_ONLY
 
 #include "lib/quiver.hpp"
 
-// ~~forward_decl_in_cpp~~ SEGMENT
-// REASON PROPOGATE ~~no_header~~
 // begin forward declarations
 
 int main(int argc, const char** argv);
