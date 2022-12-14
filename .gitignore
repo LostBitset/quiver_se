@@ -34,6 +34,6 @@
 # BEGIN (Added / Not in template)
 
 # Directories used by the bazel build system
-bazel-*/
+bazel-*
 
 # END (Added / Not in template)
