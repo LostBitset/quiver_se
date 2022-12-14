@@ -55,7 +55,7 @@ class SimpleQuiverEdge {
     std::vector<E> rev_lookup(QuiverNodeRef node_ref);
     // end ReversibleAssoc methods
 
-    private:
+    // DBGHACK private:
     std::map<E, QuiverNodeRef> backing_map;
 
 };
@@ -90,7 +90,7 @@ struct QuiverNodeRef {
     QuiverNode<N, E, C>* find_in_quiver(Quiver<N, E, C>* quiver);
 
     /*! Needed for storing QuiverNodeRef objects in an std::set. */
-    inline bool operator<(const QuiverNodeRef& other);
+    inline bool operator<(const QuiverNodeRef& other) const;
 
 };
 

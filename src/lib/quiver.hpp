@@ -18,7 +18,7 @@ QuiverNode<N, E, C>* QuiverNodeRef::find_in_quiver(Quiver<N, E, C> *quiver) {
     return &quiver->arena.at(this->index);
 }
 
-inline bool QuiverNodeRef::operator<(const QuiverNodeRef& other) {
+inline bool QuiverNodeRef::operator<(const QuiverNodeRef& other) const {
     return this->index < other.index;
 }
 
@@ -27,7 +27,7 @@ SimpleQuiverEdge<E>::SimpleQuiverEdge() {}
 
 template <typename E>
 void SimpleQuiverEdge<E>::foreach_key(std::function<void(E)> func) {
-    for (std::pair<E, SimpleQuiverEdge<E>> kv : this->backing_map) {
+    for (auto kv : this->backing_map) {
         func(kv.first);
     }
 }
@@ -35,13 +35,14 @@ void SimpleQuiverEdge<E>::foreach_key(std::function<void(E)> func) {
 template <typename E>
 void SimpleQuiverEdge<E>::insert(E edge, QuiverNodeRef node_ref) {
     if (!this->backing_map.contains(edge)) {
+        printf("adding TMPHACK\n");
         this->backing_map[edge] = node_ref;
-    }
+    } else printf("already found TMPHACK\n");
 }
 
 template <typename E>
 QuiverNodeRef* SimpleQuiverEdge<E>::fwd_lookup(E edge) {
-    return this->backing_map.at(&edge);
+    return &this->backing_map.at(edge);
 }
 
 template <typename E>
@@ -115,7 +116,14 @@ QuiverNodeRef Quiver<N, E, C>::insert_node(N node_value) {
 template <typename N, typename E, typename C>
 requires ReversibleAssoc<C, E, QuiverNodeRef>
 void Quiver<N, E, C>::insert_edge(QuiverNodeRef src, QuiverNodeRef dst, E edge) {
-    src.find_in_quiver(this)->get_edge_container().insert(edge, dst);
+    auto edge_container = src.find_in_quiver(this)->get_edge_container();
+    edge_container.insert(edge, dst);
+    // TMPHACK begin
+    printf(
+        "set_size %zu in TMPHACK\n",
+        edge_container.backing_map.size()
+    );
+    // end
     dst.find_in_quiver(this)->get_parents().insert(src);
 }
 
@@ -128,7 +136,7 @@ std::vector<std::pair<QuiverNodeRef, E>> Quiver<N, E, C>::follow_all_fwd(
     QuiverNode<N, E, C>* node = node_ref.find_in_quiver(this);
     auto xproc = [=, &res](E edge) {
         res.push_back(std::make_pair(
-            *(node->get_edge_container().lookup_fwd(edge)),
+            *(node->get_edge_container().fwd_lookup(edge)),
             edge
         ));
     };
