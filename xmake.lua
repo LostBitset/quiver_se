@@ -6,24 +6,15 @@
 
 external_home = "/usr"
 
+-- SECTION COMPILER_CONFIG
+
+set_languages("cxx20")
+
 -- SECTION TARGETS
 
-target("libcode")
-    set_kind("static")
-    add_files("src/lib/*.cpp")
-    set_languages("cxx20")
-
-target("bincode_artifact")
+target("bincode")
     set_kind("binary")
-    add_files("src/bin/*.cpp")
-    add_deps("libcode")
-    set_languages("cxx20")
-
-target("test")
-    set_kind("binary")
-    add_files("src/run_tests.cpp")
-    add_deps("libcode")
-    set_languages("cxx20")
+    add_files("src/*.cpp", "src/lib/*.cpp")
     add_links("CppUTest")
     add_linkdirs(external_home .. "/lib")
     add_includedirs(external_home .. "/include")

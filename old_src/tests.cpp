@@ -2,15 +2,23 @@
 // ~~nonstandard_tu~~
 
 // ~~no_header~~ TU
-// REASON target("test")
+// REASON TESTING
 
-#include "lib/quiver.h"
+// ~~deferred_include_guard~~ SEGMENT
+// REASON PROPOGATE INCLUDE_SITE "run_tests.cpp"
+// begin deferred include guard
+
+#define __GUARD_TESTS
+
+// end deferred include guard
+
+#include "quiver.h"
+
+#include <utility>
 
 // begin external includes
 
 #include "CppUTest/TestHarness.h"
-#include <CppUTest/UtestMacros.h>
-#include <utility>
 
 // end external includes
 
