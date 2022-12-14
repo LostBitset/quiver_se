@@ -119,6 +119,7 @@ void Quiver<N, E, C>::insert_edge(QuiverNodeRef src, QuiverNodeRef dst, E edge) 
     auto edge_container = src.find_in_quiver(this)->get_edge_container();
     edge_container.insert(edge, dst);
     // TMPHACK begin
+    printf("map at %p\n", &edge_container);
     printf(
         "set_size %zu in TMPHACK\n",
         edge_container.backing_map.size()

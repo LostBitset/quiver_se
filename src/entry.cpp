@@ -13,10 +13,23 @@ int main(int argc, const char** argv) {
     Quiver<int, int> q;
     QuiverNodeRef n1 = q.insert_node(99);
     QuiverNodeRef n2 = q.insert_node(43);
-    q.insert_edge(n1, n2, 8);
-    q.insert_edge(n1, n2, 7);
-    q.insert_edge(n2, n1, 3);
     QuiverNode<int, int>* new_node = n1.find_in_quiver(&q);
+    auto ec = new_node->get_edge_container();
+    q.insert_edge(n1, n2, 8);
+    printf(
+        "n1 backing_map size is %zu\n",
+        ec.backing_map.size()
+    );
+    printf(
+        "map at %p (in entry)\n",
+        &ec
+    );
+    q.insert_edge(n1, n2, 7);
+    printf(
+        "n1 backing_map size is %zu\n",
+        ec.backing_map.size()
+    );
+    q.insert_edge(n2, n1, 3);
     printf(
         "node value %d at index %zu in quiver\n",
         new_node->get_value(),
@@ -24,7 +37,7 @@ int main(int argc, const char** argv) {
     );
     printf(
         "n1 backing_map size is %zu\n",
-        new_node->get_edge_container().backing_map.size()
+        ec.backing_map.size()
     );
     auto fwd_lookup = new_node->get_edge_container().fwd_lookup(8);
     printf("{n1}->fwd_lookup(8) returns %zu\n", fwd_lookup->index);
