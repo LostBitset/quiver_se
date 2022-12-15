@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestQuiverCreation(t *testing.T) {
+func TestQuiver(t *testing.T) {
 	var q SimpleQuiver[int, int]
 	n1 := q.insert_node_simple(7)
 	n2 := q.insert_node_simple(8)
