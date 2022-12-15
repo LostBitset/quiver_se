@@ -31,14 +31,18 @@ func (t Trie[N, L]) Lookup(seq []N) (ptr *L) {
 	node := t.root
 	cursor := 0
 	for {
+		found_value_node := false
 		for _, child := range node.children {
 			if child.IsTrieLeaf() {
 				leaf := child.(TrieLeafNode[L])
 				if cursor == len(seq)-1 {
 					ptr = &leaf.value
 					return
+				} else {
+					break
 				}
 			} else {
+				found_value_node = true
 				value_node := child.(TrieValueNode[N, L])
 				for _, expected := range value_node.value {
 					if cursor >= len(seq) || seq[cursor] != expected {
