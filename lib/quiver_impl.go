@@ -53,12 +53,17 @@ type Neighbor[E any] struct {
 	dst      QuiverIndex
 }
 
-/*
 func (q *Quiver[N, E, C]) all_outneighbors(src QuiverIndex) (outneighbors []Neighbor[E]) {
 	src_node := q.arena[src]
-	src_node.edges
+	src_node.edges.ForEachKey(func(edge E) {
+		neighbor := Neighbor[E]{
+			edge,
+			src_node.edges.FwdLookup(edge),
+		}
+		outneighbors = append(outneighbors, neighbor)
+	})
+	return
 }
-*/
 
 func (q *SimpleQuiver[N, E]) insert_node_simple(node_value N) (idx QuiverIndex) {
 	container := NewSimpleRA[E, QuiverIndex]()
