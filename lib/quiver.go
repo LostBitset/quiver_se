@@ -6,9 +6,15 @@ type ReversibleAssoc[A any, B any] interface {
 	RevLookup(b B) (items []A)
 }
 
+type SimpleReversibleAssoc[A comparable, B comparable] struct {
+	backing_map map[A]B
+}
+
 type QuiverIndex uint
 
-type SimpleQuiverNode[N any, E any] QuiverNode[N, E, SimpleReversibleAssoc[E, QuiverIndex]]
+type SimpleQuiverNode[N any, E comparable] struct {
+	QuiverNode[N, E, SimpleReversibleAssoc[E, QuiverIndex]]
+}
 
 type QuiverNode[N any, E any, C ReversibleAssoc[E, QuiverIndex]] struct {
 	value   N
