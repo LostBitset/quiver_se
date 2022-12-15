@@ -21,3 +21,7 @@ type QuiverNode[N any, E any, C ReversibleAssoc[E, QuiverIndex]] struct {
 	parents []QuiverIndex
 	edges   C
 }
+
+type Quiver[N any, E any, C ReversibleAssoc[E, QuiverIndex]] struct {
+	arena []QuiverNode[N, E, C]
+}
