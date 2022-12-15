@@ -25,6 +25,12 @@ func (obj SimpleReversibleAssoc[A, B]) RevLookup(b B) (items []A) {
 	return
 }
 
+func (obj SimpleReversibleAssoc[A, B]) ForEachKey(fn func(A)) {
+	for k := range obj.backing_map {
+		fn(k)
+	}
+}
+
 func (q *Quiver[N, E, C]) insert_node(node_value N, container C) (idx QuiverIndex) {
 	node := QuiverNode[N, E, C]{
 		node_value,
@@ -41,6 +47,18 @@ func (q *Quiver[N, E, C]) insert_edge(src, dst QuiverIndex, edge_value E) {
 	src_node.edges.Insert(edge_value, dst)
 	dst_node.parents = append(dst_node.parents, src)
 }
+
+type Neighbor[E any] struct {
+	via_edge E
+	dst      QuiverIndex
+}
+
+/*
+func (q *Quiver[N, E, C]) all_outneighbors(src QuiverIndex) (outneighbors []Neighbor[E]) {
+	src_node := q.arena[src]
+	src_node.edges
+}
+*/
 
 func (q *SimpleQuiver[N, E]) insert_node_simple(node_value N) (idx QuiverIndex) {
 	container := NewSimpleRA[E, QuiverIndex]()

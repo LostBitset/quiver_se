@@ -7,6 +7,7 @@ type ReversibleAssoc[A any, B any] interface {
 	Insert(a A, b B)
 	FwdLookup(a A) (item B)
 	RevLookup(b B) (items []A)
+	ForEachKey(fn func(A))
 }
 
 // A simple implementation of a ReversibleAssoc data structure backed by a map. The RevLookup
