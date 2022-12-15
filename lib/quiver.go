@@ -23,7 +23,7 @@ type QuiverIndex uint
 // A node of a quiver. Parent references are done with QuiverIndex objects and not references.
 type QuiverNode[N any, E any, C ReversibleAssoc[E, QuiverIndex]] struct {
 	value   N
-	parents []QuiverIndex
+	parents map[QuiverIndex]struct{}
 	edges   C
 }
 

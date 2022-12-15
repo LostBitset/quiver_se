@@ -34,7 +34,7 @@ func (obj SimpleReversibleAssoc[A, B]) ForEachKey(fn func(A)) {
 func (q *Quiver[N, E, C]) insert_node(node_value N, container C) (idx QuiverIndex) {
 	node := QuiverNode[N, E, C]{
 		node_value,
-		make([]QuiverIndex, 0),
+		make(map[QuiverIndex]struct{}),
 		container,
 	}
 	q.arena = append(q.arena, node)
@@ -45,7 +45,7 @@ func (q *Quiver[N, E, C]) insert_node(node_value N, container C) (idx QuiverInde
 func (q *Quiver[N, E, C]) insert_edge(src, dst QuiverIndex, edge_value E) {
 	src_node, dst_node := q.arena[src], q.arena[dst]
 	src_node.edges.Insert(edge_value, dst)
-	dst_node.parents = append(dst_node.parents, src)
+	dst_node.parents[src] = struct{}{}
 }
 
 type Neighbor[E any] struct {
