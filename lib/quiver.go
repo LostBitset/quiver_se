@@ -4,7 +4,6 @@ package qse
 // to query in both. Each A is mapped to one B, but you're free to look up all A values associated
 // with a specific B.
 type ReversibleAssoc[A any, B any] interface {
-	EmptyOut()
 	Insert(a A, b B)
 	FwdLookup(a A) (item B)
 	RevLookup(b B) (items []A)
@@ -29,7 +28,7 @@ type QuiverNode[N any, E any, C ReversibleAssoc[E, QuiverIndex]] struct {
 
 // A simple quiver using SimpleReversibleAssoc as the edge container.
 type SimpleQuiver[N any, E comparable] struct {
-	Quiver[N, E, SimpleReversibleAssoc[E, QuiverIndex]]
+	Quiver[N, E, *SimpleReversibleAssoc[E, QuiverIndex]]
 }
 
 // A doubly-linked arena-based quiver. Abstracted over arbitrary edge container types, which store
