@@ -65,6 +65,11 @@ func (q *Quiver[N, E, C]) all_outneighbors(src QuiverIndex) (outneighbors []Neig
 	return
 }
 
+/*func (q *Quiver[N, E, C]) all_inneighbors(src QuiverIndex) (inneighbors []Neighbor[E]) {
+	src_node := q.arena[src]
+	for parent := range src_node.parents {}
+}*/
+
 func (q *SimpleQuiver[N, E]) insert_node_simple(node_value N) (idx QuiverIndex) {
 	container := NewSimpleRA[E, QuiverIndex]()
 	idx = q.insert_node(node_value, &container)
