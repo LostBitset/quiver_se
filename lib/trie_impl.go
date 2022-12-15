@@ -33,8 +33,9 @@ func (t *Trie[N, L]) Insert(seq []N, leaf L) {
 	for {
 		var closest_node *TrieValueNode[N, L]
 		var closest_by *int
-		var closest_exact_match bool
-		for _, child := range node.children {
+		var closest_exact_match *bool
+		var closest_index *int
+		for i, child := range node.children {
 			if child.IsTrieLeaf() {
 				continue
 			}
@@ -52,11 +53,20 @@ func (t *Trie[N, L]) Insert(seq []N, leaf L) {
 				closest_by_value := speculative_cursor - cursor
 				closest_node = &value_node
 				closest_by = &closest_by_value
-				closest_exact_match = exact_match
+				closest_exact_match = &exact_match
+				closest_index = &i
 			}
 		}
-		if !closest_exact_match {
-			node.children
+		// TODO handle no closest found (nil)
+		if !*closest_exact_match {
+			new_node := TrieValueNode[N, L]{
+				seq[cursor : cursor+*closest_by],
+				make([]TrieValueNode[N, L], 0), // TODO parent pointers
+				[]TrieNode[N, L]{
+					closest_node,
+				},
+			}
+			node.children[*closest_index] = new_node
 		}
 	}
 }
