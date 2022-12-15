@@ -27,6 +27,16 @@ func NewTrieValueNode[N comparable, L comparable]() (node TrieValueNode[N, L]) {
 	return
 }
 
+/*func (t *Trie[N, L]) Insert(seq []N, leaf L) {
+	node := t.root
+	cursor := 0
+	for {
+
+		//...
+		cursor++
+	}
+}*/
+
 func (t Trie[N, L]) Lookup(seq []N) (ptr *L) {
 	node := t.root
 	cursor := 0
