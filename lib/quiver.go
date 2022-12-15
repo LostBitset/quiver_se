@@ -12,14 +12,14 @@ type SimpleReversibleAssoc[A comparable, B comparable] struct {
 
 type QuiverIndex uint
 
-type SimpleQuiverNode[N any, E comparable] struct {
-	QuiverNode[N, E, SimpleReversibleAssoc[E, QuiverIndex]]
-}
-
 type QuiverNode[N any, E any, C ReversibleAssoc[E, QuiverIndex]] struct {
 	value   N
 	parents []QuiverIndex
 	edges   C
+}
+
+type SimpleQuiver[N any, E comparable] struct {
+	Quiver[N, E, SimpleReversibleAssoc[E, QuiverIndex]]
 }
 
 type Quiver[N any, E any, C ReversibleAssoc[E, QuiverIndex]] struct {
