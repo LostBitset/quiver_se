@@ -36,8 +36,9 @@ func (t *Trie[N, L]) Insert(seq map[N]struct{}, leaf L) {
 				// TODO CASE is a leaf
 			} else {
 				child := child.(TrieValueNode[N, L])
-				if _, ok := child.value[elem]; ok {
-					if 
+				_, in_element := child.value[elem]
+				_, in_found := already_found[elem]
+				if in_element && !in_found {
 					// TODO CASE found match
 				} else {
 					// TODO CASE no match found
