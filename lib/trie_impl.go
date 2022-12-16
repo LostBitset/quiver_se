@@ -67,12 +67,12 @@ func (node *TrieValueNode[N, L]) PrepChild(seq *map[N]struct{}, leaf L) (r_child
 	var closest_shared *map[N]struct{}
 	var closest_index *int
 	exact_match := false
-	leaf_only := len(node.children) == 0
+	leaf_count := 0
 	for index, child := range node.children {
 		if child.IsTrieLeaf() {
+			leaf_count++
 			continue
 		}
-		leaf_only = false
 		child_nc := child
 		var child *TrieValueNode[N, L]
 		switch v := child_nc.(type) {
@@ -100,7 +100,7 @@ func (node *TrieValueNode[N, L]) PrepChild(seq *map[N]struct{}, leaf L) (r_child
 			exact_match = len(shared) == len(child.value)
 		}
 	}
-	if leaf_only {
+	if leaf_count != 0 && leaf_count == len(node.children) {
 		r_child_parent := new(TrieValueNode[N, L])
 		r_child = &TrieLeafNode[N, L]{
 			leaf,
@@ -120,6 +120,7 @@ func (node *TrieValueNode[N, L]) PrepChild(seq *map[N]struct{}, leaf L) (r_child
 			},
 		}
 		*r_child_parent = *extension_node
+		*seq = make(map[N]struct{})
 		node.children = append(node.children, extension_node)
 		return
 	}
