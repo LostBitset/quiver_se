@@ -7,7 +7,7 @@ func (TrieValueNode[N, L]) IsTrieLeaf() (is bool) {
 	return
 }
 
-func (TrieLeafNode[L]) IsTrieLeaf() (is bool) {
+func (TrieLeafNode[N, L]) IsTrieLeaf() (is bool) {
 	is = true
 	return
 }
@@ -15,7 +15,7 @@ func (TrieLeafNode[L]) IsTrieLeaf() (is bool) {
 func NewTrie[N comparable, L comparable]() (t Trie[N, L]) {
 	t = Trie[N, L]{
 		NewTrieValueNode[N, L](),
-		make(map[L]struct{}),
+		make(map[L]*TrieLeafNode[N, L]),
 	}
 	return
 }
@@ -42,7 +42,7 @@ func (node TrieValueNode[N, L]) String() (repr string) {
 	return
 }
 
-func (node TrieLeafNode[L]) String() (repr string) {
+func (node TrieLeafNode[N, L]) String() (repr string) {
 	repr = fmt.Sprintf("(%v)", node.value)
 	return
 }
@@ -107,8 +107,10 @@ func (node *TrieValueNode[N, L]) PrepChild(seq *map[N]struct{}, leaf L) (r_child
 		return
 	}
 	if closest == nil {
-		r_child = &TrieLeafNode[L]{
+		r_child_parent := new(TrieValueNode[N, L])
+		r_child = &TrieLeafNode[N, L]{
 			leaf,
+			r_child_parent,
 		}
 		if len(*seq) != 0 {
 			seq_copy := make(map[N]struct{})
@@ -125,12 +127,18 @@ func (node *TrieValueNode[N, L]) PrepChild(seq *map[N]struct{}, leaf L) (r_child
 				},
 			}
 			node.children = append(node.children, r_child_inner)
+			*r_child_parent = *r_child_inner
+		} else {
+			node.children = append(node.children, r_child)
+			*r_child_parent = *node
 		}
 		*seq = make(map[N]struct{})
 		return
 	} else {
-		r_child = &TrieLeafNode[L]{
+		r_child_parent := new(TrieValueNode[N, L])
+		r_child = &TrieLeafNode[N, L]{
 			leaf,
+			r_child_parent,
 		}
 		target := closest.(*TrieValueNode[N, L])
 		parent_ref := target.CutPrefix(*closest_shared)
@@ -141,7 +149,6 @@ func (node *TrieValueNode[N, L]) PrepChild(seq *map[N]struct{}, leaf L) (r_child
 				rem_seq[item] = struct{}{}
 			}
 		}
-		fmt.Printf("rem_seq: %v\n", rem_seq)
 		r_child_inner := TrieValueNode[N, L]{
 			rem_seq,
 			[]*TrieValueNode[N, L]{
@@ -153,6 +160,7 @@ func (node *TrieValueNode[N, L]) PrepChild(seq *map[N]struct{}, leaf L) (r_child
 		}
 		*seq = make(map[N]struct{})
 		parent_ref.children = append(parent_ref.children, r_child_inner)
+		*r_child_parent = r_child_inner
 		return
 	}
 }
@@ -166,6 +174,12 @@ func (t *Trie[N, L]) Insert(seq map[N]struct{}, leaf L) {
 	for {
 		child := node.PrepChild(&seq_copy, leaf)
 		if child.IsTrieLeaf() {
+			switch child := child.(type) {
+			case *TrieLeafNode[N, L]:
+				t.leaves[leaf] = child
+			case TrieLeafNode[N, L]:
+				t.leaves[leaf] = &child
+			}
 			break
 		} else {
 			switch child := child.(type) {
