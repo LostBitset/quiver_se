@@ -27,26 +27,6 @@ func NewTrieValueNode[N comparable, L comparable]() (node TrieValueNode[N, L]) {
 	return
 }
 
-/*
-func (t Trie[N, L]) String() (repr string) {
-	repr = fmt.Sprintf("Trie{Leaves = %v, Root = [@Root]%v}", t.leaves, t.root)
-	return
-}
-
-func (node TrieValueNode[N, L]) String() (repr string) {
-	repr = fmt.Sprintf(
-		"{%v -> %v}",
-		node.value, node.children,
-	)
-	return
-}
-
-func (node TrieLeafNode[N, L]) String() (repr string) {
-	repr = fmt.Sprintf("(%v)", node.value)
-	return
-}
-*/
-
 func (node *TrieValueNode[N, L]) CutPrefix(shared map[N]struct{}) (parent *TrieValueNode[N, L]) {
 	parent = &TrieValueNode[N, L]{
 		shared,
