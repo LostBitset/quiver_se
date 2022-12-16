@@ -21,19 +21,23 @@ func NewTrie[N comparable, L comparable]() (t Trie[N, L]) {
 func NewTrieValueNode[N comparable, L comparable]() (node TrieValueNode[N, L]) {
 	node = TrieValueNode[N, L]{
 		make(map[N]struct{}),
-		make([]TrieValueNode[N, L], 0),
+		make([]*TrieValueNode[N, L], 0),
 		make([]TrieNode[N, L], 0),
 	}
 	return
 }
 
-// This invalidates the reciever (node)
-func (node *TrieValueNode[N, L]) CutPrefix(shared map[N]struct{}) (
-	parent *TrieValueNode[N, L], child *TrieValueNode[N, L],
-) {
+func (node *TrieValueNode[N, L]) CutPrefix(shared map[N]struct{}) (parent *TrieValueNode[N, L]) {
 	parent = &TrieValueNode[N, L]{
 		shared,
 		node.parents,
-		append(node.children, child),
+		[]TrieNode[N, L]{
+			node,
+		},
 	}
+	for shared_key := range shared {
+		delete(node.value, shared_key)
+	}
+	node.parents = append(node.parents, parent)
+	return
 }
