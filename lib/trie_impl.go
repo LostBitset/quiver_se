@@ -27,23 +27,13 @@ func NewTrieValueNode[N comparable, L comparable]() (node TrieValueNode[N, L]) {
 	return
 }
 
-func (t *Trie[N, L]) Insert(seq map[N]struct{}, leaf L) {
-	node := &t.root
-	already_found := make(map[N]struct{})
-	for elem := range seq {
-		for _, child := range node.children {
-			if child.IsTrieLeaf() {
-				// TODO CASE is a leaf
-			} else {
-				child := child.(TrieValueNode[N, L])
-				_, in_element := child.value[elem]
-				_, in_found := already_found[elem]
-				if in_element && !in_found {
-					// TODO CASE found match
-				} else {
-					// TODO CASE no match found
-				}
-			}
-		}
+// This invalidates the reciever (node)
+func (node *TrieValueNode[N, L]) CutPrefix(shared map[N]struct{}) (
+	parent *TrieValueNode[N, L], child *TrieValueNode[N, L],
+) {
+	parent = &TrieValueNode[N, L]{
+		shared,
+		node.parents,
+		append(node.children, child),
 	}
 }
