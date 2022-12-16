@@ -20,9 +20,29 @@ func NewTrie[N comparable, L comparable]() (t Trie[N, L]) {
 
 func NewTrieValueNode[N comparable, L comparable]() (node TrieValueNode[N, L]) {
 	node = TrieValueNode[N, L]{
-		make([]N, 0),
+		make(map[N]struct{}),
 		make([]TrieValueNode[N, L], 0),
 		make([]TrieNode[N, L], 0),
 	}
 	return
+}
+
+func (t *Trie[N, L]) Insert(seq map[N]struct{}, leaf L) {
+	node := &t.root
+	already_found := make(map[N]struct{})
+	for elem := range seq {
+		for _, child := range node.children {
+			if child.IsTrieLeaf() {
+				// TODO CASE is a leaf
+			} else {
+				child := child.(TrieValueNode[N, L])
+				if _, ok := child.value[elem]; ok {
+					if 
+					// TODO CASE found match
+				} else {
+					// TODO CASE no match found
+				}
+			}
+		}
+	}
 }
