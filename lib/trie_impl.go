@@ -91,8 +91,10 @@ func (node *TrieValueNode[N, L]) PrepChild(seq *map[N]struct{}, leaf L) (r_child
 		}
 		if closest == nil || length > len(*closest_shared) {
 			closest = child
-			closest_shared = &shared
-			closest_index = &index
+			closest_shared = new(map[N]struct{})
+			*closest_shared = shared
+			closest_index = new(int)
+			*closest_index = index
 			exact_match = len(shared) == len(child.value)
 		}
 	}
