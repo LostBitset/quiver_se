@@ -57,8 +57,27 @@ func (t *Trie[N, L]) Insert(seq []N, leaf L) {
 				closest_index = &i
 			}
 		}
-		// TODO handle no closest found (nil)
-		if !*closest_exact_match {
+		if closest_node == nil {
+			var leaf_part TrieNode[N, L]
+			leaf_part = TrieLeafNode[L]{
+				leaf,
+			}
+			if cursor != len(seq)-1 {
+				leaf_part = TrieValueNode[N, L]{
+					seq[cursor:],
+					make([]TrieValueNode[N, L], 0), // TODO parent pointers
+					[]TrieNode[N, L]{
+						leaf_part,
+					},
+				}
+			}
+			node.children = append(node.children, leaf_part)
+			return
+		}
+		if *closest_exact_match {
+			cursor += *closest_by
+			node = closest_node
+		} else {
 			new_node := TrieValueNode[N, L]{
 				seq[cursor : cursor+*closest_by],
 				make([]TrieValueNode[N, L], 0), // TODO parent pointers
@@ -67,6 +86,8 @@ func (t *Trie[N, L]) Insert(seq []N, leaf L) {
 				},
 			}
 			node.children[*closest_index] = new_node
+			cursor += *closest_by
+			node = &new_node
 		}
 	}
 }
