@@ -14,8 +14,12 @@ func TestTrie(t *testing.T) {
 			44,
 		},
 		{
-			map[int]struct{}{0: {}, 1: {}, 8: {}},
+			map[int]struct{}{0: {}, 1: {}, 9: {}},
 			55,
+		},
+		{
+			map[int]struct{}{0: {}, 1: {}, 3: {}, 9: {}},
+			12,
 		},
 		{
 			map[int]struct{}{9: {}},
