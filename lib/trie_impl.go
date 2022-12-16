@@ -71,7 +71,7 @@ func (node *TrieValueNode[N, L]) PrepChild(seq map[N]struct{}, leaf L) (r_child 
 		if child.IsTrieLeaf() {
 			continue
 		}
-		child := child.(TrieValueNode[N, L])
+		child := child.(*TrieValueNode[N, L])
 		shared := make(map[N]struct{})
 		for key := range child.value {
 			if _, ok := seq[key]; ok {
@@ -79,8 +79,8 @@ func (node *TrieValueNode[N, L]) PrepChild(seq map[N]struct{}, leaf L) (r_child 
 			}
 		}
 		length := len(shared)
-		if length > len(*closest_shared) {
-			closest = &child
+		if closest == nil || length > len(*closest_shared) {
+			closest = child
 			closest_shared = &shared
 			closest_index = &index
 			exact_match = len(shared) == len(child.value)
@@ -111,7 +111,7 @@ func (node *TrieValueNode[N, L]) PrepChild(seq map[N]struct{}, leaf L) (r_child 
 			}
 		}
 	} else {
-		target := closest.(TrieValueNode[N, L])
+		target := closest.(*TrieValueNode[N, L])
 		parent_ref := target.CutPrefix(*closest_shared)
 		node.children[*closest_index] = *parent_ref
 		rem_seq := make(map[N]struct{})
