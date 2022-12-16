@@ -75,3 +75,16 @@ func (node *TrieValueNode[N, L]) PrepChild(seq map[N]struct{}, leaf L) (child Tr
 	node.children = append(node.children, child)
 	return
 }
+
+func (t *Trie[N, L]) Insert(seq map[N]struct{}, leaf L) {
+	node := &t.root
+	for {
+		child := node.PrepChild(seq, leaf)
+		if child.IsTrieLeaf() {
+			break
+		} else {
+			child := child.(TrieValueNode[N, L])
+			node = &child
+		}
+	}
+}
