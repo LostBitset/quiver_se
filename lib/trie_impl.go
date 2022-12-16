@@ -21,7 +21,7 @@ func NewTrie[N comparable, L comparable]() (t Trie[N, L]) {
 func NewTrieValueNode[N comparable, L comparable]() (node TrieValueNode[N, L]) {
 	node = TrieValueNode[N, L]{
 		make(map[N]struct{}),
-		make([]*TrieValueNode[N, L], 0),
+		nil,
 		make([]TrieNode[N, L], 0),
 	}
 	return
@@ -30,7 +30,7 @@ func NewTrieValueNode[N comparable, L comparable]() (node TrieValueNode[N, L]) {
 func (node *TrieValueNode[N, L]) CutPrefix(shared map[N]struct{}) (parent *TrieValueNode[N, L]) {
 	parent = &TrieValueNode[N, L]{
 		shared,
-		node.parents,
+		node.parent,
 		[]TrieNode[N, L]{
 			node,
 		},
@@ -38,7 +38,7 @@ func (node *TrieValueNode[N, L]) CutPrefix(shared map[N]struct{}) (parent *TrieV
 	for shared_key := range shared {
 		delete(node.value, shared_key)
 	}
-	node.parents = append(node.parents, parent)
+	node.parent = parent
 	return
 }
 
@@ -86,9 +86,7 @@ func (node *TrieValueNode[N, L]) PrepChild(seq *map[N]struct{}, leaf L) (r_child
 		}
 		extension_node := &TrieValueNode[N, L]{
 			seq_copy,
-			[]*TrieValueNode[N, L]{
-				node,
-			},
+			node,
 			[]TrieNode[N, L]{
 				r_child,
 			},
@@ -118,9 +116,7 @@ func (node *TrieValueNode[N, L]) PrepChild(seq *map[N]struct{}, leaf L) (r_child
 		}
 		r_child_inner := &TrieValueNode[N, L]{
 			seq_copy,
-			[]*TrieValueNode[N, L]{
-				node,
-			},
+			node,
 			[]TrieNode[N, L]{
 				r_child,
 			},
@@ -146,9 +142,7 @@ func (node *TrieValueNode[N, L]) PrepChild(seq *map[N]struct{}, leaf L) (r_child
 		}
 		r_child_inner := &TrieValueNode[N, L]{
 			rem_seq,
-			[]*TrieValueNode[N, L]{
-				parent_ref,
-			},
+			parent_ref,
 			[]TrieNode[N, L]{
 				r_child,
 			},

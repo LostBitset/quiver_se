@@ -18,7 +18,7 @@ type TrieNode[N comparable, L comparable] interface {
 
 type TrieValueNode[N comparable, L comparable] struct {
 	value    map[N]struct{}
-	parents  []*TrieValueNode[N, L]
+	parent   *TrieValueNode[N, L]
 	children []TrieNode[N, L]
 }
 
