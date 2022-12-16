@@ -106,8 +106,12 @@ func (node *TrieValueNode[N, L]) PrepChild(seq *map[N]struct{}, leaf L) (r_child
 			leaf,
 			r_child_parent,
 		}
-		extension_node := TrieValueNode[N, L]{
-			*seq,
+		seq_copy := make(map[N]struct{})
+		for k := range *seq {
+			seq_copy[k] = struct{}{}
+		}
+		extension_node := &TrieValueNode[N, L]{
+			seq_copy,
 			[]*TrieValueNode[N, L]{
 				node,
 			},
@@ -115,13 +119,13 @@ func (node *TrieValueNode[N, L]) PrepChild(seq *map[N]struct{}, leaf L) (r_child
 				r_child,
 			},
 		}
-		*r_child_parent = extension_node
+		*r_child_parent = *extension_node
 		node.children = append(node.children, extension_node)
 		return
 	}
 	if exact_match {
 		skip_ref := closest.(*TrieValueNode[N, L])
-		r_child = *skip_ref
+		r_child = skip_ref
 		for k := range skip_ref.value {
 			delete(*seq, k)
 		}
@@ -198,8 +202,8 @@ func (t *Trie[N, L]) Insert(seq map[N]struct{}, leaf L) {
 			t.leaves[leaf] = child.(*TrieLeafNode[N, L])
 			break
 		} else {
-			child := child.(TrieValueNode[N, L])
-			node = &child
+			child := child.(*TrieValueNode[N, L])
+			node = child
 		}
 	}
 }
