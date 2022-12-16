@@ -86,6 +86,9 @@ func (node *TrieValueNode[N, L]) PrepChild(seq *map[N]struct{}, leaf L) (r_child
 			}
 		}
 		length := len(shared)
+		if length == 0 {
+			continue
+		}
 		if closest == nil || length > len(*closest_shared) {
 			closest = child
 			closest_shared = &shared
@@ -136,6 +139,7 @@ func (node *TrieValueNode[N, L]) PrepChild(seq *map[N]struct{}, leaf L) (r_child
 				rem_seq[item] = struct{}{}
 			}
 		}
+		fmt.Printf("rem_seq: %v\n", rem_seq)
 		r_child_inner := TrieValueNode[N, L]{
 			rem_seq,
 			[]*TrieValueNode[N, L]{
