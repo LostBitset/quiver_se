@@ -74,13 +74,7 @@ func (node *TrieValueNode[N, L]) PrepChild(seq *map[N]struct{}, leaf L) (r_child
 			continue
 		}
 		child_nc := child
-		var child *TrieValueNode[N, L]
-		switch v := child_nc.(type) {
-		case *TrieValueNode[N, L]:
-			child = v
-		case TrieValueNode[N, L]:
-			child = &v
-		}
+		child := child_nc.(*TrieValueNode[N, L])
 		shared := make(map[N]struct{})
 		for key := range child.value {
 			if _, ok := (*seq)[key]; ok {
@@ -138,26 +132,21 @@ func (node *TrieValueNode[N, L]) PrepChild(seq *map[N]struct{}, leaf L) (r_child
 			leaf,
 			r_child_parent,
 		}
-		if len(*seq) != 0 {
-			seq_copy := make(map[N]struct{})
-			for k := range *seq {
-				seq_copy[k] = struct{}{}
-			}
-			r_child_inner := &TrieValueNode[N, L]{
-				seq_copy,
-				[]*TrieValueNode[N, L]{
-					node,
-				},
-				[]TrieNode[N, L]{
-					r_child,
-				},
-			}
-			node.children = append(node.children, r_child_inner)
-			*r_child_parent = *r_child_inner
-		} else {
-			node.children = append(node.children, r_child)
-			*r_child_parent = *node
+		seq_copy := make(map[N]struct{})
+		for k := range *seq {
+			seq_copy[k] = struct{}{}
 		}
+		r_child_inner := &TrieValueNode[N, L]{
+			seq_copy,
+			[]*TrieValueNode[N, L]{
+				node,
+			},
+			[]TrieNode[N, L]{
+				r_child,
+			},
+		}
+		node.children = append(node.children, r_child_inner)
+		*r_child_parent = *r_child_inner
 		*seq = make(map[N]struct{})
 		return
 	} else {
