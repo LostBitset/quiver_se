@@ -122,7 +122,7 @@ func (node *TrieValueNode[N, L]) PrepChild(seq *map[N]struct{}, leaf L) (r_child
 		}
 		target := closest.(*TrieValueNode[N, L])
 		parent_ref := target.CutPrefix(*closest_shared)
-		node.children[*closest_index] = *parent_ref
+		node.children[*closest_index] = parent_ref
 		rem_seq := make(map[N]struct{})
 		for item := range *seq {
 			if _, ok := (*closest_shared)[item]; !ok {
