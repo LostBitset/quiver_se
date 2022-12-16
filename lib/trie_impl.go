@@ -175,7 +175,7 @@ func (node *TrieValueNode[N, L]) PrepChild(seq *map[N]struct{}, leaf L) (r_child
 				rem_seq[item] = struct{}{}
 			}
 		}
-		r_child_inner := TrieValueNode[N, L]{
+		r_child_inner := &TrieValueNode[N, L]{
 			rem_seq,
 			[]*TrieValueNode[N, L]{
 				parent_ref,
@@ -186,7 +186,7 @@ func (node *TrieValueNode[N, L]) PrepChild(seq *map[N]struct{}, leaf L) (r_child
 		}
 		*seq = make(map[N]struct{})
 		parent_ref.children = append(parent_ref.children, r_child_inner)
-		*r_child_parent = r_child_inner
+		*r_child_parent = *r_child_inner
 		return
 	}
 }
