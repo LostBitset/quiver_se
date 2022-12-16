@@ -191,3 +191,45 @@ func (t *Trie[N, L]) Insert(seq map[N]struct{}, leaf L) {
 		}
 	}
 }
+
+func (e TrieEntry[N, L]) PrefixWith(prefix map[N]struct{}) (mod TrieEntry[N, L]) {
+	key := make(map[N]struct{})
+	for k, v := range e.key {
+		key[k] = v
+	}
+	for k, v := range prefix {
+		key[k] = v
+	}
+	mod = TrieEntry[N, L]{
+		key,
+		e.value,
+	}
+	return
+}
+
+// Enumerate all mappings contained within a trie
+// Note that this is recursive and can stack-overflow on large tries
+func (t Trie[N, L]) EntryList() (out []TrieEntry[N, L]) {
+	out = t.root.EntryList()
+	return
+}
+
+func (node TrieValueNode[N, L]) EntryList() (out []TrieEntry[N, L]) {
+	prefix := node.value
+	for _, child := range node.children {
+		for _, entry := range child.EntryList() {
+			out = append(out, entry.PrefixWith(prefix))
+		}
+	}
+	return
+}
+
+func (node TrieLeafNode[N, L]) EntryList() (out []TrieEntry[N, L]) {
+	out = []TrieEntry[N, L]{
+		{
+			make(map[N]struct{}),
+			node.value,
+		},
+	}
+	return
+}

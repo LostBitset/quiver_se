@@ -6,8 +6,14 @@ type Trie[N comparable, L comparable] struct {
 	leaves map[L]*TrieLeafNode[N, L]
 }
 
+type TrieEntry[N comparable, L comparable] struct {
+	key   map[N]struct{}
+	value L
+}
+
 type TrieNode[N comparable, L comparable] interface {
 	IsTrieLeaf() (is bool)
+	EntryList() []TrieEntry[N, L]
 }
 
 type TrieValueNode[N comparable, L comparable] struct {
