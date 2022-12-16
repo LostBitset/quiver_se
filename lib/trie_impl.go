@@ -36,14 +36,14 @@ func (t Trie[N, L]) String() (repr string) {
 
 func (node TrieValueNode[N, L]) String() (repr string) {
 	repr = fmt.Sprintf(
-		"V[%v]{..., Children = %v}",
+		"{%v -> %v}",
 		node.value, node.children,
 	)
 	return
 }
 
 func (node TrieLeafNode[L]) String() (repr string) {
-	repr = fmt.Sprintf("L(%v)", node.value)
+	repr = fmt.Sprintf("(%v)", node.value)
 	return
 }
 
@@ -71,7 +71,14 @@ func (node *TrieValueNode[N, L]) PrepChild(seq *map[N]struct{}, leaf L) (r_child
 		if child.IsTrieLeaf() {
 			continue
 		}
-		child := child.(*TrieValueNode[N, L])
+		child_nc := child
+		var child *TrieValueNode[N, L]
+		switch v := child_nc.(type) {
+		case *TrieValueNode[N, L]:
+			child = v
+		case TrieValueNode[N, L]:
+			child = &v
+		}
 		shared := make(map[N]struct{})
 		for key := range child.value {
 			if _, ok := (*seq)[key]; ok {
@@ -162,6 +169,5 @@ func (t *Trie[N, L]) Insert(seq map[N]struct{}, leaf L) {
 				node = &child
 			}
 		}
-		fmt.Printf("(in insert) node: %v\n", *node)
 	}
 }
