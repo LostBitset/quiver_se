@@ -42,24 +42,32 @@ func (node *TrieValueNode[N, L]) CutPrefix(shared map[N]struct{}) (parent *TrieV
 	return
 }
 
-func (node *TrieValueNode[N, L]) PrepChild(seq map[N]struct{}) (child *TrieNode[N, L]) {
-	var closest *TrieNode[N, L]
+func (node *TrieValueNode[N, L]) PrepChild(seq map[N]struct{}, leaf L) (child TrieNode[N, L]) {
+	var closest TrieNode[N, L]
 	var closest_by *int
 	for _, child := range node.children {
 		if child.IsTrieLeaf() {
 			continue
 		}
 		child := child.(TrieValueNode[N, L])
-		matches := 0
+		shared := make(map[N]struct{})
 		for key := range child.value {
 			if _, ok := seq[key]; ok {
-				matches++
+				shared[key] = struct{}{}
 			}
 		}
-		if matches > *closest_by {
-			// TODO
+		length := len(shared)
+		if length > *closest_by {
+			closest = &child
+			closest_by = &length
 		}
-		// TODO
 	}
-	// TODO
+	if closest == nil {
+		child = &TrieLeafNode[L]{
+			leaf,
+		}
+	} else {
+		target := closest.(TrieValueNode[N, L])
+	}
+	node.children = append(node.children, child)
 }
