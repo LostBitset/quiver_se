@@ -1,7 +1,5 @@
 package qse
 
-import "fmt"
-
 func (TrieValueNode[N, L]) IsTrieLeaf() (is bool) {
 	is = false
 	return
@@ -29,6 +27,7 @@ func NewTrieValueNode[N comparable, L comparable]() (node TrieValueNode[N, L]) {
 	return
 }
 
+/*
 func (t Trie[N, L]) String() (repr string) {
 	repr = fmt.Sprintf("Trie{Leaves = %v, Root = [@Root]%v}", t.leaves, t.root)
 	return
@@ -46,6 +45,7 @@ func (node TrieLeafNode[N, L]) String() (repr string) {
 	repr = fmt.Sprintf("(%v)", node.value)
 	return
 }
+*/
 
 func (node *TrieValueNode[N, L]) CutPrefix(shared map[N]struct{}) (parent *TrieValueNode[N, L]) {
 	parent = &TrieValueNode[N, L]{
@@ -174,20 +174,11 @@ func (t *Trie[N, L]) Insert(seq map[N]struct{}, leaf L) {
 	for {
 		child := node.PrepChild(&seq_copy, leaf)
 		if child.IsTrieLeaf() {
-			switch child := child.(type) {
-			case *TrieLeafNode[N, L]:
-				t.leaves[leaf] = child
-			case TrieLeafNode[N, L]:
-				t.leaves[leaf] = &child
-			}
+			t.leaves[leaf] = child.(*TrieLeafNode[N, L])
 			break
 		} else {
-			switch child := child.(type) {
-			case *TrieValueNode[N, L]:
-				node = child
-			case TrieValueNode[N, L]:
-				node = &child
-			}
+			child := child.(TrieValueNode[N, L])
+			node = &child
 		}
 	}
 }
