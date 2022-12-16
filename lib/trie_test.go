@@ -10,6 +10,7 @@ import (
 func TestTrie(t *testing.T) {
 	trie := NewTrie[int, int]()
 	trie.Insert([]int{0, 0, 7}, 44)
+	trie.Insert([]int{0, 0, 8}, 55)
 	fmt.Printf("trie: %v\n", trie)
 	assert.Equal(
 		t,
