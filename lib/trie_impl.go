@@ -42,9 +42,7 @@ func (node *TrieValueNode[N, L]) CutPrefix(shared map[N]struct{}) (parent *TrieV
 	return
 }
 
-func (node *TrieValueNode[N, L]) PrepChild(seq map[N]struct{}, leaf L) (
-	child TrieNode[N, L], done bool,
-) {
+func (node *TrieValueNode[N, L]) PrepChild(seq map[N]struct{}, leaf L) (child TrieNode[N, L]) {
 	var closest TrieNode[N, L]
 	var closest_shared *map[N]struct{}
 	var closest_index *int
@@ -70,7 +68,6 @@ func (node *TrieValueNode[N, L]) PrepChild(seq map[N]struct{}, leaf L) (
 		child = &TrieLeafNode[L]{
 			leaf,
 		}
-		done = true
 	} else {
 		target := closest.(TrieValueNode[N, L])
 		node.children[*closest_index] = target.CutPrefix(*closest_shared)
