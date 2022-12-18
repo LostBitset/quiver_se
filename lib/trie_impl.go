@@ -77,7 +77,7 @@ func (node *TrieValueNode[N, L]) PrepChild(seq *map[N]struct{}, leaf L) (r_child
 	if leaf_count != 0 && leaf_count == len(node.children) {
 		r_child = &TrieLeafNode[N, L]{
 			leaf,
-			nil,
+			new(TrieValueNode[N, L]),
 		}
 		seq_copy := make(map[N]struct{})
 		for k := range *seq {
@@ -85,7 +85,7 @@ func (node *TrieValueNode[N, L]) PrepChild(seq *map[N]struct{}, leaf L) (r_child
 		}
 		extension_node := &TrieValueNode[N, L]{
 			seq_copy,
-			nil,
+			new(TrieValueNode[N, L]),
 			[]TrieNode[N, L]{
 				r_child,
 			},
@@ -105,7 +105,7 @@ func (node *TrieValueNode[N, L]) PrepChild(seq *map[N]struct{}, leaf L) (r_child
 	if closest == nil {
 		r_child = &TrieLeafNode[N, L]{
 			leaf,
-			nil,
+			new(TrieValueNode[N, L]),
 		}
 		seq_copy := make(map[N]struct{})
 		for k := range *seq {
@@ -113,7 +113,7 @@ func (node *TrieValueNode[N, L]) PrepChild(seq *map[N]struct{}, leaf L) (r_child
 		}
 		r_child_inner := &TrieValueNode[N, L]{
 			seq_copy,
-			nil,
+			new(TrieValueNode[N, L]),
 			[]TrieNode[N, L]{
 				r_child,
 			},
@@ -124,7 +124,7 @@ func (node *TrieValueNode[N, L]) PrepChild(seq *map[N]struct{}, leaf L) (r_child
 	} else {
 		r_child = &TrieLeafNode[N, L]{
 			leaf,
-			nil,
+			new(TrieValueNode[N, L]),
 		}
 		target := closest.(*TrieValueNode[N, L])
 		parent_ref := target.CutPrefix(*closest_shared)
@@ -137,7 +137,7 @@ func (node *TrieValueNode[N, L]) PrepChild(seq *map[N]struct{}, leaf L) (r_child
 		}
 		r_child_inner := &TrieValueNode[N, L]{
 			rem_seq,
-			nil,
+			new(TrieValueNode[N, L]),
 			[]TrieNode[N, L]{
 				r_child,
 			},
@@ -168,7 +168,7 @@ func (t *Trie[N, L]) Insert(seq map[N]struct{}, leaf L) {
 }
 
 // TODO add repair part
-func (t Trie[N, L]) LookupRepair(query map[N]struct{}) (leaf *L) {
+func (t Trie[N, L]) LookupRepair(query map[N]struct{}) {
 	query_copy := make(map[N]struct{})
 	for k := range query {
 		query_copy[k] = struct{}{}
@@ -182,11 +182,11 @@ searchLoop:
 		if len(query_copy) == 0 {
 			for _, child := range node.children {
 				if child.IsTrieLeaf() {
-					leaf = &child.(*TrieLeafNode[N, L]).value
+					child := child.(*TrieLeafNode[N, L])
+					child.parent = node
 					return
 				}
 			}
-			leaf = nil
 			return
 		}
 	checkChildrenLoop:
@@ -204,11 +204,11 @@ searchLoop:
 				}
 			}
 			if has_match {
+				child.parent = node
 				node = child
 				continue searchLoop
 			}
 		}
-		leaf = nil
 		return
 	}
 }
