@@ -6,9 +6,9 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestTrie(t *testing.T) {
-	trie := NewTrie[int, int]()
-	entries := []TrieEntry[int, int]{
+func CreateExampleTrie() (trie Trie[int, int], entries []TrieEntry[int, int]) {
+	trie = NewTrie[int, int]()
+	entries = []TrieEntry[int, int]{
 		{
 			map[int]struct{}{0: {}, 1: {}, 7: {}},
 			44,
@@ -41,5 +41,25 @@ func TestTrie(t *testing.T) {
 	for _, entry := range entries {
 		trie.Insert(entry.key, entry.value)
 	}
+	return
+}
+
+func TestTrie(t *testing.T) {
+	trie, entries := CreateExampleTrie()
 	assert.ElementsMatch(t, trie.EntryList(), entries)
+}
+
+func TestTrieLookup(t *testing.T) {
+	trie, entries := CreateExampleTrie()
+	for _, entry := range entries {
+		assert.Equal(
+			t,
+			*trie.Lookup(entry.key),
+			entry.value,
+		)
+	}
+	assert.Nil(t, trie.Lookup(make(map[int]struct{})))
+	assert.Nil(t, trie.Lookup(map[int]struct{}{
+		0: {}, 1: {}, 443: {},
+	}))
 }

@@ -213,3 +213,48 @@ func (node TrieLeafNode[N, L]) EntryList() (out []TrieEntry[N, L]) {
 	}
 	return
 }
+
+func (t Trie[N, L]) Lookup(query map[N]struct{}) (leaf *L) {
+	query_copy := make(map[N]struct{})
+	for k := range query {
+		query_copy[k] = struct{}{}
+	}
+	node := &t.root
+searchLoop:
+	for {
+		for key := range node.value {
+			delete(query_copy, key)
+		}
+		if len(query_copy) == 0 {
+			for _, child := range node.children {
+				if child.IsTrieLeaf() {
+					leaf = &child.(*TrieLeafNode[N, L]).value
+					return
+				}
+			}
+			leaf = nil
+			return
+		}
+	checkChildrenLoop:
+		for _, child := range node.children {
+			if child.IsTrieLeaf() {
+				continue checkChildrenLoop
+			}
+			child := child.(*TrieValueNode[N, L])
+			has_match := false
+			for key := range child.value {
+				if _, ok := query_copy[key]; ok {
+					has_match = true
+				} else {
+					continue checkChildrenLoop
+				}
+			}
+			if has_match {
+				node = child
+				continue searchLoop
+			}
+		}
+		leaf = nil
+		return
+	}
+}
