@@ -69,8 +69,26 @@ func TestTrieLookupLeaf(t *testing.T) {
 	for _, entry := range entries {
 		assert.Equal(
 			t,
-			entry.key,
+			[]map[int]struct{}{
+				entry.key,
+			},
 			trie.LookupLeaf(entry.value),
 		)
 	}
+}
+
+func TestTrieLookupLeafDuplicates(t *testing.T) {
+	trie := NewTrie[int, int]()
+	keys := []map[int]struct{}{
+		{0: {}, 1: {}, 7: {}},
+		{0: {}, 1: {}, 9: {}},
+	}
+	for _, key := range keys {
+		trie.Insert(key, 77)
+	}
+	assert.Equal(
+		t,
+		keys,
+		trie.LookupLeaf(77),
+	)
 }

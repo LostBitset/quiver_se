@@ -3,7 +3,7 @@ package qse
 // A trie that maps sets of N to values of L
 type Trie[N comparable, L comparable] struct {
 	root   TrieValueNode[N, L]
-	leaves map[L]*TrieLeafNode[N, L]
+	leaves map[L][]*TrieLeafNode[N, L]
 }
 
 type TrieEntry[N comparable, L comparable] struct {

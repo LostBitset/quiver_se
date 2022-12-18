@@ -13,7 +13,7 @@ func (TrieLeafNode[N, L]) IsTrieLeaf() (is bool) {
 func NewTrie[N comparable, L comparable]() (t Trie[N, L]) {
 	t = Trie[N, L]{
 		NewTrieRootNode[N, L](),
-		make(map[L]*TrieLeafNode[N, L]),
+		make(map[L][]*TrieLeafNode[N, L]),
 	}
 	return
 }
@@ -157,7 +157,10 @@ func (t *Trie[N, L]) Insert(seq map[N]struct{}, leaf L) {
 	for {
 		child := node.PrepChild(&seq_copy, leaf)
 		if child.IsTrieLeaf() {
-			t.leaves[leaf] = child.(*TrieLeafNode[N, L])
+			if _, ok := t.leaves[leaf]; !ok {
+				t.leaves[leaf] = make([]*TrieLeafNode[N, L], 0)
+			}
+			t.leaves[leaf] = append(t.leaves[leaf], child.(*TrieLeafNode[N, L]))
 			break
 		} else {
 			child := child.(*TrieValueNode[N, L])
@@ -300,11 +303,18 @@ searchLoop:
 	}
 }
 
-func (t Trie[N, L]) LookupLeaf(leaf L) (seq map[N]struct{}) {
-	leaf_node, ok := t.leaves[leaf]
+func (t Trie[N, L]) LookupLeaf(leaf L) (seqs []map[N]struct{}) {
+	leaf_nodes, ok := t.leaves[leaf]
 	if !ok {
 		return
 	}
+	for _, leaf_node := range leaf_nodes {
+		seqs = append(seqs, t.LookupLeafByNode(leaf_node))
+	}
+	return
+}
+
+func (t Trie[N, L]) LookupLeafByNode(leaf_node *TrieLeafNode[N, L]) (seq map[N]struct{}) {
 	seq = make(map[N]struct{})
 	node := leaf_node.parent
 	for {
