@@ -23,7 +23,7 @@ func CreateExampleTrie() (trie Trie[int, int], entries []TrieEntry[int, int]) {
 		},
 		{
 			map[int]struct{}{0: {}, 1: {}, 2: {}, 3: {}},
-			12,
+			21,
 		},
 		{
 			map[int]struct{}{9: {}},
