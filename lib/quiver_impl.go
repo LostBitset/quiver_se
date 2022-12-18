@@ -11,8 +11,11 @@ func (obj *SimpleReversibleAssoc[A, B]) Insert(a A, b B) {
 	obj.backing_map[a] = b
 }
 
-func (obj SimpleReversibleAssoc[A, B]) FwdLookup(a A) (item B) {
-	item = obj.backing_map[a]
+func (obj SimpleReversibleAssoc[A, B]) FwdLookup(a A) (item *B) {
+	item_value, ok := obj.backing_map[a]
+	if ok {
+		item = &item_value
+	}
 	return
 }
 
@@ -58,7 +61,7 @@ func (q *Quiver[N, E, C]) all_outneighbors(src QuiverIndex) (outneighbors []Neig
 	src_node.edges.ForEachKey(func(edge E) {
 		neighbor := Neighbor[E]{
 			edge,
-			src_node.edges.FwdLookup(edge),
+			*src_node.edges.FwdLookup(edge),
 		}
 		outneighbors = append(outneighbors, neighbor)
 	})

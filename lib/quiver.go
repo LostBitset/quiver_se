@@ -5,7 +5,7 @@ package qse
 // with a specific B.
 type ReversibleAssoc[A any, B any] interface {
 	Insert(a A, b B)
-	FwdLookup(a A) (item B)
+	FwdLookup(a A) (item *B)
 	RevLookup(b B) (items []A)
 	ForEachKey(fn func(A))
 }
