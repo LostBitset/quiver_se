@@ -54,12 +54,23 @@ func TestTrieLookup(t *testing.T) {
 	for _, entry := range entries {
 		assert.Equal(
 			t,
-			*trie.Lookup(entry.key),
 			entry.value,
+			*trie.Lookup(entry.key),
 		)
 	}
 	assert.Nil(t, trie.Lookup(make(map[int]struct{})))
 	assert.Nil(t, trie.Lookup(map[int]struct{}{
 		0: {}, 1: {}, 443: {},
 	}))
+}
+
+func TestTrieLookupLeaf(t *testing.T) {
+	trie, entries := CreateExampleTrie()
+	for _, entry := range entries {
+		assert.Equal(
+			t,
+			entry.key,
+			trie.LookupLeaf(entry.value),
+		)
+	}
 }

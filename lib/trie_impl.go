@@ -12,13 +12,13 @@ func (TrieLeafNode[N, L]) IsTrieLeaf() (is bool) {
 
 func NewTrie[N comparable, L comparable]() (t Trie[N, L]) {
 	t = Trie[N, L]{
-		NewTrieValueNode[N, L](),
+		NewTrieRootNode[N, L](),
 		make(map[L]*TrieLeafNode[N, L]),
 	}
 	return
 }
 
-func NewTrieValueNode[N comparable, L comparable]() (node TrieValueNode[N, L]) {
+func NewTrieRootNode[N comparable, L comparable]() (node TrieValueNode[N, L]) {
 	node = TrieValueNode[N, L]{
 		make(map[N]struct{}),
 		nil,
@@ -257,4 +257,23 @@ searchLoop:
 		leaf = nil
 		return
 	}
+}
+
+func (t Trie[N, L]) LookupLeaf(leaf L) (seq map[N]struct{}) {
+	leaf_node, ok := t.leaves[leaf]
+	if !ok {
+		return
+	}
+	seq = make(map[N]struct{})
+	node := leaf_node.parent
+	for {
+		if node == nil {
+			break
+		}
+		for k := range node.value {
+			seq[k] = struct{}{}
+		}
+		node = node.parent
+	}
+	return
 }
