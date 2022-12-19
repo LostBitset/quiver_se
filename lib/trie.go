@@ -13,7 +13,7 @@ type TrieEntry[N comparable, L comparable] struct {
 
 type TrieNode[N comparable, L comparable] interface {
 	IsTrieLeaf() (is bool)
-	EntryList() []TrieEntry[N, L]
+	ForEachNodeEntry(fn func(TrieEntry[N, L]))
 }
 
 type TrieValueNode[N comparable, L comparable] struct {

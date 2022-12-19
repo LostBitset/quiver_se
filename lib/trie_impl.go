@@ -229,30 +229,32 @@ func (e TrieEntry[N, L]) PrefixWith(prefix map[N]struct{}) (mod TrieEntry[N, L])
 	return
 }
 
-// Enumerate all mappings contained within a trie
-// Note that this is recursive and can stack-overflow on large tries
-func (t Trie[N, L]) EntryList() (out []TrieEntry[N, L]) {
-	out = t.root.EntryList()
-	return
+// Recursively call a method on all key-value pairs defined in a trie
+func (t Trie[N, L]) ForEachEntry(fn func(TrieEntry[N, L])) {
+	t.root.ForEachNodeEntry(fn)
 }
 
-func (node TrieValueNode[N, L]) EntryList() (out []TrieEntry[N, L]) {
+func (node TrieValueNode[N, L]) ForEachNodeEntry(fn func(TrieEntry[N, L])) {
 	prefix := node.value
 	for _, child := range node.children {
-		for _, entry := range child.EntryList() {
-			out = append(out, entry.PrefixWith(prefix))
-		}
+		child.ForEachNodeEntry(func(entry TrieEntry[N, L]) {
+			fn(entry.PrefixWith(prefix))
+		})
 	}
-	return
 }
 
-func (node TrieLeafNode[N, L]) EntryList() (out []TrieEntry[N, L]) {
-	out = []TrieEntry[N, L]{
-		{
-			make(map[N]struct{}),
-			node.value,
-		},
-	}
+func (node TrieLeafNode[N, L]) ForEachNodeEntry(fn func(TrieEntry[N, L])) {
+	fn(TrieEntry[N, L]{
+		make(map[N]struct{}),
+		node.value,
+	})
+}
+
+// Enumerate all mappings contained within a trie
+func (t Trie[N, L]) EntryList() (out []TrieEntry[N, L]) {
+	t.ForEachEntry(func(entry TrieEntry[N, L]) {
+		out = append(out, entry)
+	})
 	return
 }
 
