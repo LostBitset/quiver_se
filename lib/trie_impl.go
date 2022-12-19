@@ -190,7 +190,6 @@ searchLoop:
 					return
 				}
 			}
-			return
 		}
 	checkChildrenLoop:
 		for _, child := range node.children {
@@ -212,7 +211,6 @@ searchLoop:
 				continue searchLoop
 			}
 		}
-		return
 	}
 }
 

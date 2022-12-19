@@ -77,6 +77,20 @@ func TestTrieLookupLeaf(t *testing.T) {
 	}
 }
 
+func TestTrieLookupInvalid(t *testing.T) {
+	trie, _ := CreateExampleTrie()
+	assert.Nil(
+		t,
+		trie.Lookup(map[int]struct{}{
+			0: {}, 1777: {},
+		}),
+	)
+	assert.Nil(
+		t,
+		trie.LookupLeaf(444444),
+	)
+}
+
 func TestTrieLookupLeafDuplicates(t *testing.T) {
 	trie := NewTrie[int, int]()
 	keys := []map[int]struct{}{
