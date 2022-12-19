@@ -6,6 +6,23 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestSimpleReversibleAssoc(t *testing.T) {
+	ra := NewSimpleRA[string, int]()
+	ra.Insert("hi", 42)
+	assert.Equal(
+		t,
+		42,
+		*ra.FwdLookup("hi"),
+	)
+	assert.Equal(
+		t,
+		[]string{
+			"hi",
+		},
+		ra.RevLookup(42),
+	)
+}
+
 func TestQuiver(t *testing.T) {
 	var q SimpleQuiver[int, int]
 	n1 := q.insert_node_simple(7)

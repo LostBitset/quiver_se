@@ -28,9 +28,9 @@ func (obj SimpleReversibleAssoc[A, B]) RevLookup(b B) (items []A) {
 	return
 }
 
-func (obj SimpleReversibleAssoc[A, B]) ForEachKey(fn func(A)) {
-	for k := range obj.backing_map {
-		fn(k)
+func (obj SimpleReversibleAssoc[A, B]) ForEachPair(fn func(A, B)) {
+	for k, v := range obj.backing_map {
+		fn(k, v)
 	}
 }
 
@@ -58,10 +58,10 @@ type Neighbor[E any] struct {
 
 func (q *Quiver[N, E, C]) all_outneighbors(src QuiverIndex) (outneighbors []Neighbor[E]) {
 	src_node := q.arena[src]
-	src_node.edges.ForEachKey(func(edge E) {
+	src_node.edges.ForEachPair(func(edge E, dst QuiverIndex) {
 		neighbor := Neighbor[E]{
 			edge,
-			*src_node.edges.FwdLookup(edge),
+			dst,
 		}
 		outneighbors = append(outneighbors, neighbor)
 	})
