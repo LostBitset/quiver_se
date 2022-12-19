@@ -328,3 +328,19 @@ func (t Trie[N, L]) LookupLeafByNode(leaf_node *TrieLeafNode[N, L]) (seq map[N]s
 	}
 	return
 }
+
+func (t Trie[N, L]) FwdLookup(a map[N]struct{}) (item *L) {
+	item = t.Lookup(a)
+	return
+}
+
+func (t Trie[N, L]) RevLookup(b L) (items []map[N]struct{}) {
+	items = t.LookupLeaf(b)
+	return
+}
+
+func (t Trie[N, L]) ForEachPair(fn func(map[N]struct{}, L)) {
+	t.ForEachEntry(func(entry TrieEntry[N, L]) {
+		fn(entry.key, entry.value)
+	})
+}
