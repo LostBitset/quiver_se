@@ -26,4 +26,24 @@ func TestTrieAsReversibleAssoc(t *testing.T) {
 		},
 		ra.RevLookup(42),
 	)
+	a_list := make([]map[int]struct{}, 0)
+	b_list := make([]int, 0)
+	ra.ForEachPair(func(a map[int]struct{}, b int) {
+		a_list = append(a_list, a)
+		b_list = append(b_list, b)
+	})
+	assert.ElementsMatch(
+		t,
+		[]map[int]struct{}{
+			test_key,
+		},
+		a_list,
+	)
+	assert.ElementsMatch(
+		t,
+		[]int{
+			42,
+		},
+		b_list,
+	)
 }
