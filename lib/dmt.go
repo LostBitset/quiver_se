@@ -5,5 +5,5 @@ package qse
 // child subtries are kept and recomputed as necessary in order to make it fast to simplify clause
 // pairs of the form (A && B) || (A && !B) to just A.
 type DnfMerkleTrie[LIT comparable, LEAF comparable] struct {
-	backing_trie Trie[LIT, LEAF]
+	backing_trie MerkleTrie[LIT, LEAF]
 }
