@@ -1,28 +1,28 @@
 package qse
 
-// A trie that maps sets of N to values of L
-type Trie[N comparable, L comparable] struct {
-	root   TrieValueNode[N, L]
-	leaves map[L][]*TrieLeafNode[N, L]
+// A trie that maps sets of NODE to values of LEAF.
+type Trie[NODE comparable, LEAF comparable] struct {
+	root   TrieValueNode[NODE, LEAF]
+	leaves map[LEAF][]*TrieLeafNode[NODE, LEAF]
 }
 
-type TrieEntry[N comparable, L comparable] struct {
-	key   map[N]struct{}
-	value L
+type TrieEntry[NODE comparable, LEAF comparable] struct {
+	key   map[NODE]struct{}
+	value LEAF
 }
 
-type TrieNode[N comparable, L comparable] interface {
+type TrieNode[NODE comparable, LEAF comparable] interface {
 	IsTrieLeaf() (is bool)
-	ForEachNodeEntry(fn func(TrieEntry[N, L]))
+	ForEachNodeEntry(fn func(TrieEntry[NODE, LEAF]))
 }
 
-type TrieValueNode[N comparable, L comparable] struct {
-	value    map[N]struct{}
-	parent   *TrieValueNode[N, L]
-	children []TrieNode[N, L]
+type TrieValueNode[NODE comparable, LEAF comparable] struct {
+	value    map[NODE]struct{}
+	parent   *TrieValueNode[NODE, LEAF]
+	children []TrieNode[NODE, LEAF]
 }
 
-type TrieLeafNode[N comparable, L comparable] struct {
-	value  L
-	parent *TrieValueNode[N, L]
+type TrieLeafNode[NODE comparable, LEAF comparable] struct {
+	value  LEAF
+	parent *TrieValueNode[NODE, LEAF]
 }

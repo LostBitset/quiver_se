@@ -1,37 +1,37 @@
 package qse
 
-func (TrieValueNode[N, L]) IsTrieLeaf() (is bool) {
+func (TrieValueNode[NODE, LEAF]) IsTrieLeaf() (is bool) {
 	is = false
 	return
 }
 
-func (TrieLeafNode[N, L]) IsTrieLeaf() (is bool) {
+func (TrieLeafNode[NODE, LEAF]) IsTrieLeaf() (is bool) {
 	is = true
 	return
 }
 
-func NewTrie[N comparable, L comparable]() (t Trie[N, L]) {
-	t = Trie[N, L]{
-		NewTrieRootNode[N, L](),
-		make(map[L][]*TrieLeafNode[N, L]),
+func NewTrie[NODE comparable, LEAF comparable]() (t Trie[NODE, LEAF]) {
+	t = Trie[NODE, LEAF]{
+		NewTrieRootNode[NODE, LEAF](),
+		make(map[LEAF][]*TrieLeafNode[NODE, LEAF]),
 	}
 	return
 }
 
-func NewTrieRootNode[N comparable, L comparable]() (node TrieValueNode[N, L]) {
-	node = TrieValueNode[N, L]{
-		make(map[N]struct{}),
+func NewTrieRootNode[NODE comparable, LEAF comparable]() (node TrieValueNode[NODE, LEAF]) {
+	node = TrieValueNode[NODE, LEAF]{
+		make(map[NODE]struct{}),
 		nil,
-		make([]TrieNode[N, L], 0),
+		make([]TrieNode[NODE, LEAF], 0),
 	}
 	return
 }
 
-func (node *TrieValueNode[N, L]) CutPrefix(shared map[N]struct{}) (parent *TrieValueNode[N, L]) {
-	parent = &TrieValueNode[N, L]{
+func (node *TrieValueNode[NODE, LEAF]) CutPrefix(shared map[NODE]struct{}) (parent *TrieValueNode[NODE, LEAF]) {
+	parent = &TrieValueNode[NODE, LEAF]{
 		shared,
 		node.parent,
-		[]TrieNode[N, L]{
+		[]TrieNode[NODE, LEAF]{
 			node,
 		},
 	}
@@ -42,9 +42,9 @@ func (node *TrieValueNode[N, L]) CutPrefix(shared map[N]struct{}) (parent *TrieV
 	return
 }
 
-func (node *TrieValueNode[N, L]) PrepChild(seq *map[N]struct{}, leaf L) (r_child TrieNode[N, L]) {
-	var closest TrieNode[N, L]
-	var closest_shared *map[N]struct{}
+func (node *TrieValueNode[NODE, LEAF]) PrepChild(seq *map[NODE]struct{}, leaf LEAF) (r_child TrieNode[NODE, LEAF]) {
+	var closest TrieNode[NODE, LEAF]
+	var closest_shared *map[NODE]struct{}
 	var closest_index *int
 	exact_match := false
 	leaf_count := 0
@@ -54,8 +54,8 @@ func (node *TrieValueNode[N, L]) PrepChild(seq *map[N]struct{}, leaf L) (r_child
 			continue
 		}
 		child_nc := child
-		child := child_nc.(*TrieValueNode[N, L])
-		shared := make(map[N]struct{})
+		child := child_nc.(*TrieValueNode[NODE, LEAF])
+		shared := make(map[NODE]struct{})
 		for key := range child.value {
 			if _, ok := (*seq)[key]; ok {
 				shared[key] = struct{}{}
@@ -67,7 +67,7 @@ func (node *TrieValueNode[N, L]) PrepChild(seq *map[N]struct{}, leaf L) (r_child
 		}
 		if closest == nil || length > len(*closest_shared) {
 			closest = child
-			closest_shared = new(map[N]struct{})
+			closest_shared = new(map[NODE]struct{})
 			*closest_shared = shared
 			closest_index = new(int)
 			*closest_index = index
@@ -75,27 +75,27 @@ func (node *TrieValueNode[N, L]) PrepChild(seq *map[N]struct{}, leaf L) (r_child
 		}
 	}
 	if leaf_count != 0 && leaf_count == len(node.children) {
-		r_child = &TrieLeafNode[N, L]{
+		r_child = &TrieLeafNode[NODE, LEAF]{
 			leaf,
-			new(TrieValueNode[N, L]),
+			new(TrieValueNode[NODE, LEAF]),
 		}
-		seq_copy := make(map[N]struct{})
+		seq_copy := make(map[NODE]struct{})
 		for k := range *seq {
 			seq_copy[k] = struct{}{}
 		}
-		extension_node := &TrieValueNode[N, L]{
+		extension_node := &TrieValueNode[NODE, LEAF]{
 			seq_copy,
-			new(TrieValueNode[N, L]),
-			[]TrieNode[N, L]{
+			new(TrieValueNode[NODE, LEAF]),
+			[]TrieNode[NODE, LEAF]{
 				r_child,
 			},
 		}
-		*seq = make(map[N]struct{})
+		*seq = make(map[NODE]struct{})
 		node.children = append(node.children, extension_node)
 		return
 	}
 	if exact_match {
-		skip_ref := closest.(*TrieValueNode[N, L])
+		skip_ref := closest.(*TrieValueNode[NODE, LEAF])
 		r_child = skip_ref
 		for k := range skip_ref.value {
 			delete(*seq, k)
@@ -103,54 +103,54 @@ func (node *TrieValueNode[N, L]) PrepChild(seq *map[N]struct{}, leaf L) (r_child
 		return
 	}
 	if closest == nil {
-		r_child = &TrieLeafNode[N, L]{
+		r_child = &TrieLeafNode[NODE, LEAF]{
 			leaf,
-			new(TrieValueNode[N, L]),
+			new(TrieValueNode[NODE, LEAF]),
 		}
-		seq_copy := make(map[N]struct{})
+		seq_copy := make(map[NODE]struct{})
 		for k := range *seq {
 			seq_copy[k] = struct{}{}
 		}
-		r_child_inner := &TrieValueNode[N, L]{
+		r_child_inner := &TrieValueNode[NODE, LEAF]{
 			seq_copy,
-			new(TrieValueNode[N, L]),
-			[]TrieNode[N, L]{
+			new(TrieValueNode[NODE, LEAF]),
+			[]TrieNode[NODE, LEAF]{
 				r_child,
 			},
 		}
 		node.children = append(node.children, r_child_inner)
-		*seq = make(map[N]struct{})
+		*seq = make(map[NODE]struct{})
 		return
 	} else {
-		r_child = &TrieLeafNode[N, L]{
+		r_child = &TrieLeafNode[NODE, LEAF]{
 			leaf,
-			new(TrieValueNode[N, L]),
+			new(TrieValueNode[NODE, LEAF]),
 		}
-		target := closest.(*TrieValueNode[N, L])
+		target := closest.(*TrieValueNode[NODE, LEAF])
 		parent_ref := target.CutPrefix(*closest_shared)
 		node.children[*closest_index] = parent_ref
-		rem_seq := make(map[N]struct{})
+		rem_seq := make(map[NODE]struct{})
 		for item := range *seq {
 			if _, ok := (*closest_shared)[item]; !ok {
 				rem_seq[item] = struct{}{}
 			}
 		}
-		r_child_inner := &TrieValueNode[N, L]{
+		r_child_inner := &TrieValueNode[NODE, LEAF]{
 			rem_seq,
-			new(TrieValueNode[N, L]),
-			[]TrieNode[N, L]{
+			new(TrieValueNode[NODE, LEAF]),
+			[]TrieNode[NODE, LEAF]{
 				r_child,
 			},
 		}
-		*seq = make(map[N]struct{})
+		*seq = make(map[NODE]struct{})
 		parent_ref.children = append(parent_ref.children, r_child_inner)
 		return
 	}
 }
 
-func (t *Trie[N, L]) Insert(seq map[N]struct{}, leaf L) {
+func (t *Trie[NODE, LEAF]) Insert(seq map[NODE]struct{}, leaf LEAF) {
 	node := &t.root
-	seq_copy := make(map[N]struct{})
+	seq_copy := make(map[NODE]struct{})
 	for k := range seq {
 		seq_copy[k] = struct{}{}
 	}
@@ -158,12 +158,12 @@ func (t *Trie[N, L]) Insert(seq map[N]struct{}, leaf L) {
 		child := node.PrepChild(&seq_copy, leaf)
 		if child.IsTrieLeaf() {
 			if _, ok := t.leaves[leaf]; !ok {
-				t.leaves[leaf] = make([]*TrieLeafNode[N, L], 0)
+				t.leaves[leaf] = make([]*TrieLeafNode[NODE, LEAF], 0)
 			}
-			t.leaves[leaf] = append(t.leaves[leaf], child.(*TrieLeafNode[N, L]))
+			t.leaves[leaf] = append(t.leaves[leaf], child.(*TrieLeafNode[NODE, LEAF]))
 			break
 		} else {
-			child := child.(*TrieValueNode[N, L])
+			child := child.(*TrieValueNode[NODE, LEAF])
 			node = child
 		}
 	}
@@ -171,8 +171,8 @@ func (t *Trie[N, L]) Insert(seq map[N]struct{}, leaf L) {
 }
 
 // TODO add repair part
-func (t Trie[N, L]) LookupRepair(query map[N]struct{}) {
-	query_copy := make(map[N]struct{})
+func (t Trie[NODE, LEAF]) LookupRepair(query map[NODE]struct{}) {
+	query_copy := make(map[NODE]struct{})
 	for k := range query {
 		query_copy[k] = struct{}{}
 	}
@@ -185,7 +185,7 @@ searchLoop:
 		if len(query_copy) == 0 {
 			for _, child := range node.children {
 				if child.IsTrieLeaf() {
-					child := child.(*TrieLeafNode[N, L])
+					child := child.(*TrieLeafNode[NODE, LEAF])
 					child.parent = node
 					return
 				}
@@ -196,7 +196,7 @@ searchLoop:
 			if child.IsTrieLeaf() {
 				continue checkChildrenLoop
 			}
-			child := child.(*TrieValueNode[N, L])
+			child := child.(*TrieValueNode[NODE, LEAF])
 			has_match := false
 			for key := range child.value {
 				if _, ok := query_copy[key]; ok {
@@ -214,15 +214,15 @@ searchLoop:
 	}
 }
 
-func (e TrieEntry[N, L]) PrefixWith(prefix map[N]struct{}) (mod TrieEntry[N, L]) {
-	key := make(map[N]struct{})
+func (e TrieEntry[NODE, LEAF]) PrefixWith(prefix map[NODE]struct{}) (mod TrieEntry[NODE, LEAF]) {
+	key := make(map[NODE]struct{})
 	for k, v := range e.key {
 		key[k] = v
 	}
 	for k, v := range prefix {
 		key[k] = v
 	}
-	mod = TrieEntry[N, L]{
+	mod = TrieEntry[NODE, LEAF]{
 		key,
 		e.value,
 	}
@@ -230,36 +230,36 @@ func (e TrieEntry[N, L]) PrefixWith(prefix map[N]struct{}) (mod TrieEntry[N, L])
 }
 
 // Recursively call a method on all key-value pairs defined in a trie
-func (t Trie[N, L]) ForEachEntry(fn func(TrieEntry[N, L])) {
+func (t Trie[NODE, LEAF]) ForEachEntry(fn func(TrieEntry[NODE, LEAF])) {
 	t.root.ForEachNodeEntry(fn)
 }
 
-func (node TrieValueNode[N, L]) ForEachNodeEntry(fn func(TrieEntry[N, L])) {
+func (node TrieValueNode[NODE, LEAF]) ForEachNodeEntry(fn func(TrieEntry[NODE, LEAF])) {
 	prefix := node.value
 	for _, child := range node.children {
-		child.ForEachNodeEntry(func(entry TrieEntry[N, L]) {
+		child.ForEachNodeEntry(func(entry TrieEntry[NODE, LEAF]) {
 			fn(entry.PrefixWith(prefix))
 		})
 	}
 }
 
-func (node TrieLeafNode[N, L]) ForEachNodeEntry(fn func(TrieEntry[N, L])) {
-	fn(TrieEntry[N, L]{
-		make(map[N]struct{}),
+func (node TrieLeafNode[NODE, LEAF]) ForEachNodeEntry(fn func(TrieEntry[NODE, LEAF])) {
+	fn(TrieEntry[NODE, LEAF]{
+		make(map[NODE]struct{}),
 		node.value,
 	})
 }
 
 // Enumerate all mappings contained within a trie
-func (t Trie[N, L]) EntryList() (out []TrieEntry[N, L]) {
-	t.ForEachEntry(func(entry TrieEntry[N, L]) {
+func (t Trie[NODE, LEAF]) EntryList() (out []TrieEntry[NODE, LEAF]) {
+	t.ForEachEntry(func(entry TrieEntry[NODE, LEAF]) {
 		out = append(out, entry)
 	})
 	return
 }
 
-func (t Trie[N, L]) Lookup(query map[N]struct{}) (leaf *L) {
-	query_copy := make(map[N]struct{})
+func (t Trie[NODE, LEAF]) Lookup(query map[NODE]struct{}) (leaf *LEAF) {
+	query_copy := make(map[NODE]struct{})
 	for k := range query {
 		query_copy[k] = struct{}{}
 	}
@@ -272,7 +272,7 @@ searchLoop:
 		if len(query_copy) == 0 {
 			for _, child := range node.children {
 				if child.IsTrieLeaf() {
-					leaf = &child.(*TrieLeafNode[N, L]).value
+					leaf = &child.(*TrieLeafNode[NODE, LEAF]).value
 					return
 				}
 			}
@@ -284,7 +284,7 @@ searchLoop:
 			if child.IsTrieLeaf() {
 				continue checkChildrenLoop
 			}
-			child := child.(*TrieValueNode[N, L])
+			child := child.(*TrieValueNode[NODE, LEAF])
 			has_match := false
 			for key := range child.value {
 				if _, ok := query_copy[key]; ok {
@@ -303,7 +303,7 @@ searchLoop:
 	}
 }
 
-func (t Trie[N, L]) LookupLeaf(leaf L) (seqs []map[N]struct{}) {
+func (t Trie[NODE, LEAF]) LookupLeaf(leaf LEAF) (seqs []map[NODE]struct{}) {
 	leaf_nodes, ok := t.leaves[leaf]
 	if !ok {
 		return
@@ -314,8 +314,8 @@ func (t Trie[N, L]) LookupLeaf(leaf L) (seqs []map[N]struct{}) {
 	return
 }
 
-func (t Trie[N, L]) LookupLeafByNode(leaf_node *TrieLeafNode[N, L]) (seq map[N]struct{}) {
-	seq = make(map[N]struct{})
+func (t Trie[NODE, LEAF]) LookupLeafByNode(leaf_node *TrieLeafNode[NODE, LEAF]) (seq map[NODE]struct{}) {
+	seq = make(map[NODE]struct{})
 	node := leaf_node.parent
 	for {
 		if node == nil {
@@ -329,18 +329,18 @@ func (t Trie[N, L]) LookupLeafByNode(leaf_node *TrieLeafNode[N, L]) (seq map[N]s
 	return
 }
 
-func (t Trie[N, L]) FwdLookup(a map[N]struct{}) (item *L) {
+func (t Trie[NODE, LEAF]) FwdLookup(a map[NODE]struct{}) (item *LEAF) {
 	item = t.Lookup(a)
 	return
 }
 
-func (t Trie[N, L]) RevLookup(b L) (items []map[N]struct{}) {
+func (t Trie[NODE, LEAF]) RevLookup(b LEAF) (items []map[NODE]struct{}) {
 	items = t.LookupLeaf(b)
 	return
 }
 
-func (t Trie[N, L]) ForEachPair(fn func(map[N]struct{}, L)) {
-	t.ForEachEntry(func(entry TrieEntry[N, L]) {
+func (t Trie[NODE, LEAF]) ForEachPair(fn func(map[NODE]struct{}, LEAF)) {
+	t.ForEachEntry(func(entry TrieEntry[NODE, LEAF]) {
 		fn(entry.key, entry.value)
 	})
 }
