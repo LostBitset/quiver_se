@@ -148,7 +148,7 @@ func (node *TrieValueNode[NODE, LEAF]) PrepChild(seq *map[NODE]struct{}, leaf LE
 	}
 }
 
-func (t *Trie[NODE, LEAF]) Insert(seq map[NODE]struct{}, leaf LEAF) {
+func (t *Trie[NODE, LEAF]) Insert(seq map[NODE]struct{}, leaf LEAF) (leaf_ptr *TrieLeafNode[NODE, LEAF]) {
 	node := &t.root
 	seq_copy := make(map[NODE]struct{})
 	for k := range seq {
@@ -157,10 +157,12 @@ func (t *Trie[NODE, LEAF]) Insert(seq map[NODE]struct{}, leaf LEAF) {
 	for {
 		child := node.PrepChild(&seq_copy, leaf)
 		if child.IsTrieLeaf() {
+			child := child.(*TrieLeafNode[NODE, LEAF])
 			if _, ok := t.leaves[leaf]; !ok {
 				t.leaves[leaf] = make([]*TrieLeafNode[NODE, LEAF], 0)
 			}
-			t.leaves[leaf] = append(t.leaves[leaf], child.(*TrieLeafNode[NODE, LEAF]))
+			t.leaves[leaf] = append(t.leaves[leaf], child)
+			leaf_ptr = child
 			break
 		} else {
 			child := child.(*TrieValueNode[NODE, LEAF])
@@ -168,9 +170,9 @@ func (t *Trie[NODE, LEAF]) Insert(seq map[NODE]struct{}, leaf LEAF) {
 		}
 	}
 	t.LookupRepair(seq)
+	return
 }
 
-// TODO add repair part
 func (t Trie[NODE, LEAF]) LookupRepair(query map[NODE]struct{}) {
 	query_copy := make(map[NODE]struct{})
 	for k := range query {
