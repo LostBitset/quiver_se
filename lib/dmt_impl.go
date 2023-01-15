@@ -163,13 +163,19 @@ getChildEdgesLoop:
 }
 
 func IsInvertedEdge[NODE hashable](maybe_buf map[Literal[NODE]]struct{}, maybe_inv map[Literal[NODE]]struct{}) (match bool) {
+	maybe_inv_copy := make(map[Literal[NODE]]struct{})
+	for k := range maybe_inv {
+		maybe_inv_copy[k] = struct{}{}
+	}
 	for key := range maybe_buf {
 		inverted := key.Invert()
-		if _, ok := maybe_inv[inverted]; !ok {
+		if _, ok := maybe_inv_copy[inverted]; ok {
+			delete(maybe_inv_copy, inverted)
+		} else {
 			match = false
 			return
 		}
 	}
-	match = true
+	match = (len(maybe_inv_copy) == 0)
 	return
 }
