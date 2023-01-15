@@ -1,24 +1,31 @@
 package qse
 
 import (
+	"encoding/binary"
 	"hash/fnv"
 )
 
 func (lit Literal[NODE]) Hash() (digest []byte) {
-	hasher := fnv.New64a()
+	hasher := fnv.New32a()
 	hasher.Write(lit.value.Hash())
 	if !lit.eq {
 		hasher.Write([]byte{0xDD})
 	}
 	digest = hasher.Sum([]byte{})
+	return
+}
 
+func FixDigest(digest digest_t) (digest_fixed digest_fixed_t) {
+	digest_fixed = binary.LittleEndian.Uint32(digest)
+	return
 }
 
 func (lit Literal[NODE]) Merkleify() (mlit MerkleLiteral[NODE]) {
 	mlit = MerkleLiteral[NODE]{
 		lit,
-		lit.Hash(),
+		FixDigest(lit.Hash()),
 	}
+	return
 }
 
 func BufferingLiteral[NODE hashable](value NODE) (lit MerkleLiteral[NODE]) {

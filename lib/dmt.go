@@ -1,6 +1,7 @@
 package qse
 
 type digest_t = []byte
+type digest_fixed_t = uint32
 
 type hashable interface {
 	Hash() (digest digest_t)
@@ -14,7 +15,7 @@ type Literal[NODE hashable] struct {
 
 type MerkleLiteral[NODE hashable] struct {
 	Literal[NODE]
-	subtree_hash digest_t
+	subtree_hash digest_fixed_t
 }
 
 type DMT[NODE hashable, LEAF comparable] struct {
