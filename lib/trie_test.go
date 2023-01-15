@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func CreateExampleTrie() (trie Trie[int, int], entries []TrieEntry[int, int]) {
+func CreateExampleTrie() (trie Trie[int, int, struct{}], entries []TrieEntry[int, int]) {
 	trie = NewTrie[int, int]()
 	entries = []TrieEntry[int, int]{
 		{

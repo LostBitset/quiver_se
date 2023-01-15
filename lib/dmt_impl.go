@@ -52,4 +52,9 @@ func (t *DMT[NODE, LEAF]) Insert(seq map[MerkleLiteral[NODE]]struct{}, leaf LEAF
 }
 
 func (t *DMT[NODE, LEAF]) UpdateHashes(leaf_ptr *TrieLeafNode[MerkleLiteral[NODE], LEAF]) {
+	var node TrieNode[MerkleLiteral[NODE], LEAF]
+	node = leaf_ptr
+	for {
+		
+	}
 }
