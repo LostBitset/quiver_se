@@ -1,16 +1,20 @@
 package qse
 
 import (
+	"bytes"
 	"hash/fnv"
 )
 
 func (lit Literal[NODE]) Hash() (digest []byte) {
-	hasher := fnv.New32a()
-	hasher.Write(lit.value.Hash())
+	digest = lit.value.Hash()
 	if !lit.eq {
-		hasher.Write([]byte{0xDD})
+		digest = WrapInvert(digest)
 	}
-	digest = hasher.Sum([]byte{})
+	return
+}
+
+func WrapInvert(pseudo_digest []byte) (digest []byte) {
+	digest = FixDigest(pseudo_digest, 0xDD)
 	return
 }
 
@@ -27,6 +31,11 @@ func FixDigest(pseudo_digest []byte, fix_seed byte) (digest []byte) {
 	return
 }
 
+func DigestEqual(a digest_t, b digest_t) (equal bool) {
+	equal = bytes.Equal(a, b)
+	return
+}
+
 func BufferingLiteral[NODE hashable](value NODE) (lit Literal[NODE]) {
 	lit = Literal[NODE]{value, true}
 	return
@@ -34,6 +43,14 @@ func BufferingLiteral[NODE hashable](value NODE) (lit Literal[NODE]) {
 
 func InvertingLiteral[NODE hashable](value NODE) (lit Literal[NODE]) {
 	lit = Literal[NODE]{value, false}
+	return
+}
+
+func (lit Literal[NODE]) Invert() (inverted Literal[NODE]) {
+	inverted = Literal[NODE]{
+		lit.value,
+		!lit.eq,
+	}
 	return
 }
 
@@ -94,4 +111,65 @@ correctLoop:
 	}
 }
 
-func (t *DMT[NODE, LEAF]) SimplifyNode(node *TrieValueNode[Literal[NODE], LEAF, digest_t]) {}
+func (t *DMT[NODE, LEAF]) SimplifyNode(node *TrieValueNode[Literal[NODE], LEAF, digest_t]) {
+	edge_indices := make([]int, 0)
+	edge_values := make([]map[Literal[NODE]]struct{}, 0)
+getChildEdgesLoop:
+	for i, child := range node.children {
+		switch c := child.(type) {
+		case TrieLeafNode[Literal[NODE], LEAF, digest_t]:
+			continue getChildEdgesLoop
+		case *TrieLeafNode[Literal[NODE], LEAF, digest_t]:
+			continue getChildEdgesLoop
+		case TrieValueNode[Literal[NODE], LEAF, digest_t]:
+			edge_indices = append(edge_indices, i)
+			edge_values = append(edge_values, c.value)
+		case *TrieValueNode[Literal[NODE], LEAF, digest_t]:
+			edge_indices = append(edge_indices, i)
+			edge_values = append(edge_values, c.value)
+		}
+	}
+	unwanted_children := make([]int, 0)
+	for buf_ii := range edge_indices {
+		for inv_ii := range edge_indices {
+			if IsInvertedEdge(edge_values[buf_ii], edge_values[inv_ii]) {
+				var buf_subtrie_hash digest_t
+				var inv_subtrie_hash digest_t
+				switch c := node.children[edge_indices[buf_ii]].(type) {
+				case TrieValueNode[Literal[NODE], LEAF, digest_t]:
+					buf_subtrie_hash = c.meta
+				case *TrieValueNode[Literal[NODE], LEAF, digest_t]:
+					buf_subtrie_hash = c.meta
+				}
+				switch c := node.children[edge_indices[inv_ii]].(type) {
+				case TrieValueNode[Literal[NODE], LEAF, digest_t]:
+					inv_subtrie_hash = c.meta
+				case *TrieValueNode[Literal[NODE], LEAF, digest_t]:
+					inv_subtrie_hash = c.meta
+				}
+				if DigestEqual(buf_subtrie_hash, inv_subtrie_hash) {
+					unwanted_i := edge_indices[inv_ii]
+					unwanted_children = append(unwanted_children, unwanted_i)
+					// TODO splice out the buf node
+				}
+			}
+		}
+	}
+	for _, child := range unwanted_children {
+		// Drop the child
+		copy(node.children[child:], node.children[(child+1):])
+		node.children = node.children[:(len(node.children)-1)]
+	}
+}
+
+func IsInvertedEdge[NODE hashable](maybe_buf map[Literal[NODE]]struct{}, maybe_inv map[Literal[NODE]]struct{}) (match bool) {
+	for key := range maybe_buf {
+		inverted := key.Invert()
+		if _, ok := maybe_inv[inverted]; !ok {
+			match = false
+			return
+		}
+	}
+	match = true
+	return
+}
