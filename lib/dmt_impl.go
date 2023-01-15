@@ -133,24 +133,25 @@ getChildEdgesLoop:
 	for buf_ii := range edge_indices {
 		for inv_ii := range edge_indices {
 			if IsInvertedEdge(edge_values[buf_ii], edge_values[inv_ii]) {
+				buf_i, inv_i := edge_indices[buf_ii], edge_indices[inv_ii]
 				var buf_subtrie_hash digest_t
 				var inv_subtrie_hash digest_t
-				switch c := node.children[edge_indices[buf_ii]].(type) {
+				switch c := node.children[buf_i].(type) {
 				case TrieValueNode[Literal[NODE], LEAF, digest_t]:
 					buf_subtrie_hash = c.meta
 				case *TrieValueNode[Literal[NODE], LEAF, digest_t]:
 					buf_subtrie_hash = c.meta
 				}
-				switch c := node.children[edge_indices[inv_ii]].(type) {
+				switch c := node.children[inv_i].(type) {
 				case TrieValueNode[Literal[NODE], LEAF, digest_t]:
 					inv_subtrie_hash = c.meta
 				case *TrieValueNode[Literal[NODE], LEAF, digest_t]:
 					inv_subtrie_hash = c.meta
 				}
 				if DigestEqual(buf_subtrie_hash, inv_subtrie_hash) {
-					unwanted_i := edge_indices[inv_ii]
-					unwanted_children = append(unwanted_children, unwanted_i)
-					// TODO splice out the buf node
+					unwanted_children = append(unwanted_children, buf_i)
+					unwanted_children = append(unwanted_children, inv_i)
+					t.ShiftChildren(node, edge_indices[buf_ii])
 				}
 			}
 		}
@@ -158,7 +159,25 @@ getChildEdgesLoop:
 	for _, child := range unwanted_children {
 		// Drop the child
 		copy(node.children[child:], node.children[(child+1):])
+		node.children[len(node.children)] = nil
 		node.children = node.children[:(len(node.children)-1)]
+	}
+}
+
+func (t *DMT[NODE, LEAF]) ShiftChildren(node *TrieValueNode[Literal[NODE], LEAF, digest_t], child_i int) {
+	var child *TrieValueNode[Literal[NODE], LEAF, digest_t]
+	switch c := node.children[child_i].(type) {
+	case TrieValueNode[Literal[NODE], LEAF, digest_t]:
+		child = &c
+	case *TrieValueNode[Literal[NODE], LEAF, digest_t]:
+		child = c
+	}
+	bypass_children := make([]TrieNode[Literal[NODE], LEAF], len(child.children))
+	for i, bypass_child := range child.children {
+		bypass_children[i] = bypass_child
+	}
+	for _, bypass_child := range bypass_children {
+		node.children = append(node.children, bypass_child)
 	}
 }
 
