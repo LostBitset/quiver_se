@@ -12,6 +12,6 @@ type Literal[NODE hashable] struct {
 	eq bool
 }
 
-type DMT[NODE hashable, LEAF comparable] struct {
+type DMT[NODE hashable, LEAF hashable] struct {
 	trie Trie[Literal[NODE], LEAF, digest_t]
 }

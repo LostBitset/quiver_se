@@ -54,7 +54,7 @@ func (lit Literal[NODE]) Invert() (inverted Literal[NODE]) {
 	return
 }
 
-func NewDMT[NODE hashable, LEAF comparable]() (t DMT[NODE, LEAF]) {
+func NewDMT[NODE hashable, LEAF hashable]() (t DMT[NODE, LEAF]) {
 	t = DMT[NODE, LEAF]{
 		Trie[Literal[NODE], LEAF, digest_t]{
 			TrieValueNode[Literal[NODE], LEAF, digest_t]{
@@ -85,20 +85,19 @@ func (t *DMT[NODE, LEAF]) UpdateHashes(leaf_ptr *TrieLeafNode[Literal[NODE], LEA
 correctLoop:
 	for {
 		sum := ZeroDigest()
-	xorChildrenLoop:
 		for _, raw_child := range node.children {
-			var child *TrieValueNode[Literal[NODE], LEAF, digest_t]
+			var child_meta []byte
 			switch c := raw_child.(type) {
 			case TrieLeafNode[Literal[NODE], LEAF, digest_t]:
-				continue xorChildrenLoop
+				child_meta = FixDigest(c.value.Hash(), 0xA4)
 			case *TrieLeafNode[Literal[NODE], LEAF, digest_t]:
-				continue xorChildrenLoop
+				child_meta = FixDigest(c.value.Hash(), 0xA4)
 			case TrieValueNode[Literal[NODE], LEAF, digest_t]:
-				child = &c
+				child_meta = c.meta
 			case *TrieValueNode[Literal[NODE], LEAF, digest_t]:
-				child = c
+				child_meta = c.meta
 			}
-			for i, byte_value := range child.meta {
+			for i, byte_value := range child_meta {
 				sum[i] ^= byte_value
 			}
 		}
