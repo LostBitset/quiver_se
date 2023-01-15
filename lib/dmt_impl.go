@@ -151,16 +151,20 @@ getChildEdgesLoop:
 				if DigestEqual(buf_subtrie_hash, inv_subtrie_hash) {
 					unwanted_children = append(unwanted_children, buf_i)
 					unwanted_children = append(unwanted_children, inv_i)
-					t.ShiftChildren(node, edge_indices[buf_ii])
+					t.ShiftChildren(node, buf_i)
 				}
 			}
 		}
 	}
-	for _, child := range unwanted_children {
+	InsertionSortInPlace(unwanted_children)
+	offset := 0
+	for _, child_i := range unwanted_children {
 		// Drop the child
-		copy(node.children[child:], node.children[(child+1):])
+		child_i := child_i - offset
+		copy(node.children[child_i:], node.children[(child_i+1):])
 		node.children[len(node.children)] = nil
 		node.children = node.children[:(len(node.children)-1)]
+		offset++
 	}
 }
 
@@ -197,4 +201,18 @@ func IsInvertedEdge[NODE hashable](maybe_buf map[Literal[NODE]]struct{}, maybe_i
 	}
 	match = (len(maybe_inv_copy) == 0)
 	return
+}
+
+func InsertionSortInPlace(arr []int) {
+	for i := 1; i < len(arr); i++ {
+		j := i
+	findTargetPosition:
+		for {
+			if j == 0 || arr[j-1] <= arr[j] {
+				break findTargetPosition
+			}
+			arr[j-1], arr[j] = arr[j], arr[j-1]
+			j--
+		}
+	}
 }
