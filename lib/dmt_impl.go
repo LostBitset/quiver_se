@@ -1,7 +1,6 @@
 package qse
 
 import (
-	"encoding/binary"
 	"hash/fnv"
 )
 
@@ -15,46 +14,40 @@ func (lit Literal[NODE]) Hash() (digest []byte) {
 	return
 }
 
-func FixDigest(digest digest_t) (digest_fixed digest_fixed_t) {
-	digest_fixed = binary.LittleEndian.Uint32(digest)
+func BufferingLiteral[NODE hashable](value NODE) (lit Literal[NODE]) {
+	lit = Literal[NODE]{value, true}
 	return
 }
 
-func (lit Literal[NODE]) Merkleify() (mlit MerkleLiteral[NODE]) {
-	mlit = MerkleLiteral[NODE]{
-		lit,
-		FixDigest(lit.Hash()),
-	}
-	return
-}
-
-func BufferingLiteral[NODE hashable](value NODE) (lit MerkleLiteral[NODE]) {
-	lit = Literal[NODE]{value, true}.Merkleify()
-	return
-}
-
-func InvertingLiteral[NODE hashable](value NODE) (lit MerkleLiteral[NODE]) {
-	lit = Literal[NODE]{value, false}.Merkleify()
+func InvertingLiteral[NODE hashable](value NODE) (lit Literal[NODE]) {
+	lit = Literal[NODE]{value, false}
 	return
 }
 
 func NewDMT[NODE hashable, LEAF comparable]() (t DMT[NODE, LEAF]) {
 	t = DMT[NODE, LEAF]{
-		NewTrie[MerkleLiteral[NODE], LEAF](),
+		Trie[Literal[NODE], LEAF, digest_t]{
+			TrieValueNode[Literal[NODE], LEAF, digest_t]{
+				map[Literal[NODE]]struct{}{},
+				nil,
+				[]TrieNode[Literal[NODE], LEAF]{},
+				make([]byte, 4),
+			},
+			map[LEAF][]*TrieLeafNode[Literal[NODE], LEAF, []byte]{},
+		},
 	}
 	return
 }
 
-func (t *DMT[NODE, LEAF]) Insert(seq map[MerkleLiteral[NODE]]struct{}, leaf LEAF) (leaf_ptr *TrieLeafNode[MerkleLiteral[NODE], LEAF]) {
+func (t *DMT[NODE, LEAF]) Insert(
+	seq map[Literal[NODE]]struct{}, leaf LEAF,
+) (
+	leaf_ptr *TrieLeafNode[Literal[NODE], LEAF, digest_t],
+) {
 	leaf_ptr = t.trie.Insert(seq, leaf)
 	t.UpdateHashes(leaf_ptr)
 	return
 }
 
-func (t *DMT[NODE, LEAF]) UpdateHashes(leaf_ptr *TrieLeafNode[MerkleLiteral[NODE], LEAF]) {
-	var node TrieNode[MerkleLiteral[NODE], LEAF]
-	node = leaf_ptr
-	for {
-		
-	}
+func (t *DMT[NODE, LEAF]) UpdateHashes(leaf_ptr *TrieLeafNode[Literal[NODE], LEAF, digest_t]) {
 }
