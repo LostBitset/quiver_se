@@ -69,6 +69,21 @@ func NewDMT[NODE hashable, LEAF hashable]() (t DMT[NODE, LEAF]) {
 	return
 }
 
+func (t DMT[NODE, LEAF]) FwdLookup(a map[Literal[NODE]]struct{}) (item *LEAF) {
+	item = t.trie.FwdLookup(a)
+	return
+}
+
+func (t DMT[NODE, LEAF]) RevLookup(b LEAF) (items []map[Literal[NODE]]struct{}) {
+	items = t.trie.RevLookup(b)
+	return
+}
+
+func (t DMT[NODE, LEAF]) ForEachPair(fn func(map[Literal[NODE]]struct{}, LEAF)) {
+	t.trie.ForEachPair(fn)
+	return
+}
+
 func (t *DMT[NODE, LEAF]) Insert(
 	seq map[Literal[NODE]]struct{}, leaf LEAF,
 ) (
