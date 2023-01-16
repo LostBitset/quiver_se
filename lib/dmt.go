@@ -7,6 +7,14 @@ type hashable interface {
 	comparable
 }
 
+type uint32_H struct {
+	uint32
+}
+
+type uint64_H struct {
+	uint64
+}
+
 type Literal[NODE hashable] struct {
 	value NODE
 	eq bool

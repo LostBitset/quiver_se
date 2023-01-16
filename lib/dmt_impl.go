@@ -2,8 +2,27 @@ package qse
 
 import (
 	"bytes"
+	"encoding/binary"
 	"hash/fnv"
 )
+
+func (n uint32_H) Hash() (digest []byte) {
+	pseudo_digest := binary.LittleEndian.AppendUint32([]byte{}, n.uint32)
+	hasher := fnv.New32a()
+	hasher.Write(pseudo_digest)
+	hasher.Write([]byte{0xCE, 0xD1, 0x32})
+	digest = hasher.Sum([]byte{})
+	return
+}
+
+func (n uint64_H) Hash() (digest []byte) {
+	pseudo_digest := binary.LittleEndian.AppendUint64([]byte{}, n.uint64)
+	hasher := fnv.New32a()
+	hasher.Write(pseudo_digest)
+	hasher.Write([]byte{0xCE, 0xD1, 0x64})
+	digest = hasher.Sum([]byte{})
+	return
+}
 
 func (lit Literal[NODE]) Hash() (digest []byte) {
 	digest = lit.value.Hash()
