@@ -216,34 +216,6 @@ func (t *DMT[NODE, LEAF]) MergeIdenticalLeaves(leaves []*TrieLeafNode[Literal[NO
 	}
 }
 
-func (t *DMT[NODE, LEAF]) MergeIdenticalLeavesOLD(node *TrieValueNode[Literal[NODE], LEAF, digest_t]) {
-	hash_to_indices := make(map[uint32][]int)
-	for i, child := range node.children {
-		var hash uint32
-		switch c := child.(type) {
-		case TrieLeafNode[Literal[NODE], LEAF, digest_t]:
-			hash = binary.LittleEndian.Uint32(c.value.Hash())
-		case *TrieLeafNode[Literal[NODE], LEAF, digest_t]:
-			hash = binary.LittleEndian.Uint32(c.value.Hash())
-		case TrieValueNode[Literal[NODE], LEAF, digest_t]:
-			hash = binary.LittleEndian.Uint32(c.meta)
-		case *TrieValueNode[Literal[NODE], LEAF, digest_t]:
-			hash = binary.LittleEndian.Uint32(c.meta)
-		}
-		if _, ok := hash_to_indices[hash]; !ok {
-			hash_to_indices[hash] = make([]int, 0)
-		}
-		hash_to_indices[hash] = append(hash_to_indices[hash], i)
-	}
-	for _, indices := range hash_to_indices {
-		if len(indices) > 1 {
-			for i := 1; i < len(indices); i++ {
-				SpliceOutReclaim(&node.children, indices[i])
-			}
-		}
-	}
-}
-
 func (t *DMT[NODE, LEAF]) ShiftChildren(node *TrieValueNode[Literal[NODE], LEAF, digest_t], child_i int) {
 	var child *TrieValueNode[Literal[NODE], LEAF, digest_t]
 	switch c := node.children[child_i].(type) {
@@ -255,6 +227,18 @@ func (t *DMT[NODE, LEAF]) ShiftChildren(node *TrieValueNode[Literal[NODE], LEAF,
 	bypass_children := make([]TrieNode[Literal[NODE], LEAF], len(child.children))
 	copy(bypass_children, child.children)
 	node.children = append(node.children, bypass_children...)
+	for _, bypass_child := range bypass_children {
+		switch c := bypass_child.(type) {
+		case TrieLeafNode[Literal[NODE], LEAF, digest_t]:
+			*c.parent = *node
+		case *TrieLeafNode[Literal[NODE], LEAF, digest_t]:
+			*c.parent = *node
+		case TrieValueNode[Literal[NODE], LEAF, digest_t]:
+			*c.parent = *node
+		case *TrieValueNode[Literal[NODE], LEAF, digest_t]:
+			*c.parent = *node
+		}
+	}
 }
 
 func IsInvertedEdge[NODE hashable](maybe_buf map[Literal[NODE]]struct{}, maybe_inv map[Literal[NODE]]struct{}) (match bool) {
