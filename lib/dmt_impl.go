@@ -15,15 +15,6 @@ func (n uint32_H) Hash() (digest []byte) {
 	return
 }
 
-func (n uint64_H) Hash() (digest []byte) {
-	pseudo_digest := binary.LittleEndian.AppendUint64([]byte{}, n.uint64)
-	hasher := fnv.New32a()
-	hasher.Write(pseudo_digest)
-	hasher.Write([]byte{0xCE, 0xD1, 0x64})
-	digest = hasher.Sum([]byte{})
-	return
-}
-
 func (lit Literal[NODE]) Hash() (digest []byte) {
 	digest = lit.value.Hash()
 	if !lit.eq {
@@ -100,7 +91,6 @@ func (t DMT[NODE, LEAF]) RevLookup(b LEAF) (items []map[Literal[NODE]]struct{}) 
 
 func (t DMT[NODE, LEAF]) ForEachPair(fn func(map[Literal[NODE]]struct{}, LEAF)) {
 	t.trie.ForEachPair(fn)
-	return
 }
 
 func (t *DMT[NODE, LEAF]) Insert(
@@ -110,6 +100,7 @@ func (t *DMT[NODE, LEAF]) Insert(
 ) {
 	leaf_ptr = t.trie.Insert(seq, leaf)
 	t.UpdateHashes(leaf_ptr)
+	t.MergeIdenticalLeaves(leaf_ptr.parent)
 	return
 }
 
@@ -135,8 +126,8 @@ correctLoop:
 				sum[i] ^= byte_value
 			}
 		}
-		*&node.meta = FixDigest(sum, 0x3E) // Update the hash
-		t.SimplifyNode(node) // Try and locally simplify
+		node.meta = FixDigest(sum, 0x3E) // Update the hash
+		t.SimplifyNode(node)             // Try and locally simplify
 		node = node.parent
 		if node == nil {
 			break correctLoop
@@ -200,6 +191,34 @@ getChildEdgesLoop:
 	}
 }
 
+func (t *DMT[NODE, LEAF]) MergeIdenticalLeaves(node *TrieValueNode[Literal[NODE], LEAF, digest_t]) {
+	hash_to_indices := make(map[uint32][]int)
+	for i, child := range node.children {
+		var hash uint32
+		switch c := child.(type) {
+		case TrieLeafNode[Literal[NODE], LEAF, digest_t]:
+			hash = binary.LittleEndian.Uint32(c.value.Hash())
+		case *TrieLeafNode[Literal[NODE], LEAF, digest_t]:
+			hash = binary.LittleEndian.Uint32(c.value.Hash())
+		case TrieValueNode[Literal[NODE], LEAF, digest_t]:
+			hash = binary.LittleEndian.Uint32(c.meta)
+		case *TrieValueNode[Literal[NODE], LEAF, digest_t]:
+			hash = binary.LittleEndian.Uint32(c.meta)
+		}
+		if _, ok := hash_to_indices[hash]; !ok {
+			hash_to_indices[hash] = make([]int, 0)
+		}
+		hash_to_indices[hash] = append(hash_to_indices[hash], i)
+	}
+	for _, indices := range hash_to_indices {
+		if len(indices) > 1 {
+			for i := 1; i < len(indices); i++ {
+				SpliceOutReclaim(&node.children, indices[i])
+			}
+		}
+	}
+}
+
 func (t *DMT[NODE, LEAF]) ShiftChildren(node *TrieValueNode[Literal[NODE], LEAF, digest_t], child_i int) {
 	var child *TrieValueNode[Literal[NODE], LEAF, digest_t]
 	switch c := node.children[child_i].(type) {
@@ -209,12 +228,8 @@ func (t *DMT[NODE, LEAF]) ShiftChildren(node *TrieValueNode[Literal[NODE], LEAF,
 		child = c
 	}
 	bypass_children := make([]TrieNode[Literal[NODE], LEAF], len(child.children))
-	for i, bypass_child := range child.children {
-		bypass_children[i] = bypass_child
-	}
-	for _, bypass_child := range bypass_children {
-		node.children = append(node.children, bypass_child)
-	}
+	copy(bypass_children, child.children)
+	node.children = append(node.children, bypass_children...)
 }
 
 func IsInvertedEdge[NODE hashable](maybe_buf map[Literal[NODE]]struct{}, maybe_inv map[Literal[NODE]]struct{}) (match bool) {
