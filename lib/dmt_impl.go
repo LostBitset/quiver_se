@@ -190,13 +190,12 @@ getChildEdgesLoop:
 		}
 	}
 	InsertionSortInPlace(unwanted_children)
+	DedupSortedInPlace(&unwanted_children)
 	offset := 0
 	for _, child_i := range unwanted_children {
 		// Drop the child
 		child_i := child_i - offset
-		copy(node.children[child_i:], node.children[(child_i+1):])
-		node.children[len(node.children)] = nil
-		node.children = node.children[:(len(node.children)-1)]
+		SpliceOutReclaim(&node.children, child_i)
 		offset++
 	}
 }
@@ -248,6 +247,22 @@ func InsertionSortInPlace(arr []int) {
 			j--
 		}
 	}
+}
+
+func DedupSortedInPlace(arr *[]int) {
+	for i := 0; i < (len(*arr) - 1); i++ {
+		if (*arr)[i] == (*arr)[i+1] {
+			SpliceOutReclaim(arr, i+1)
+			i--
+		}
+	}
+}
+
+func SpliceOutReclaim[T any](arr *[]T, index int) {
+	var zero T
+	copy((*arr)[index:], (*arr)[(index+1):])
+	(*arr)[len(*arr)-1] = zero
+	*arr = (*arr)[:(len(*arr) - 1)]
 }
 
 func (dmt DMT[NODE, LEAF]) EntryList() (out []TrieEntry[Literal[NODE], LEAF]) {
