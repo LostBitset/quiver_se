@@ -41,6 +41,16 @@ func FixDigest(pseudo_digest []byte, fix_seed byte) (digest []byte) {
 	return
 }
 
+func MixDigests(pseudo_a []byte, pseudo_b []byte) (digest []byte) {
+	hasher := fnv.New32a()
+	hasher.Write([]byte{0x80})
+	hasher.Write(pseudo_a)
+	hasher.Write(pseudo_b)
+	hasher.Write([]byte{0x80})
+	digest = hasher.Sum([]byte{})
+	return
+}
+
 func DigestEqual(a digest_t, b digest_t) (equal bool) {
 	equal = bytes.Equal(a, b)
 	return
@@ -120,8 +130,22 @@ correctLoop:
 				child_meta = FixDigest(c.value.Hash(), 0xA4)
 			case TrieValueNode[Literal[NODE], LEAF, digest_t]:
 				child_meta = c.meta
+				value_hash := ZeroDigest()
+				for key := range c.value {
+					for i, byte_value := range key.Hash() {
+						value_hash[i] ^= byte_value
+					}
+				}
+				child_meta = MixDigests(child_meta, value_hash)
 			case *TrieValueNode[Literal[NODE], LEAF, digest_t]:
 				child_meta = c.meta
+				value_hash := ZeroDigest()
+				for key := range c.value {
+					for i, byte_value := range key.Hash() {
+						value_hash[i] ^= byte_value
+					}
+				}
+				child_meta = MixDigests(child_meta, value_hash)
 			}
 			for i, byte_value := range child_meta {
 				sum[i] ^= byte_value
