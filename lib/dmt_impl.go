@@ -249,3 +249,8 @@ func InsertionSortInPlace(arr []int) {
 		}
 	}
 }
+
+func (dmt DMT[NODE, LEAF]) EntryList() (out []TrieEntry[Literal[NODE], LEAF]) {
+	out = dmt.trie.EntryList()
+	return
+}

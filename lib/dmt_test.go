@@ -1,9 +1,9 @@
 package qse
 
 import (
-	// "testing"
+	"testing"
 
-	// "github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/assert"
 )
 
 func CreateExampleDMT() (dmt DMT[uint32_H, uint32_H], entries []TrieEntry[Literal[uint32_H], uint32_H]) {
@@ -42,3 +42,7 @@ func CreateExampleDMT() (dmt DMT[uint32_H, uint32_H], entries []TrieEntry[Litera
 	return
 }
 
+func TestDMT(t *testing.T) {
+	dmt, entries := CreateExampleDMT()
+	assert.ElementsMatch(t, dmt.EntryList(), entries)
+}
