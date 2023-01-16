@@ -100,7 +100,8 @@ func (t *DMT[NODE, LEAF]) Insert(
 ) {
 	leaf_ptr = t.trie.Insert(seq, leaf)
 	t.UpdateHashes(leaf_ptr)
-	t.MergeIdenticalLeaves(leaf_ptr.parent)
+	final_leaves := t.trie.leaves[leaf]
+	t.MergeIdenticalLeaves(final_leaves)
 	return
 }
 
@@ -191,7 +192,31 @@ getChildEdgesLoop:
 	}
 }
 
-func (t *DMT[NODE, LEAF]) MergeIdenticalLeaves(node *TrieValueNode[Literal[NODE], LEAF, digest_t]) {
+func (t *DMT[NODE, LEAF]) MergeIdenticalLeaves(leaves []*TrieLeafNode[Literal[NODE], LEAF, digest_t]) {
+	for i := 1; i < len(leaves); i++ {
+		unwanted_leaf := leaves[i]
+		parent := unwanted_leaf.parent
+		var index int
+		for i, option := range parent.children {
+		findLeafTypeSwitch:
+			switch c := option.(type) {
+			case TrieLeafNode[Literal[NODE], LEAF, digest_t]:
+				if unwanted_leaf == &c {
+					index = i
+				}
+			case *TrieLeafNode[Literal[NODE], LEAF, digest_t]:
+				if unwanted_leaf == c {
+					index = i
+				}
+			default:
+				break findLeafTypeSwitch
+			}
+		}
+		SpliceOutReclaim(&parent.children, index)
+	}
+}
+
+func (t *DMT[NODE, LEAF]) MergeIdenticalLeavesOLD(node *TrieValueNode[Literal[NODE], LEAF, digest_t]) {
 	hash_to_indices := make(map[uint32][]int)
 	for i, child := range node.children {
 		var hash uint32
