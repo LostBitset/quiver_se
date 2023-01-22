@@ -1,5 +1,7 @@
 #!/bin/bash
 
+echo "[z3_test] Attempting to use z3 binary to generate MUS..."
+
 example_out=`z3 -smt2 example.smt2 | paste -s -d','`
 desired_out_1='unsat,(ga_1 ga_0)'
 desired_out_2='unsat,(ga_0 ga_1)'
