@@ -1,3 +1,5 @@
+github.com/aclements/go-z3 v0.0.0-20220809013456-4675d5f90ca5 h1:A27FEXOK2zSHuCwXwmPIKfrHcT+caybRGb1kaW4KOBI=
+github.com/aclements/go-z3 v0.0.0-20220809013456-4675d5f90ca5/go.mod h1:Dcqk4DTCIWIVv0jiFnYg5nnTIOWZ3JgU/mYjb5puA1s=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
