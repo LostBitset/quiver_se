@@ -6,7 +6,7 @@ import (
 	"hash/fnv"
 )
 
-func (n uint32_H) Hash() (digest []byte) {
+func (n uint32_H) Hash() (digest digest_t) {
 	pseudo_digest := binary.LittleEndian.AppendUint32([]byte{}, n.uint32)
 	hasher := fnv.New32a()
 	hasher.Write(pseudo_digest)
@@ -15,7 +15,7 @@ func (n uint32_H) Hash() (digest []byte) {
 	return
 }
 
-func (lit Literal[NODE]) Hash() (digest []byte) {
+func (lit Literal[NODE]) Hash() (digest digest_t) {
 	digest = lit.value.Hash()
 	if !lit.eq {
 		digest = WrapInvert(digest)
@@ -23,17 +23,17 @@ func (lit Literal[NODE]) Hash() (digest []byte) {
 	return
 }
 
-func WrapInvert(pseudo_digest []byte) (digest []byte) {
+func WrapInvert(pseudo_digest digest_t) (digest digest_t) {
 	digest = FixDigest(pseudo_digest, 0xDD)
 	return
 }
 
-func ZeroDigest() (digest []byte) {
+func ZeroDigest() (digest digest_t) {
 	digest = make([]byte, 4)
 	return
 }
 
-func FixDigest(pseudo_digest []byte, fix_seed byte) (digest []byte) {
+func FixDigest(pseudo_digest digest_t, fix_seed byte) (digest digest_t) {
 	hasher := fnv.New32a()
 	hasher.Write(pseudo_digest)
 	hasher.Write([]byte{fix_seed})
@@ -41,7 +41,7 @@ func FixDigest(pseudo_digest []byte, fix_seed byte) (digest []byte) {
 	return
 }
 
-func MixDigests(pseudo_a []byte, pseudo_b []byte) (digest []byte) {
+func MixDigests(pseudo_a []byte, pseudo_b []byte) (digest digest_t) {
 	hasher := fnv.New32a()
 	hasher.Write([]byte{0x80})
 	hasher.Write(pseudo_a)
@@ -105,10 +105,17 @@ func (t DMT[NODE, LEAF]) ForEachPair(fn func(map[Literal[NODE]]struct{}, LEAF)) 
 
 func (t *DMT[NODE, LEAF]) Insert(
 	seq map[Literal[NODE]]struct{}, leaf LEAF,
+) {
+	t.InsertReturn(seq, leaf)
+	return
+}
+
+func (t *DMT[NODE, LEAF]) InsertReturn(
+	seq map[Literal[NODE]]struct{}, leaf LEAF,
 ) (
 	leaf_ptr *TrieLeafNode[Literal[NODE], LEAF, digest_t],
 ) {
-	leaf_ptr = t.trie.Insert(seq, leaf)
+	leaf_ptr = t.trie.InsertReturn(seq, leaf)
 	t.UpdateHashes(leaf_ptr)
 	final_leaves := t.trie.leaves[leaf]
 	t.MergeIdenticalLeaves(final_leaves)

@@ -153,7 +153,12 @@ func (node *TrieValueNode[NODE, LEAF, META]) PrepChild(seq *map[NODE]struct{}, l
 	}
 }
 
-func (t *Trie[NODE, LEAF, META]) Insert(seq map[NODE]struct{}, leaf LEAF) (leaf_ptr *TrieLeafNode[NODE, LEAF, META]) {
+func (t *Trie[NODE, LEAF, META]) Insert(seq map[NODE]struct{}, leaf LEAF) {
+	t.InsertReturn(seq, leaf)
+	return
+}
+
+func (t *Trie[NODE, LEAF, META]) InsertReturn(seq map[NODE]struct{}, leaf LEAF) (leaf_ptr *TrieLeafNode[NODE, LEAF, META]) {
 	node := &t.root
 	seq_copy := make(map[NODE]struct{})
 	for k := range seq {
