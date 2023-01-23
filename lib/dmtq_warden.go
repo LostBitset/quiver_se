@@ -13,12 +13,21 @@ type DMTQNodeUpdate[NODE hashable] struct {
 }
 
 type DMTQEdgeUpdate[NODE hashable, ATOM hashable] struct {
-	src QuiverIndex
-	dst QuiverIndex
+	src     QuiverIndex
+	dst     QuiverIndex
 	formula map[Literal[ATOM]]struct{}
 }
 
-type DMTQUpdate[NODE hashable, ATOM hashable] interface {
+type DMTQTransaction[NODE hashable, ATOM hashable] interface {
 	Invoke(dmtq InnerDMTQ[NODE, ATOM])
+}
+
+type DMTQWalk[NODE hashable, ATOM hashable] struct {
+	edges  []map[Literal[ATOM]]struct{}
+	target NODE
+}
+
+type DMTQWardenConfig[NODE hashable, ATOM hashable] struct {
+	walk_chan chan DMTQWalk[NODE, ATOM]
 }
 
