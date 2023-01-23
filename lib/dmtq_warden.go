@@ -18,3 +18,7 @@ type DMTQEdgeUpdate[NODE hashable, ATOM hashable] struct {
 	formula map[Literal[ATOM]]struct{}
 }
 
+type DMTQUpdate[NODE hashable, ATOM hashable] interface {
+	Invoke(dmtq InnerDMTQ[NODE, ATOM])
+}
+
