@@ -110,10 +110,11 @@ func (lit Literal[NODE]) Invert() (inverted Literal[NODE]) {
 }
 
 func NewDMT[NODE hashable, LEAF hashable]() (t DMT[NODE, LEAF]) {
+	root_value_pm := NewPHashMap[Literal[NODE], struct{}]()
 	t = DMT[NODE, LEAF]{
 		Trie[Literal[NODE], LEAF, digest_t]{
 			TrieValueNode[Literal[NODE], LEAF, digest_t]{
-				map[Literal[NODE]]struct{}{},
+				&root_value_pm,
 				nil,
 				[]TrieNode[Literal[NODE], LEAF]{},
 				ZeroDigest(),
@@ -124,12 +125,12 @@ func NewDMT[NODE hashable, LEAF hashable]() (t DMT[NODE, LEAF]) {
 	return
 }
 
-func (t DMT[NODE, LEAF]) FwdLookup(a map[Literal[NODE]]struct{}) (item *LEAF) {
+func (t DMT[NODE, LEAF]) FwdLookup(a PHashMap[Literal[NODE], struct{}]) (item *LEAF) {
 	item = t.trie.FwdLookup(a)
 	return
 }
 
-func (t DMT[NODE, LEAF]) RevLookup(b LEAF) (items []map[Literal[NODE]]struct{}) {
+func (t DMT[NODE, LEAF]) RevLookup(b LEAF) (items []PHashMap[Literal[NODE], struct{}]) {
 	items = t.trie.RevLookup(b)
 	return
 }
