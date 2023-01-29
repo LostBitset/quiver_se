@@ -10,7 +10,7 @@ func (TrieLeafNode[NODE, LEAF, META]) IsTrieLeaf() (is bool) {
 	return
 }
 
-func NewTrie[NODE comparable, LEAF comparable]() (t Trie[NODE, LEAF, struct{}]) {
+func NewTrie[NODE hashable, LEAF comparable]() (t Trie[NODE, LEAF, struct{}]) {
 	t = Trie[NODE, LEAF, struct{}]{
 		NewTrieRootNode[NODE, LEAF](),
 		make(map[LEAF][]*TrieLeafNode[NODE, LEAF, struct{}]),
@@ -18,7 +18,7 @@ func NewTrie[NODE comparable, LEAF comparable]() (t Trie[NODE, LEAF, struct{}]) 
 	return
 }
 
-func NewTrieRootNode[NODE comparable, LEAF comparable]() (node TrieValueNode[NODE, LEAF, struct{}]) {
+func NewTrieRootNode[NODE hashable, LEAF comparable]() (node TrieValueNode[NODE, LEAF, struct{}]) {
 	node = TrieValueNode[NODE, LEAF, struct{}]{
 		make(map[NODE]struct{}),
 		nil,
