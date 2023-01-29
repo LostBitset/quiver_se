@@ -6,35 +6,35 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func CreateExampleTrie() (trie Trie[int, int, struct{}], entries []TrieEntry[int, int]) {
-	trie = NewTrie[int, int]()
-	entries = []TrieEntry[int, int]{
+func CreateExampleTrie() (trie Trie[uint32_H, int, struct{}], entries []TrieEntry[uint32_H, int]) {
+	trie = NewTrie[uint32_H, int]()
+	entries = []TrieEntry[uint32_H, int]{
 		{
-			map[int]struct{}{0: {}, 1: {}, 7: {}},
+			map[uint32_H]struct{}{{0}: {}, {1}: {}, {7}: {}},
 			44,
 		},
 		{
-			map[int]struct{}{0: {}, 1: {}, 9: {}},
+			map[uint32_H]struct{}{{0}: {}, {1}: {}, {9}: {}},
 			55,
 		},
 		{
-			map[int]struct{}{0: {}, 1: {}, 2: {}, 9: {}},
+			map[uint32_H]struct{}{{0}: {}, {1}: {}, {2}: {}, {9}: {}},
 			12,
 		},
 		{
-			map[int]struct{}{0: {}, 1: {}, 2: {}, 3: {}},
+			map[uint32_H]struct{}{{0}: {}, {1}: {}, {2}: {}, {3}: {}},
 			21,
 		},
 		{
-			map[int]struct{}{9: {}},
+			map[uint32_H]struct{}{{9}: {}},
 			99,
 		},
 		{
-			map[int]struct{}{0: {}, 5: {}, 6: {}, 7: {}, 4: {}},
+			map[uint32_H]struct{}{{0}: {}, {5}: {}, {6}: {}, {7}: {}, {4}: {}},
 			31,
 		},
 		{
-			map[int]struct{}{0: {}, 5: {}, 6: {}, 8: {}, 4: {}},
+			map[uint32_H]struct{}{{0}: {}, {5}: {}, {6}: {}, {8}: {}, {4}: {}},
 			32,
 		},
 	}
@@ -58,9 +58,9 @@ func TestTrieLookup(t *testing.T) {
 			*trie.Lookup(entry.key),
 		)
 	}
-	assert.Nil(t, trie.Lookup(make(map[int]struct{})))
-	assert.Nil(t, trie.Lookup(map[int]struct{}{
-		0: {}, 1: {}, 443: {},
+	assert.Nil(t, trie.Lookup(make(map[uint32_H]struct{})))
+	assert.Nil(t, trie.Lookup(map[uint32_H]struct{}{
+		{0}: {}, {1}: {}, {443}: {},
 	}))
 }
 
@@ -69,7 +69,7 @@ func TestTrieLookupLeaf(t *testing.T) {
 	for _, entry := range entries {
 		assert.Equal(
 			t,
-			[]map[int]struct{}{
+			[]map[uint32_H]struct{}{
 				entry.key,
 			},
 			trie.LookupLeaf(entry.value),
@@ -81,8 +81,8 @@ func TestTrieLookupInvalid(t *testing.T) {
 	trie, _ := CreateExampleTrie()
 	assert.Nil(
 		t,
-		trie.Lookup(map[int]struct{}{
-			0: {}, 1777: {},
+		trie.Lookup(map[uint32_H]struct{}{
+			{0}: {}, {1777}: {},
 		}),
 	)
 	assert.Nil(
@@ -92,10 +92,10 @@ func TestTrieLookupInvalid(t *testing.T) {
 }
 
 func TestTrieLookupLeafDuplicates(t *testing.T) {
-	trie := NewTrie[int, int]()
-	keys := []map[int]struct{}{
-		{0: {}, 1: {}, 7: {}},
-		{0: {}, 1: {}, 9: {}},
+	trie := NewTrie[uint32_H, int]()
+	keys := []map[uint32_H]struct{}{
+		{{0}: {}, {1}: {}, {7}: {}},
+		{{0}: {}, {1}: {}, {9}: {}},
 	}
 	for _, key := range keys {
 		trie.Insert(key, 77)
