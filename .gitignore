@@ -24,3 +24,8 @@ go.work
 
 **/.#*
 
+# (Added) The elves/elvish package copied
+pkg/
+pkg/*
+pkg/**/*
+
