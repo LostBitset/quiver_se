@@ -140,14 +140,14 @@ func (t DMT[NODE, LEAF]) ForEachPair(fn func(map[Literal[NODE]]struct{}, LEAF)) 
 }
 
 func (t *DMT[NODE, LEAF]) Insert(
-	seq map[Literal[NODE]]struct{}, leaf LEAF,
+	seq PHashMap[Literal[NODE], struct{}], leaf LEAF,
 ) {
 	t.InsertReturn(seq, leaf)
 	return
 }
 
 func (t *DMT[NODE, LEAF]) InsertReturn(
-	seq map[Literal[NODE]]struct{}, leaf LEAF,
+	seq PHashMap[Literal[NODE], struct{}], leaf LEAF,
 ) (
 	leaf_ptr *TrieLeafNode[Literal[NODE], LEAF, digest_t],
 ) {
@@ -174,7 +174,9 @@ correctLoop:
 			case TrieValueNode[Literal[NODE], LEAF, digest_t]:
 				child_meta = c.meta
 				value_hash := ZeroDigest()
-				for key := range c.value {
+				for itr := c.value.inner.Iterator(); itr.HasElem(); itr.Next() {
+					key_any, _ := itr.Elem()
+					key := key_any.(Literal[NODE])
 					for i, byte_value := range key.Hash() {
 						value_hash[i] ^= byte_value
 					}
@@ -183,7 +185,9 @@ correctLoop:
 			case *TrieValueNode[Literal[NODE], LEAF, digest_t]:
 				child_meta = c.meta
 				value_hash := ZeroDigest()
-				for key := range c.value {
+				for itr := c.value.inner.Iterator(); itr.HasElem(); itr.Next() {
+					key_any, _ := itr.Elem()
+					key := key_any.(Literal[NODE])
 					for i, byte_value := range key.Hash() {
 						value_hash[i] ^= byte_value
 					}
@@ -205,7 +209,7 @@ correctLoop:
 
 func (t *DMT[NODE, LEAF]) SimplifyNode(node *TrieValueNode[Literal[NODE], LEAF, digest_t]) {
 	edge_indices := make([]int, 0)
-	edge_values := make([]map[Literal[NODE]]struct{}, 0)
+	edge_values := make([]PHashMap[Literal[NODE], struct{}], 0)
 getChildEdgesLoop:
 	for i, child := range node.children {
 		switch c := child.(type) {
@@ -215,10 +219,10 @@ getChildEdgesLoop:
 			continue getChildEdgesLoop
 		case TrieValueNode[Literal[NODE], LEAF, digest_t]:
 			edge_indices = append(edge_indices, i)
-			edge_values = append(edge_values, c.value)
+			edge_values = append(edge_values, *c.value)
 		case *TrieValueNode[Literal[NODE], LEAF, digest_t]:
 			edge_indices = append(edge_indices, i)
-			edge_values = append(edge_values, c.value)
+			edge_values = append(edge_values, *c.value)
 		}
 	}
 	unwanted_children := make([]int, 0)
@@ -308,21 +312,25 @@ func (t *DMT[NODE, LEAF]) ShiftChildren(node *TrieValueNode[Literal[NODE], LEAF,
 	}
 }
 
-func IsInvertedEdge[NODE hashable](maybe_buf map[Literal[NODE]]struct{}, maybe_inv map[Literal[NODE]]struct{}) (match bool) {
-	maybe_inv_copy := make(map[Literal[NODE]]struct{})
-	for k := range maybe_inv {
-		maybe_inv_copy[k] = struct{}{}
+func IsInvertedEdge[NODE hashable](maybe_buf PHashMap[Literal[NODE], struct{}], maybe_inv PHashMap[Literal[NODE], struct{}]) (match bool) {
+	maybe_inv_copy := NewPHashMap[Literal[NODE], struct{}]()
+	for itr := maybe_inv.inner.Iterator(); itr.HasElem(); itr.Next() {
+		k_any, _ := itr.Elem()
+		k := k_any.(Literal[NODE])
+		maybe_inv_copy = maybe_inv_copy.Assoc(k, struct{}{})
 	}
-	for key := range maybe_buf {
+	for itr := maybe_buf.inner.Iterator(); itr.HasElem(); itr.Next() {
+		key_any, _ := itr.Elem()
+		key := key_any.(Literal[NODE])
 		inverted := key.Invert()
-		if _, ok := maybe_inv_copy[inverted]; ok {
-			delete(maybe_inv_copy, inverted)
+		if maybe_inv_copy.HasKey(inverted) {
+			maybe_inv_copy = maybe_inv_copy.Dissoc(inverted)
 		} else {
 			match = false
 			return
 		}
 	}
-	match = (len(maybe_inv_copy) == 0)
+	match = (maybe_inv_copy.length == 0)
 	return
 }
 
