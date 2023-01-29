@@ -143,7 +143,6 @@ func (t *DMT[NODE, LEAF]) Insert(
 	seq PHashMap[Literal[NODE], struct{}], leaf LEAF,
 ) {
 	t.InsertReturn(seq, leaf)
-	return
 }
 
 func (t *DMT[NODE, LEAF]) InsertReturn(
