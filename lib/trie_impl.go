@@ -327,8 +327,10 @@ searchLoop:
 			}
 			child := child.(*TrieValueNode[NODE, LEAF, META])
 			has_match := false
-			for key := range child.value {
-				if _, ok := query_copy[key]; ok {
+			for itr := child.value.inner.Iterator(); itr.HasElem(); itr.Next() {
+				key_any, _ := itr.Elem()
+				key := key_any.(NODE)
+				if query_copy.HasKey(key) {
 					has_match = true
 				} else {
 					continue checkChildrenLoop
@@ -362,8 +364,10 @@ func (t Trie[NODE, LEAF, META]) LookupLeafByNode(leaf_node *TrieLeafNode[NODE, L
 		if node == nil {
 			break
 		}
-		for k := range node.value {
-			seq[k] = struct{}{}
+		for itr := node.value.inner.Iterator(); itr.HasElem(); itr.Next() {
+			k_any, _ := itr.Elem()
+			k := k_any.(NODE)
+			seq = seq.Assoc(k, struct{}{})
 		}
 		node = node.parent
 	}
@@ -380,7 +384,7 @@ func (t Trie[NODE, LEAF, META]) RevLookup(b LEAF) (items []PHashMap[NODE, struct
 	return
 }
 
-func (t Trie[NODE, LEAF, META]) ForEachPair(fn func(PHashMap[NODE, struct{}], LEAF)) {
+func (t Trie[NODE, LEAF, META]) ForEachPair(fn func(map[NODE]struct{}, LEAF)) {
 	t.ForEachEntry(func(entry TrieEntry[NODE, LEAF]) {
 		fn(entry.key, entry.value)
 	})
