@@ -209,10 +209,12 @@ func (t Trie[NODE, LEAF, META]) LookupRepair(query PHashMap[NODE, struct{}]) {
 	node := &t.root
 searchLoop:
 	for {
-		for key := range node.value {
-			delete(query_copy, key)
+		for itr := node.value.inner.Iterator(); itr.HasElem(); itr.Next() {
+			key_any, _ := itr.Elem()
+			key := key_any.(NODE)
+			query_copy = query_copy.Dissoc(key)
 		}
-		if len(query_copy) == 0 {
+		if query_copy.length == 0 {
 			for _, child := range node.children {
 				if child.IsTrieLeaf() {
 					child := child.(*TrieLeafNode[NODE, LEAF, META])
@@ -228,8 +230,10 @@ searchLoop:
 			}
 			child := child.(*TrieValueNode[NODE, LEAF, META])
 			has_match := false
-			for key := range child.value {
-				if _, ok := query_copy[key]; ok {
+			for itr := child.value.inner.Iterator(); itr.HasElem(); itr.Next() {
+				key_any, _ := itr.Elem()
+				key := key_any.(NODE)
+				if query_copy.HasKey(key) {
 					has_match = true
 				} else {
 					continue checkChildrenLoop
@@ -245,11 +249,14 @@ searchLoop:
 }
 
 func (e TrieEntry[NODE, LEAF]) PrefixWith(prefix PHashMap[NODE, struct{}]) (mod TrieEntry[NODE, LEAF]) {
-	key := NewPHashMap[NODE, struct{}]()
+	key := map[NODE]struct{}{}
 	for k, v := range e.key {
 		key[k] = v
 	}
-	for k, v := range prefix {
+	for itr := prefix.inner.Iterator(); itr.HasElem(); itr.Next() {
+		k_any, v_any := itr.Elem()
+		k := k_any.(NODE)
+		v := v_any.(struct{})
 		key[k] = v
 	}
 	mod = TrieEntry[NODE, LEAF]{
@@ -268,14 +275,14 @@ func (node TrieValueNode[NODE, LEAF, META]) ForEachNodeEntry(fn func(TrieEntry[N
 	prefix := node.value
 	for _, child := range node.children {
 		child.ForEachNodeEntry(func(entry TrieEntry[NODE, LEAF]) {
-			fn(entry.PrefixWith(prefix))
+			fn(entry.PrefixWith(*prefix))
 		})
 	}
 }
 
 func (node TrieLeafNode[NODE, LEAF, META]) ForEachNodeEntry(fn func(TrieEntry[NODE, LEAF])) {
 	fn(TrieEntry[NODE, LEAF]{
-		NewPHashMap[NODE, struct{}](),
+		map[NODE]struct{}{},
 		node.value,
 	})
 }
