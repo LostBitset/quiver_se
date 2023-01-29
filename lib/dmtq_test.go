@@ -27,11 +27,20 @@ func TestDMTQ(t *testing.T) {
 		n2,
 		StdlibMapToPHashMap(
 			map[Literal[uint32_H]]struct{}{
-				{uint32_H{77}, true}: {},
+				{uint32_H{77}, true}:  {},
 				{uint32_H{88}, false}: {},
 			},
 		),
 	)
+	n1_outneighbors := q.all_outneighbors(n1)
+	n1_outneighbors_stdlib_map := make([]Neighbor[map[Literal[uint32_H]]struct{}], 0)
+	for _, neighbor := range n1_outneighbors {
+		neighbor_stdlib_map := Neighbor[map[Literal[uint32_H]]struct{}]{
+			neighbor.via_edge.ToStdlibMap(),
+			neighbor.dst,
+		}
+		n1_outneighbors_stdlib_map = append(n1_outneighbors_stdlib_map, neighbor_stdlib_map)
+	}
 	assert.ElementsMatch(
 		t,
 		[]Neighbor[map[Literal[uint32_H]]struct{}]{
@@ -42,7 +51,6 @@ func TestDMTQ(t *testing.T) {
 				n2,
 			},
 		},
-		q.all_outneighbors(n1),
+		n1_outneighbors_stdlib_map,
 	)
 }
-

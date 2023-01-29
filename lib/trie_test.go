@@ -69,13 +69,14 @@ func TestTrieLookup(t *testing.T) {
 func TestTrieLookupLeaf(t *testing.T) {
 	trie, entries := CreateExampleTrie()
 	for _, entry := range entries {
-		assert.Equal(
-			t,
-			[]PHashMap[uint32_H, struct{}]{
-				StdlibMapToPHashMap(entry.key),
-			},
-			trie.LookupLeaf(entry.value),
-		)
+		expected := []PHashMap[uint32_H, struct{}]{
+			StdlibMapToPHashMap(entry.key),
+		}
+		actual := trie.LookupLeaf(entry.value)
+		assert.Equal(t, len(expected), len(actual))
+		for i := range actual {
+			assert.True(t, expected[i].Equal(actual[i]))
+		}
 	}
 }
 
@@ -104,15 +105,15 @@ func TestTrieLookupLeafDuplicates(t *testing.T) {
 			map[uint32_H]struct{}{{0}: {}, {1}: {}, {7}: {}},
 		),
 		StdlibMapToPHashMap(
-		  map[uint32_H]struct{}{{0}: {}, {1}: {}, {9}: {}},
+			map[uint32_H]struct{}{{0}: {}, {1}: {}, {9}: {}},
 		),
 	}
 	for _, key := range keys {
 		trie.Insert(key, 77)
 	}
-	assert.Equal(
-		t,
-		keys,
-		trie.LookupLeaf(77),
-	)
+	actual := trie.LookupLeaf(77)
+	assert.Equal(t, len(keys), len(actual))
+	for i := range actual {
+		assert.True(t, keys[i].Equal(actual[i]))
+	}
 }
