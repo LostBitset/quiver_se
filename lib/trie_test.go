@@ -71,8 +71,8 @@ func TestTrieLookupLeaf(t *testing.T) {
 	for _, entry := range entries {
 		assert.Equal(
 			t,
-			[]map[uint32_H]struct{}{
-				entry.key,
+			[]PHashMap[uint32_H, struct{}]{
+				StdlibMapToPHashMap(entry.key),
 			},
 			trie.LookupLeaf(entry.value),
 		)
@@ -99,12 +99,16 @@ func TestTrieLookupInvalid(t *testing.T) {
 
 func TestTrieLookupLeafDuplicates(t *testing.T) {
 	trie := NewTrie[uint32_H, int]()
-	keys := []map[uint32_H]struct{}{
-		{{0}: {}, {1}: {}, {7}: {}},
-		{{0}: {}, {1}: {}, {9}: {}},
+	keys := []PHashMap[uint32_H, struct{}]{
+		StdlibMapToPHashMap(
+			map[uint32_H]struct{}{{0}: {}, {1}: {}, {7}: {}},
+		),
+		StdlibMapToPHashMap(
+		  map[uint32_H]struct{}{{0}: {}, {1}: {}, {9}: {}},
+		),
 	}
 	for _, key := range keys {
-		trie.Insert(StdlibMapToPHashMap(key), 77)
+		trie.Insert(key, 77)
 	}
 	assert.Equal(
 		t,
