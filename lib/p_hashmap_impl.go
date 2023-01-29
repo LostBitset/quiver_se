@@ -59,3 +59,22 @@ func (pm PHashMap[K, V]) Index(key K) (val V, ok bool) {
 	return
 }
 
+func (pm PHashMap[K, V]) ToStdlibMap() (m map[K]V) {
+	m = make(map[K]V, pm.length)
+	for itr := pm.inner.Iterator(); itr.HasElem(); itr.Next() {
+		key_any, val_any := itr.Elem()
+		key := key_any.(K)
+		val := val_any.(V)
+		m[key] = val
+	}
+	return
+}
+
+func StdlibMapToPHashMap[K hashable, V any](m map[K]V) (pm PHashMap[K, V]) {
+	pm = NewPHashMap[K, V]()
+	for k, v := range m {
+		pm = pm.Assoc(k, v)
+	}
+	return
+}
+
