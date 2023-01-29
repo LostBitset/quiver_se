@@ -16,6 +16,7 @@ type PhantomData[T any] struct {}
 // this is all pre-generics
 type PHashMap[K comparable, V any] struct {
 	inner         hashmap.Map
+	length        uint16
 	phantom_key   PhantomData[K]
 	phantom_value PhantomData[V]
 }

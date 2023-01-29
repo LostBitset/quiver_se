@@ -20,6 +20,7 @@ func HashableHashFunc(k any) (fixed_digest uint32) {
 func NewPHashMap[K hashable, V any]() (pm PHashMap[K, V]) {
 	pm = PHashMap[K, V]{
 		hashmap.New(ComparableEqualFunc, HashableHashFunc),
+		0,
 		PhantomData[K]{},
 		PhantomData[V]{},
 	}
@@ -29,6 +30,7 @@ func NewPHashMap[K hashable, V any]() (pm PHashMap[K, V]) {
 func (pm PHashMap[K, V]) Assoc(key K, val V) (updated PHashMap[K, V]) {
 	updated = PHashMap[K, V]{
 		pm.inner.Assoc(key, val),
+		pm.length + 1,
 		PhantomData[K]{},
 		PhantomData[V]{},
 	}
@@ -38,6 +40,7 @@ func (pm PHashMap[K, V]) Assoc(key K, val V) (updated PHashMap[K, V]) {
 func (pm PHashMap[K, V]) Dissoc(key K) (updated PHashMap[K, V]) {
 	updated = PHashMap[K, V]{
 		pm.inner.Dissoc(key),
+		pm.length - 1,
 		PhantomData[K]{},
 		PhantomData[V]{},
 	}

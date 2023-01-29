@@ -19,8 +19,9 @@ func NewTrie[NODE hashable, LEAF comparable]() (t Trie[NODE, LEAF, struct{}]) {
 }
 
 func NewTrieRootNode[NODE hashable, LEAF comparable]() (node TrieValueNode[NODE, LEAF, struct{}]) {
+	pm := NewPHashMap[NODE, struct{}]()
 	node = TrieValueNode[NODE, LEAF, struct{}]{
-		make(map[NODE]struct{}),
+		&pm,
 		nil,
 		make([]TrieNode[NODE, LEAF], 0),
 		struct{}{},
@@ -28,25 +29,27 @@ func NewTrieRootNode[NODE hashable, LEAF comparable]() (node TrieValueNode[NODE,
 	return
 }
 
-func (node *TrieValueNode[NODE, LEAF, META]) CutPrefix(shared map[NODE]struct{}) (parent *TrieValueNode[NODE, LEAF, META]) {
+func (node *TrieValueNode[NODE, LEAF, META]) CutPrefix(shared PHashMap[NODE, struct{}]) (parent *TrieValueNode[NODE, LEAF, META]) {
 	parent = &TrieValueNode[NODE, LEAF, META]{
-		shared,
+		&shared,
 		node.parent,
 		[]TrieNode[NODE, LEAF]{
 			node,
 		},
 		node.meta,
 	}
-	for shared_key := range shared {
-		delete(node.value, shared_key)
+	for itr := shared.inner.Iterator(); itr.HasElem(); itr.Next() {
+		shared_key_any, _ := itr.Elem()
+		shared_key := shared_key_any.(NODE)
+		*node.value = node.value.Dissoc(shared_key)
 	}
 	node.parent = parent
 	return
 }
 
-func (node *TrieValueNode[NODE, LEAF, META]) PrepChild(seq *map[NODE]struct{}, leaf LEAF) (r_child TrieNode[NODE, LEAF]) {
+func (node *TrieValueNode[NODE, LEAF, META]) PrepChild(seq *PHashMap[NODE, struct{}], leaf LEAF) (r_child TrieNode[NODE, LEAF]) {
 	var closest TrieNode[NODE, LEAF]
-	var closest_shared *map[NODE]struct{}
+	var closest_shared *PHashMap[NODE, struct{}]
 	var closest_index *int
 	exact_match := false
 	leaf_count := 0
@@ -57,23 +60,25 @@ func (node *TrieValueNode[NODE, LEAF, META]) PrepChild(seq *map[NODE]struct{}, l
 		}
 		child_nc := child
 		child := child_nc.(*TrieValueNode[NODE, LEAF, META])
-		shared := make(map[NODE]struct{})
-		for key := range child.value {
-			if _, ok := (*seq)[key]; ok {
-				shared[key] = struct{}{}
+		shared := NewPHashMap[NODE, struct{}]()
+		for itr := child.value.inner.Iterator(); itr.HasElem(); itr.Next() {
+			key_any, _ := itr.Elem()
+			key := key_any.(NODE)
+			if (*seq).HasKey(key) {
+				shared = shared.Assoc(key, struct{}{})
 			}
 		}
-		length := len(shared)
+		length := shared.length
 		if length == 0 {
 			continue
 		}
-		if closest == nil || length > len(*closest_shared) {
+		if closest == nil || length > (*closest_shared).length {
 			closest = child
-			closest_shared = new(map[NODE]struct{})
+			closest_shared = new(PHashMap[NODE, struct{}])
 			*closest_shared = shared
 			closest_index = new(int)
 			*closest_index = index
-			exact_match = len(shared) == len(child.value)
+			exact_match = shared.length == child.value.length
 		}
 	}
 	if leaf_count != 0 && leaf_count == len(node.children) {
@@ -81,27 +86,32 @@ func (node *TrieValueNode[NODE, LEAF, META]) PrepChild(seq *map[NODE]struct{}, l
 			leaf,
 			new(TrieValueNode[NODE, LEAF, META]),
 		}
-		seq_copy := make(map[NODE]struct{})
-		for k := range *seq {
-			seq_copy[k] = struct{}{}
+		seq_copy := NewPHashMap[NODE, struct{}]()
+		for itr := (*seq).inner.Iterator(); itr.HasElem(); itr.Next() {
+			k_any, _ := itr.Elem()
+			k := k_any.(NODE)
+			seq_copy = seq_copy.Assoc(k, struct{}{})
+
 		}
 		extension_node := &TrieValueNode[NODE, LEAF, META]{
-			seq_copy,
+			&seq_copy,
 			new(TrieValueNode[NODE, LEAF, META]),
 			[]TrieNode[NODE, LEAF]{
 				r_child,
 			},
 			node.meta,
 		}
-		*seq = make(map[NODE]struct{})
+		*seq = NewPHashMap[NODE, struct{}]()
 		node.children = append(node.children, extension_node)
 		return
 	}
 	if exact_match {
 		skip_ref := closest.(*TrieValueNode[NODE, LEAF, META])
 		r_child = skip_ref
-		for k := range skip_ref.value {
-			delete(*seq, k)
+		for itr := skip_ref.value.inner.Iterator(); itr.HasElem(); itr.Next() {
+			k_any, _ := itr.Elem()
+			k := k_any.(NODE)
+			*seq = (*seq).Dissoc(k)
 		}
 		return
 	}
@@ -110,12 +120,14 @@ func (node *TrieValueNode[NODE, LEAF, META]) PrepChild(seq *map[NODE]struct{}, l
 			leaf,
 			new(TrieValueNode[NODE, LEAF, META]),
 		}
-		seq_copy := make(map[NODE]struct{})
-		for k := range *seq {
-			seq_copy[k] = struct{}{}
+		seq_copy := NewPHashMap[NODE, struct{}]()
+		for itr := (*seq).inner.Iterator(); itr.HasElem(); itr.Next() {
+			k_any, _ := itr.Elem()
+			k := k_any.(NODE)
+			seq_copy = seq_copy.Assoc(k, struct{}{})
 		}
 		r_child_inner := &TrieValueNode[NODE, LEAF, META]{
-			seq_copy,
+			&seq_copy,
 			new(TrieValueNode[NODE, LEAF, META]),
 			[]TrieNode[NODE, LEAF]{
 				r_child,
@@ -123,7 +135,7 @@ func (node *TrieValueNode[NODE, LEAF, META]) PrepChild(seq *map[NODE]struct{}, l
 			node.meta,
 		}
 		node.children = append(node.children, r_child_inner)
-		*seq = make(map[NODE]struct{})
+		*seq = NewPHashMap[NODE, struct{}]()
 		return
 	} else {
 		r_child = &TrieLeafNode[NODE, LEAF, META]{
@@ -133,36 +145,40 @@ func (node *TrieValueNode[NODE, LEAF, META]) PrepChild(seq *map[NODE]struct{}, l
 		target := closest.(*TrieValueNode[NODE, LEAF, META])
 		parent_ref := target.CutPrefix(*closest_shared)
 		node.children[*closest_index] = parent_ref
-		rem_seq := make(map[NODE]struct{})
-		for item := range *seq {
-			if _, ok := (*closest_shared)[item]; !ok {
-				rem_seq[item] = struct{}{}
+		rem_seq := NewPHashMap[NODE, struct{}]()
+		for itr := (*seq).inner.Iterator(); itr.HasElem(); itr.Next() {
+			item_any, _ := itr.Elem()
+			item := item_any.(NODE)
+			if !closest_shared.HasKey(item) {
+				rem_seq = rem_seq.Assoc(item, struct{}{})
 			}
 		}
 		r_child_inner := &TrieValueNode[NODE, LEAF, META]{
-			rem_seq,
+			&rem_seq,
 			new(TrieValueNode[NODE, LEAF, META]),
 			[]TrieNode[NODE, LEAF]{
 				r_child,
 			},
 			node.meta,
 		}
-		*seq = make(map[NODE]struct{})
+		*seq = NewPHashMap[NODE, struct{}]()
 		parent_ref.children = append(parent_ref.children, r_child_inner)
 		return
 	}
 }
 
-func (t *Trie[NODE, LEAF, META]) Insert(seq map[NODE]struct{}, leaf LEAF) {
+func (t *Trie[NODE, LEAF, META]) Insert(seq PHashMap[NODE, struct{}], leaf LEAF) {
 	t.InsertReturn(seq, leaf)
 	return
 }
 
-func (t *Trie[NODE, LEAF, META]) InsertReturn(seq map[NODE]struct{}, leaf LEAF) (leaf_ptr *TrieLeafNode[NODE, LEAF, META]) {
+func (t *Trie[NODE, LEAF, META]) InsertReturn(seq PHashMap[NODE, struct{}], leaf LEAF) (leaf_ptr *TrieLeafNode[NODE, LEAF, META]) {
 	node := &t.root
-	seq_copy := make(map[NODE]struct{})
-	for k := range seq {
-		seq_copy[k] = struct{}{}
+	seq_copy := NewPHashMap[NODE, struct{}]()
+	for itr := seq.inner.Iterator(); itr.HasElem(); itr.Next() {
+		k_any, _ := itr.Elem()
+		k := k_any.(NODE)
+		seq_copy = seq_copy.Assoc(k, struct{}{})
 	}
 	for {
 		child := node.PrepChild(&seq_copy, leaf)
@@ -183,10 +199,12 @@ func (t *Trie[NODE, LEAF, META]) InsertReturn(seq map[NODE]struct{}, leaf LEAF) 
 	return
 }
 
-func (t Trie[NODE, LEAF, META]) LookupRepair(query map[NODE]struct{}) {
-	query_copy := make(map[NODE]struct{})
-	for k := range query {
-		query_copy[k] = struct{}{}
+func (t Trie[NODE, LEAF, META]) LookupRepair(query PHashMap[NODE, struct{}]) {
+	query_copy := NewPHashMap[NODE, struct{}]()
+	for itr := query.inner.Iterator(); itr.HasElem(); itr.Next() {
+		k_any, _ := itr.Elem()
+		k := k_any.(NODE)
+		query_copy = query_copy.Assoc(k, struct{}{})
 	}
 	node := &t.root
 searchLoop:
@@ -226,8 +244,8 @@ searchLoop:
 	}
 }
 
-func (e TrieEntry[NODE, LEAF]) PrefixWith(prefix map[NODE]struct{}) (mod TrieEntry[NODE, LEAF]) {
-	key := make(map[NODE]struct{})
+func (e TrieEntry[NODE, LEAF]) PrefixWith(prefix PHashMap[NODE, struct{}]) (mod TrieEntry[NODE, LEAF]) {
+	key := NewPHashMap[NODE, struct{}]()
 	for k, v := range e.key {
 		key[k] = v
 	}
@@ -257,7 +275,7 @@ func (node TrieValueNode[NODE, LEAF, META]) ForEachNodeEntry(fn func(TrieEntry[N
 
 func (node TrieLeafNode[NODE, LEAF, META]) ForEachNodeEntry(fn func(TrieEntry[NODE, LEAF])) {
 	fn(TrieEntry[NODE, LEAF]{
-		make(map[NODE]struct{}),
+		NewPHashMap[NODE, struct{}](),
 		node.value,
 	})
 }
@@ -270,8 +288,8 @@ func (t Trie[NODE, LEAF, META]) EntryList() (out []TrieEntry[NODE, LEAF]) {
 	return
 }
 
-func (t Trie[NODE, LEAF, META]) Lookup(query map[NODE]struct{}) (leaf *LEAF) {
-	query_copy := make(map[NODE]struct{})
+func (t Trie[NODE, LEAF, META]) Lookup(query PHashMap[NODE, struct{}]) (leaf *LEAF) {
+	query_copy := NewPHashMap[NODE, struct{}]()
 	for k := range query {
 		query_copy[k] = struct{}{}
 	}
@@ -315,7 +333,7 @@ searchLoop:
 	}
 }
 
-func (t Trie[NODE, LEAF, META]) LookupLeaf(leaf LEAF) (seqs []map[NODE]struct{}) {
+func (t Trie[NODE, LEAF, META]) LookupLeaf(leaf LEAF) (seqs []PHashMap[NODE, struct{}]) {
 	leaf_nodes, ok := t.leaves[leaf]
 	if !ok {
 		return
@@ -326,8 +344,8 @@ func (t Trie[NODE, LEAF, META]) LookupLeaf(leaf LEAF) (seqs []map[NODE]struct{})
 	return
 }
 
-func (t Trie[NODE, LEAF, META]) LookupLeafByNode(leaf_node *TrieLeafNode[NODE, LEAF, META]) (seq map[NODE]struct{}) {
-	seq = make(map[NODE]struct{})
+func (t Trie[NODE, LEAF, META]) LookupLeafByNode(leaf_node *TrieLeafNode[NODE, LEAF, META]) (seq PHashMap[NODE, struct{}]) {
+	seq = NewPHashMap[NODE, struct{}]()
 	node := leaf_node.parent
 	for {
 		if node == nil {
@@ -341,17 +359,17 @@ func (t Trie[NODE, LEAF, META]) LookupLeafByNode(leaf_node *TrieLeafNode[NODE, L
 	return
 }
 
-func (t Trie[NODE, LEAF, META]) FwdLookup(a map[NODE]struct{}) (item *LEAF) {
+func (t Trie[NODE, LEAF, META]) FwdLookup(a PHashMap[NODE, struct{}]) (item *LEAF) {
 	item = t.Lookup(a)
 	return
 }
 
-func (t Trie[NODE, LEAF, META]) RevLookup(b LEAF) (items []map[NODE]struct{}) {
+func (t Trie[NODE, LEAF, META]) RevLookup(b LEAF) (items []PHashMap[NODE, struct{}]) {
 	items = t.LookupLeaf(b)
 	return
 }
 
-func (t Trie[NODE, LEAF, META]) ForEachPair(fn func(map[NODE]struct{}, LEAF)) {
+func (t Trie[NODE, LEAF, META]) ForEachPair(fn func(PHashMap[NODE, struct{}], LEAF)) {
 	t.ForEachEntry(func(entry TrieEntry[NODE, LEAF]) {
 		fn(entry.key, entry.value)
 	})

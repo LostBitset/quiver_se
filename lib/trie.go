@@ -17,7 +17,7 @@ type TrieNode[NODE hashable, LEAF comparable] interface {
 }
 
 type TrieValueNode[NODE hashable, LEAF comparable, META any] struct {
-	value    map[NODE]struct{}
+	value    *PHashMap[NODE, struct{}]
 	parent   *TrieValueNode[NODE, LEAF, META]
 	children []TrieNode[NODE, LEAF]
 	meta     META
