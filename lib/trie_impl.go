@@ -169,7 +169,6 @@ func (node *TrieValueNode[NODE, LEAF, META]) PrepChild(seq *PHashMap[NODE, struc
 
 func (t *Trie[NODE, LEAF, META]) Insert(seq PHashMap[NODE, struct{}], leaf LEAF) {
 	t.InsertReturn(seq, leaf)
-	return
 }
 
 func (t *Trie[NODE, LEAF, META]) InsertReturn(seq PHashMap[NODE, struct{}], leaf LEAF) (leaf_ptr *TrieLeafNode[NODE, LEAF, META]) {
