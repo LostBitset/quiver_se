@@ -26,3 +26,33 @@ func NewPHashMap[K hashable, V any]() (pm PHashMap[K, V]) {
 	return
 }
 
+func (pm PHashMap[K, V]) Assoc(key K, val V) (updated PHashMap[K, V]) {
+	updated = PHashMap[K, V]{
+		pm.inner.Assoc(key, val),
+		PhantomData[K]{},
+		PhantomData[V]{},
+	}
+	return
+}
+
+func (pm PHashMap[K, V]) Dissoc(key K) (updated PHashMap[K, V]) {
+	updated = PHashMap[K, V]{
+		pm.inner.Dissoc(key),
+		PhantomData[K]{},
+		PhantomData[V]{},
+	}
+	return
+}
+
+func (pm PHashMap[K, V]) HasKey(key K) (has bool) {
+	_, has = pm.inner.Index(key)
+	return
+}
+
+func (pm PHashMap[K, V]) Index(key K) (val V, ok bool) {
+	var val_raw any
+	val_raw, ok = pm.inner.Index(key)
+	val = val_raw.(V)
+	return
+}
+
