@@ -135,7 +135,7 @@ func (t DMT[NODE, LEAF]) RevLookup(b LEAF) (items []PHashMap[Literal[NODE], stru
 	return
 }
 
-func (t DMT[NODE, LEAF]) ForEachPair(fn func(map[Literal[NODE]]struct{}, LEAF)) {
+func (t DMT[NODE, LEAF]) ForEachPair(fn func(PHashMap[Literal[NODE], struct{}], LEAF)) {
 	t.trie.ForEachPair(fn)
 }
 

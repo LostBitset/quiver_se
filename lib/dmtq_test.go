@@ -7,7 +7,7 @@ import (
 )
 
 func TestDMTQ(t *testing.T) {
-	var q Quiver[uint32_H, map[Literal[uint32_H]]struct{}, *DMT[uint32_H, QuiverIndex]]
+	var q Quiver[uint32_H, PHashMap[Literal[uint32_H], struct{}], *DMT[uint32_H, QuiverIndex]]
 	n1_container := NewDMT[uint32_H, QuiverIndex]()
 	n2_container := NewDMT[uint32_H, QuiverIndex]()
 	n1 := q.insert_node(uint32_H{1}, &n1_container)
@@ -15,18 +15,22 @@ func TestDMTQ(t *testing.T) {
 	q.insert_edge(
 		n1,
 		n2,
-		map[Literal[uint32_H]]struct{}{
-			{uint32_H{77}, true}: {},
-			{uint32_H{88}, true}: {},
-		},
+		StdlibMapToPHashMap(
+			map[Literal[uint32_H]]struct{}{
+				{uint32_H{77}, true}: {},
+				{uint32_H{88}, true}: {},
+			},
+		),
 	)
 	q.insert_edge(
 		n1,
 		n2,
-		map[Literal[uint32_H]]struct{}{
-			{uint32_H{77}, true}: {},
-			{uint32_H{88}, false}: {},
-		},
+		StdlibMapToPHashMap(
+			map[Literal[uint32_H]]struct{}{
+				{uint32_H{77}, true}: {},
+				{uint32_H{88}, false}: {},
+			},
+		),
 	)
 	assert.ElementsMatch(
 		t,

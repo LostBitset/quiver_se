@@ -39,7 +39,7 @@ func CreateExampleTrie() (trie Trie[uint32_H, int, struct{}], entries []TrieEntr
 		},
 	}
 	for _, entry := range entries {
-		trie.Insert(entry.key, entry.value)
+		trie.Insert(StdlibMapToPHashMap(entry.key), entry.value)
 	}
 	return
 }
@@ -55,13 +55,15 @@ func TestTrieLookup(t *testing.T) {
 		assert.Equal(
 			t,
 			entry.value,
-			*trie.Lookup(entry.key),
+			*trie.Lookup(StdlibMapToPHashMap(entry.key)),
 		)
 	}
-	assert.Nil(t, trie.Lookup(make(map[uint32_H]struct{})))
-	assert.Nil(t, trie.Lookup(map[uint32_H]struct{}{
-		{0}: {}, {1}: {}, {443}: {},
-	}))
+	assert.Nil(t, trie.Lookup(NewPHashMap[uint32_H, struct{}]()))
+	assert.Nil(t, trie.Lookup(StdlibMapToPHashMap(
+		map[uint32_H]struct{}{
+			{0}: {}, {1}: {}, {443}: {},
+		},
+	)))
 }
 
 func TestTrieLookupLeaf(t *testing.T) {
@@ -81,9 +83,13 @@ func TestTrieLookupInvalid(t *testing.T) {
 	trie, _ := CreateExampleTrie()
 	assert.Nil(
 		t,
-		trie.Lookup(map[uint32_H]struct{}{
-			{0}: {}, {1777}: {},
-		}),
+		trie.Lookup(
+			StdlibMapToPHashMap(
+				map[uint32_H]struct{}{
+					{0}: {}, {1777}: {},
+				},
+			),
+		),
 	)
 	assert.Nil(
 		t,
@@ -98,7 +104,7 @@ func TestTrieLookupLeafDuplicates(t *testing.T) {
 		{{0}: {}, {1}: {}, {9}: {}},
 	}
 	for _, key := range keys {
-		trie.Insert(key, 77)
+		trie.Insert(StdlibMapToPHashMap(key), 77)
 	}
 	assert.Equal(
 		t,

@@ -384,8 +384,8 @@ func (t Trie[NODE, LEAF, META]) RevLookup(b LEAF) (items []PHashMap[NODE, struct
 	return
 }
 
-func (t Trie[NODE, LEAF, META]) ForEachPair(fn func(map[NODE]struct{}, LEAF)) {
+func (t Trie[NODE, LEAF, META]) ForEachPair(fn func(PHashMap[NODE, struct{}], LEAF)) {
 	t.ForEachEntry(func(entry TrieEntry[NODE, LEAF]) {
-		fn(entry.key, entry.value)
+		fn(StdlibMapToPHashMap(entry.key), entry.value)
 	})
 }

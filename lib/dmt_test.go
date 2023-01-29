@@ -28,7 +28,7 @@ func CreateExampleDMT() (dmt DMT[uint32_H, uint32_H], entries []TrieEntry[Litera
 		},
 	}
 	for _, entry := range entries {
-		dmt.Insert(entry.key, entry.value)
+		dmt.Insert(StdlibMapToPHashMap(entry.key), entry.value)
 	}
 	return
 }
@@ -49,7 +49,7 @@ func TestTransformingDMT(t *testing.T) {
 		},
 		uint32_H{1},
 	}
-	dmt.Insert(entry.key, entry.value)
+	dmt.Insert(StdlibMapToPHashMap(entry.key), entry.value)
 	entries := []TrieEntry[Literal[uint32_H], uint32_H]{
 		{
 			map[Literal[uint32_H]]struct{}{
