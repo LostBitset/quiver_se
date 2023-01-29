@@ -1,0 +1,225 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+defaults:
+  run:
+    # PowerShell's behavior for -flag=value is undesirable, so run all commands with bash.
+    shell: bash
+
+jobs:
+
+  test:
+    name: Run tests
+    strategy:
+      matrix:
+        os: [ubuntu, macos, windows]
+        go-version: [1.17.x]
+        include:
+          # Test old supported Go version
+          - os: ubuntu
+            go-version: 1.16.x
+    env:
+      ELVISH_TEST_TIME_SCALE: 20
+    runs-on: ${{ matrix.os }}-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+    - name: Set up cache
+      uses: actions/cache@v2
+      with:
+        path: |
+          ~/go/pkg/mod
+          ~/.cache/go-build
+          ~/Library/Caches/go-build
+          ~/AppData/Local/go-build
+        key: test/${{ matrix.os }}/${{ matrix.go-version }}/${{ hashFiles('go.sum') }}/${{ github.sha }}
+        restore-keys: test/${{ matrix.os }}/${{ matrix.go-version }}/${{ hashFiles('go.sum') }}/
+    - name: Set up Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: ${{ matrix.go-version }}
+    - name: Test with race detection
+      run: |
+        go test -race ./...
+        cd website; go test -race ./...
+    - name: Set ostype to ${{ matrix.os }}
+      run: echo ostype=${{ matrix.os }} >> $GITHUB_ENV
+    - name: Set ostype to linux
+      if: matrix.os == 'ubuntu'
+      run: echo ostype=linux >> $GITHUB_ENV
+    - name: Generate test coverage
+      if: matrix.go-version == '1.17.x'
+      run: go test -coverprofile=cover -coverpkg=./pkg/... ./pkg/...
+    - name: Save test coverage
+      if: matrix.go-version == '1.17.x'
+      uses: actions/upload-artifact@v2
+      with:
+        name: cover-${{ env.ostype }}
+        path: cover
+
+  # The purpose of running benchmarks in GitHub Actions is primarily to ensure
+  # that the benchmark code runs and doesn't crash. GitHub Action runners don't
+  # have a stable enough environment to produce reliable benchmark numbers.
+  benchmark:
+    name: Run benchmarks
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+    - name: Set up Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: 1.17.x
+    - name: Run benchmarks
+      run: go test -bench=. -run='^$' ./...
+
+  upload-coverage:
+    name: Upload test coverage
+    strategy:
+      matrix:
+        ostype: [linux, macos, windows]
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+    - name: Download test coverage
+      uses: actions/download-artifact@v2
+      with:
+        name: cover-${{ matrix.ostype }}
+    - name: Upload coverage to codecov
+      uses: codecov/codecov-action@v1
+      with:
+        files: ./cover
+        flags: ${{ matrix.ostype }}
+
+  buildall:
+    name: Build binaries
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+    - name: Set up cache
+      uses: actions/cache@v2
+      with:
+        path: |
+          ~/go/pkg/mod
+          ~/.cache/go-build
+        key: buildall/${{ matrix.os }}/1.17.x/${{ hashFiles('go.sum') }}/${{ github.sha }}
+        restore-keys: buildall/${{ matrix.os }}/1.17.x/${{ hashFiles('go.sum') }}
+    - name: Set up Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: 1.17.x
+    - name: Build binaries
+      # TODO: Use PR number for suffix when running for PR
+      run: ELVISH_REPRODUCIBLE=dev ./tools/buildall.sh . bin HEAD
+    - name: Upload binaries
+      uses: actions/upload-artifact@v2
+      with:
+        name: bin
+        path: bin/**/*
+
+  checkstyle-go:
+    name: Check style of **.go
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+    - name: Set up Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: 1.17.x
+    - name: Set up goimports
+      run: go install golang.org/x/tools/cmd/goimports@latest
+    - name: Check style
+      run: ./tools/checkstyle-go.sh
+
+  checkstyle-md:
+    name: Check style of **.md
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+    - name: Set up environment
+      run: |
+        echo "NPM_PREFIX=$HOME/npm" >> $GITHUB_ENV
+        echo "PATH=$HOME/npm/bin:$PATH" >> $GITHUB_ENV
+    - name: Set up Node
+      uses: actions/setup-node@v2
+    - name: Set up Node prefix
+      run: npm config set prefix $NPM_PREFIX
+    - name: Set up prettier
+      run: npm install --global prettier@2.3.1
+    - name: Check style
+      run: ./tools/checkstyle-md.sh
+
+  codespell:
+    name: Check spelling
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
+    - name: Install codespell
+      run: pip install codespell==2.1.0
+    - name: Run codespell
+      run: codespell
+
+  check-content:
+    name: Check content
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+    - name: Run check-content.sh
+      run: ./tools/check-content.sh
+
+  check-rellinks:
+    name: Check relative links
+    runs-on: ubuntu-latest
+    container:
+      image: theelves/up
+      options: --user 0
+    defaults:
+      run:
+        shell: sh
+    env:
+      CGO_ENABLED: 0
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+    - name: Check relative links
+      run: make -C website check-rellinks
+
+  lint:
+    name: Run linters
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+    - name: Set up Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: 1.17.x
+    - name: Set up staticcheck
+      run: go install honnef.co/go/tools/cmd/staticcheck@2021.1
+    - name: Run linters
+      run: ./tools/lint.sh
+
+  lsif:
+    name: Upload SourceGraph LSIF
+    if: github.repository == 'elves/elvish' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    container: sourcegraph/lsif-go:latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+    - name: Generate LSIF data
+      run: lsif-go
+    - name: Upload LSIF data
+      run: src lsif upload -github-token=${{ secrets.GITHUB_TOKEN }} -ignore-upload-failure
