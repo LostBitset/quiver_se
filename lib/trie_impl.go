@@ -297,16 +297,20 @@ func (t Trie[NODE, LEAF, META]) EntryList() (out []TrieEntry[NODE, LEAF]) {
 
 func (t Trie[NODE, LEAF, META]) Lookup(query PHashMap[NODE, struct{}]) (leaf *LEAF) {
 	query_copy := NewPHashMap[NODE, struct{}]()
-	for k := range query {
-		query_copy[k] = struct{}{}
+	for itr := query.inner.Iterator(); itr.HasElem(); itr.Next() {
+		k_any, _ := itr.Elem()
+		k := k_any.(NODE)
+		query_copy = query_copy.Assoc(k, struct{}{})
 	}
 	node := &t.root
 searchLoop:
 	for {
-		for key := range node.value {
-			delete(query_copy, key)
+		for itr := node.value.inner.Iterator(); itr.HasElem(); itr.Next() {
+			key_any, _ := itr.Elem()
+			key := key_any.(NODE)
+			query_copy = query_copy.Dissoc(key)
 		}
-		if len(query_copy) == 0 {
+		if query_copy.length == 0 {
 			for _, child := range node.children {
 				if child.IsTrieLeaf() {
 					leaf = &child.(*TrieLeafNode[NODE, LEAF, META]).value
