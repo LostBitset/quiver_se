@@ -1,9 +1,10 @@
 package qse
 
 import (
+	"fmt"
+
 	"src.elv.sh/pkg/persistent/hashmap"
 )
-
 
 // Actually requires k1, k2 comparable
 func ComparableEqualFunc(k1, k2 any) (eq bool) {
@@ -75,6 +76,33 @@ func StdlibMapToPHashMap[K hashable, V any](m map[K]V) (pm PHashMap[K, V]) {
 	for k, v := range m {
 		pm = pm.Assoc(k, v)
 	}
+	return
+}
+
+func (a PHashMap[K, V]) Equal(b PHashMap[K, V]) (eq bool) {
+	fmt.Println("actually ran Equal")
+	a_copy := PHashMap[K, V]{
+		a.inner,
+		a.length,
+		PhantomData[K]{},
+		PhantomData[V]{},
+	}
+	for itr := b.inner.Iterator(); itr.HasElem(); itr.Next() {
+		b_key_any, b_val_any := itr.Elem()
+		b_key := b_key_any.(K)
+		b_val := b_val_any.(V)
+		a_val, ok := a_copy.Index(b_key)
+		if !ok || ComparableEqualFunc(a_val, b_val) {
+			eq = false
+			return
+		}
+		a_copy = a_copy.Dissoc(b_key)
+	}
+	if a_copy.length == 0 {
+		eq = false
+		return
+	}
+	eq = true
 	return
 }
 
