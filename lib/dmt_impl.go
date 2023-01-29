@@ -15,6 +15,15 @@ func (n uint32_H) Hash() (digest digest_t) {
 	return
 }
 
+func (n uint32_H) Hash32() (fixed_digest uint32) {
+	pseudo_digest := binary.LittleEndian.AppendUint32([]byte{}, n.uint32)
+	hasher := fnv.New32a()
+	hasher.Write(pseudo_digest)
+	hasher.Write([]byte{0xCE, 0xD1, 0x32})
+	fixed_digest = hasher.Sum32()
+	return
+}
+
 func (lit Literal[NODE]) Hash() (digest digest_t) {
 	digest = lit.value.Hash()
 	if !lit.eq {
@@ -23,8 +32,21 @@ func (lit Literal[NODE]) Hash() (digest digest_t) {
 	return
 }
 
+func (lit Literal[NODE]) Hash32() (fixed_digest uint32) {
+	fixed_digest = lit.value.Hash32()
+	if !lit.eq {
+		fixed_digest = WrapInvert32(fixed_digest)
+	}
+	return
+}
+
 func WrapInvert(pseudo_digest digest_t) (digest digest_t) {
 	digest = FixDigest(pseudo_digest, 0xDD)
+	return
+}
+
+func WrapInvert32(pseudo_fixed_digest uint32) (fixed_digest uint32) {
+	fixed_digest = FixDigest32(pseudo_fixed_digest, 0xDD)
 	return
 }
 
@@ -38,6 +60,19 @@ func FixDigest(pseudo_digest digest_t, fix_seed byte) (digest digest_t) {
 	hasher.Write(pseudo_digest)
 	hasher.Write([]byte{fix_seed})
 	digest = hasher.Sum([]byte{})
+	return
+}
+
+func FixDigest32(pseudo_fixed_digest uint32, fix_seed byte) (fixed_digest uint32) {
+	hasher := fnv.New32a()
+	hasher.Write(
+		binary.LittleEndian.AppendUint32(
+			[]byte{},
+			pseudo_fixed_digest,
+		),
+	)
+	hasher.Write([]byte{fix_seed})
+	fixed_digest = hasher.Sum32()
 	return
 }
 
