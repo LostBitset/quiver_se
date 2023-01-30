@@ -312,12 +312,7 @@ func (t *DMT[NODE, LEAF]) ShiftChildren(node *TrieValueNode[Literal[NODE], LEAF,
 }
 
 func IsInvertedEdge[NODE hashable](maybe_buf PHashMap[Literal[NODE], struct{}], maybe_inv PHashMap[Literal[NODE], struct{}]) (match bool) {
-	maybe_inv_copy := NewPHashMap[Literal[NODE], struct{}]()
-	for itr := maybe_inv.inner.Iterator(); itr.HasElem(); itr.Next() {
-		k_any, _ := itr.Elem()
-		k := k_any.(Literal[NODE])
-		maybe_inv_copy = maybe_inv_copy.Assoc(k, struct{}{})
-	}
+	maybe_inv_copy := maybe_inv.Clone()
 	for itr := maybe_buf.inner.Iterator(); itr.HasElem(); itr.Next() {
 		key_any, _ := itr.Elem()
 		key := key_any.(Literal[NODE])

@@ -82,3 +82,14 @@ func (a PHashMap[K, V]) Equal(b PHashMap[K, V]) (eq bool) {
 	eq = cmp.Equal(a.ToStdlibMap(), b.ToStdlibMap())
 	return
 }
+
+func (pm PHashMap[K, V]) Clone() (cloned PHashMap[K, V]) {
+	cloned = PHashMap[K, V]{
+		pm.inner,
+		pm.length,
+		PhantomData[K]{},
+		PhantomData[V]{},
+	}
+	return
+}
+
