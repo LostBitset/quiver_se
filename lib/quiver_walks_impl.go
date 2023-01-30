@@ -33,29 +33,37 @@ func (Quiver[N, E, C]) ParameterizeIndex(index QuiverIndex) (indexp QuiverIndexP
 	return
 }
 
-func MarkIntentToBeQuiverNode[N any, E any, C ReversibleAssoc[E, QuiverIndex]](node N) (
+func NewQuiverIntendedNode[N any, E any, C ReversibleAssoc[E, QuiverIndex], UNUSED_BOUNDARY any](
+	node N, container C,
+) (
 	intended_node QuiverIntendedNode[N, E, C],
 ) {
 	intended_node = QuiverIntendedNode[N, E, C]{
 		node,
+		container,
 		NewPhantomQuiverAssociation[N, E, C](),
 	}
 	return
 }
 
-func (Quiver[N, E, C]) MarkNodeIntent(node N) (intended_node QuiverIntendedNode[N, E, C]) {
-	intended_node = MarkIntentToBeQuiverNode[N, E, C](node)
+func (Quiver[N, E, C]) NewIntendedNode(node N, container C) (intended_node QuiverIntendedNode[N, E, C]) {
+	intended_node = NewQuiverIntendedNode[N, E, C, any](node, container)
 	return
 }
 
 func (indexp QuiverIndexParameterized[N, E, C]) ResolveAsQuiverUpdateDst(q_ptr *Quiver[N, E, C]) (
 	index QuiverIndex,
 ) {
-	// TODO
+	index = indexp.Unparameterize()
+	return
 }
 
 func (intended_node QuiverIntendedNode[N, E, C]) ResolveAsQuiverUpdateDst(q_ptr *Quiver[N, E, C]) (
 	index QuiverIndex,
 ) {
-	// TODO
+	index = q_ptr.insert_node(
+		intended_node.node,
+		intended_node.container,
+	)
+	return
 }

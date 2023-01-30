@@ -30,6 +30,7 @@ type QuiverUpdate[N any, E any, C ReversibleAssoc[E, QuiverIndex]] struct {
 // But this must be wrapped with it's intent (mostly for type parameterization)
 type QuiverIntendedNode[N any, E any, C ReversibleAssoc[E, QuiverIndex]] struct {
 	node                N
+	container           C
 	phantom_association PhantomQuiverAssociation[N, E, C]
 }
 
