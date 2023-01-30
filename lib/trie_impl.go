@@ -86,13 +86,7 @@ func (node *TrieValueNode[NODE, LEAF, META]) PrepChild(seq *PHashMap[NODE, struc
 			leaf,
 			new(TrieValueNode[NODE, LEAF, META]),
 		}
-		seq_copy := NewPHashMap[NODE, struct{}]()
-		for itr := (*seq).inner.Iterator(); itr.HasElem(); itr.Next() {
-			k_any, _ := itr.Elem()
-			k := k_any.(NODE)
-			seq_copy = seq_copy.Assoc(k, struct{}{})
-
-		}
+		seq_copy := (*seq).Clone()
 		extension_node := &TrieValueNode[NODE, LEAF, META]{
 			&seq_copy,
 			new(TrieValueNode[NODE, LEAF, META]),
@@ -120,12 +114,7 @@ func (node *TrieValueNode[NODE, LEAF, META]) PrepChild(seq *PHashMap[NODE, struc
 			leaf,
 			new(TrieValueNode[NODE, LEAF, META]),
 		}
-		seq_copy := NewPHashMap[NODE, struct{}]()
-		for itr := (*seq).inner.Iterator(); itr.HasElem(); itr.Next() {
-			k_any, _ := itr.Elem()
-			k := k_any.(NODE)
-			seq_copy = seq_copy.Assoc(k, struct{}{})
-		}
+		seq_copy := (*seq).Clone()
 		r_child_inner := &TrieValueNode[NODE, LEAF, META]{
 			&seq_copy,
 			new(TrieValueNode[NODE, LEAF, META]),
@@ -173,12 +162,7 @@ func (t *Trie[NODE, LEAF, META]) Insert(seq PHashMap[NODE, struct{}], leaf LEAF)
 
 func (t *Trie[NODE, LEAF, META]) InsertReturn(seq PHashMap[NODE, struct{}], leaf LEAF) (leaf_ptr *TrieLeafNode[NODE, LEAF, META]) {
 	node := &t.root
-	seq_copy := NewPHashMap[NODE, struct{}]()
-	for itr := seq.inner.Iterator(); itr.HasElem(); itr.Next() {
-		k_any, _ := itr.Elem()
-		k := k_any.(NODE)
-		seq_copy = seq_copy.Assoc(k, struct{}{})
-	}
+	seq_copy := seq.Clone()
 	for {
 		child := node.PrepChild(&seq_copy, leaf)
 		if child.IsTrieLeaf() {
@@ -199,12 +183,7 @@ func (t *Trie[NODE, LEAF, META]) InsertReturn(seq PHashMap[NODE, struct{}], leaf
 }
 
 func (t Trie[NODE, LEAF, META]) LookupRepair(query PHashMap[NODE, struct{}]) {
-	query_copy := NewPHashMap[NODE, struct{}]()
-	for itr := query.inner.Iterator(); itr.HasElem(); itr.Next() {
-		k_any, _ := itr.Elem()
-		k := k_any.(NODE)
-		query_copy = query_copy.Assoc(k, struct{}{})
-	}
+	query_copy := query.Clone()
 	node := &t.root
 searchLoop:
 	for {
@@ -295,12 +274,7 @@ func (t Trie[NODE, LEAF, META]) EntryList() (out []TrieEntry[NODE, LEAF]) {
 }
 
 func (t Trie[NODE, LEAF, META]) Lookup(query PHashMap[NODE, struct{}]) (leaf *LEAF) {
-	query_copy := NewPHashMap[NODE, struct{}]()
-	for itr := query.inner.Iterator(); itr.HasElem(); itr.Next() {
-		k_any, _ := itr.Elem()
-		k := k_any.(NODE)
-		query_copy = query_copy.Assoc(k, struct{}{})
-	}
+	query_copy := query.Clone()
 	node := &t.root
 searchLoop:
 	for {
