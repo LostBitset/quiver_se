@@ -73,3 +73,11 @@ func (q *Quiver[N, E, C]) ApplyUpdate(update QuiverUpdate[N, E, C]) {
 	dst := update.dst.ResolveAsQuiverUpdateDst(q)
 	q.insert_edge(src, dst, update.edge)
 }
+
+func (q *Quiver[N, E, C]) ApplyUpdateAndEmitWalks(
+	out_walks chan QuiverWalk[N, E],
+	update QuiverUpdate[N, E, C],
+) {
+	q.ApplyUpdate(update)
+	// TODO - Emit walks
+}
