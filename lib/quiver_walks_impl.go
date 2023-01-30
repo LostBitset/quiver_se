@@ -67,3 +67,9 @@ func (intended_node QuiverIntendedNode[N, E, C]) ResolveAsQuiverUpdateDst(q_ptr 
 	)
 	return
 }
+
+func (q *Quiver[N, E, C]) ApplyUpdate(update QuiverUpdate[N, E, C]) {
+	src := update.src
+	dst := update.dst.ResolveAsQuiverUpdateDst(q)
+	q.insert_edge(src, dst, update.edge)
+}
