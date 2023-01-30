@@ -48,10 +48,14 @@ func (Quiver[N, E, C]) MarkNodeIntent(node N) (intended_node QuiverIntendedNode[
 	return
 }
 
-func (index QuiverIndexParameterized[N, E, C]) ResolveAsQuiverUpdateDst(q_ptr *Quiver[N, E, C]) {
+func (indexp QuiverIndexParameterized[N, E, C]) ResolveAsQuiverUpdateDst(q_ptr *Quiver[N, E, C]) (
+	index QuiverIndex,
+) {
 	// TODO
 }
 
-func (intended_node QuiverIntendedNode[N, E, C]) ResolveAsQuiverUpdateDst(q_ptr *Quiver[N, E, C]) {
+func (intended_node QuiverIntendedNode[N, E, C]) ResolveAsQuiverUpdateDst(q_ptr *Quiver[N, E, C]) (
+	index QuiverIndex,
+) {
 	// TODO
 }

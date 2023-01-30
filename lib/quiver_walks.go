@@ -34,5 +34,5 @@ type QuiverIntendedNode[N any, E any, C ReversibleAssoc[E, QuiverIndex]] struct 
 }
 
 type QuiverUpdateDst[N any, E any, C ReversibleAssoc[E, QuiverIndex]] interface {
-	ResolveAsQuiverUpdateDst(q_ptr *Quiver[N, E, C]) (ref QuiverIndex)
+	ResolveAsQuiverUpdateDst(q_ptr *Quiver[N, E, C]) (index QuiverIndex)
 }
