@@ -89,7 +89,7 @@ func (q *Quiver[N, E, C]) ApplyUpdateAndEmitWalks(
 	update_walk_chunk := []E{update.edge}
 	walk_prefixes := make(chan []E)
 	walk_suffixes := make(chan []E)
-	fmt.Println("goroutine started (handles prefixes then suffixes)")
+	fmt.Println("goroutine started")
 	go func() {
 		defer close(out_walks)
 		prefixes := make([][]E, 0)
@@ -100,7 +100,6 @@ func (q *Quiver[N, E, C]) ApplyUpdateAndEmitWalks(
 			}
 			prefixes = append(prefixes, prefix)
 		}
-		fmt.Println(prefixes)
 		for suffix := range walk_suffixes {
 			for _, prefix := range prefixes {
 				l_prefix := prefix
@@ -117,13 +116,18 @@ func (q *Quiver[N, E, C]) ApplyUpdateAndEmitWalks(
 			}
 		}
 	}()
-	fmt.Println("FromToRev started")
-	q.EmitSimpleWalksFromToRev(walk_prefixes, start, update_src)
-	close(walk_prefixes)
-	fmt.Println("FromToRev finished, FromFwd started")
-	q.EmitSimpleWalksFromFwd(walk_suffixes, update_dst)
-	close(walk_suffixes)
-	fmt.Println("FromFwd finished")
+	go func() {
+		fmt.Println("FromToRev started")
+		q.EmitSimpleWalksFromToRev(walk_prefixes, start, update_src)
+		close(walk_prefixes)
+		fmt.Println("FromToRev finished")
+	}()
+	go func() {
+		fmt.Println("FromFwd started")
+		q.EmitSimpleWalksFromFwd(walk_suffixes, update_dst)
+		close(walk_suffixes)
+		fmt.Println("FromFwd finished")
+	}()
 }
 
 func (q Quiver[N, E, C]) EmitSimpleWalksFromFwd(out_simple_walks chan []E, src QuiverIndex) {
