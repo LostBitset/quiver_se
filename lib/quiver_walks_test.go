@@ -140,10 +140,17 @@ func TestQuiverWalksAcyclic(t *testing.T) {
 		},
 		q.AllInneighbors(n3),
 	)
-	walks := make([]QuiverWalk[int, int], 0)
-	for walk := range walks_chan {
-		walks = append(walks, walk)
+	walks := make([][]int, 0)
+	for walk_chunked := range walks_chan {
+		new_walk := make([]int, 0)
+		for _, chunk := range walk_chunked.edges_chunked {
+			for _, edge := range *chunk {
+				new_walk = append(new_walk, *edge)
+			}
+		}
+		walks = append(walks, new_walk)
 	}
 	fmt.Println(walks)
+	fmt.Println("ok should fail now")
 	assert.True(t, len(walks) == -1)
 }

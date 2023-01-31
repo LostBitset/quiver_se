@@ -193,9 +193,6 @@ func (q Quiver[N, E, C]) EmitSimpleWalksFromToRevMutPrefix(
 	prefix *[]*E,
 	seen PHashMap[QuiverIndex, struct{}],
 ) {
-	curr := *prefix
-	out_simple_walks <- curr
-	fmt.Printf("FromToRev ! %v\n", curr)
 	q.ForEachInneighbor(
 		src,
 		func(neighbor Neighbor[E]) {
@@ -205,7 +202,7 @@ func (q Quiver[N, E, C]) EmitSimpleWalksFromToRevMutPrefix(
 			*prefix = append(*prefix, &neighbor.via_edge)
 			curr_prime := *prefix
 			if neighbor.dst == true_dst {
-				fmt.Printf("FromToRev (terminal) ! %v\n", curr)
+				fmt.Printf("FromToRev (terminal) ! %v\n", curr_prime)
 				out_simple_walks <- curr_prime
 				return
 			}
