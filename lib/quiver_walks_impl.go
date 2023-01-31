@@ -136,7 +136,24 @@ func (q Quiver[N, E, C]) EmitSimpleWalksFromFwdPrefix(
 ) {
 	fmt.Printf("FF- sending *prefix as %v\n", *prefix)
 	out_simple_walks <- *prefix
-	// TODO
+	fmt.Printf("FF- just calling ForEachOutneighbor")
+	q.ForEachOutneighbor(
+		src,
+		func(neighbor Neighbor[E]) {
+			if seen.HasKey(neighbor.dst) {
+				return
+			}
+			fmt.Printf("FF- got neighbor %v\n", neighbor)
+			curr := *prefix
+			curr = append(curr, neighbor.via_edge)
+			q.EmitSimpleWalksFromFwdPrefix(
+				out_simple_walks,
+				neighbor.dst,
+				&curr,
+				seen.Clone().Assoc(neighbor.dst, struct{}{}),
+			)
+		},
+	)
 }
 
 func (q Quiver[N, E, C]) EmitSimpleWalksFromToRev(
