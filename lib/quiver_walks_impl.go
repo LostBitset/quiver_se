@@ -168,6 +168,15 @@ func (q Quiver[N, E, C]) EmitSimpleWalksFromFwdMutPrefix(
 	)
 }
 
+func (q Quiver[N, E, C]) EmitSimpleWalksFromToRev(
+	out_simple_walks chan []*E,
+	src QuiverIndex,
+	dst QuiverIndex,
+) {
+	backing_prefix := make([]*E, 0)
+	q.EmitSimpleWalksFromToRevMutPrefix(out_simple_walks, src, dst, &backing_prefix)
+}
+
 func (q Quiver[N, E, C]) EmitSimpleWalksFromToRevMutPrefix(
 	out_simple_walks chan []*E,
 	src QuiverIndex,
