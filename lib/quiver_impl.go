@@ -56,19 +56,18 @@ type Neighbor[E any] struct {
 	dst      QuiverIndex
 }
 
-func (q *Quiver[N, E, C]) AllOutneighbors(src QuiverIndex) (outneighbors []Neighbor[E]) {
+func (q *Quiver[N, E, C]) ForEachOutneighbor(src QuiverIndex, fn func(Neighbor[E])) {
 	src_node := q.arena[src]
 	src_node.edges.ForEachPair(func(edge E, dst QuiverIndex) {
 		neighbor := Neighbor[E]{
 			edge,
 			dst,
 		}
-		outneighbors = append(outneighbors, neighbor)
+		fn(neighbor)
 	})
-	return
 }
 
-func (q *Quiver[N, E, C]) AllInneighbors(src QuiverIndex) (inneighbors []Neighbor[E]) {
+func (q *Quiver[N, E, C]) ForEachInneighbor(src QuiverIndex, fn func(Neighbor[E])) {
 	src_node := q.arena[src]
 	for parent := range src_node.parents {
 		parent_node := q.arena[parent]
@@ -77,9 +76,28 @@ func (q *Quiver[N, E, C]) AllInneighbors(src QuiverIndex) (inneighbors []Neighbo
 				edge,
 				parent,
 			}
-			inneighbors = append(inneighbors, neighbor)
+			fn(neighbor)
 		}
 	}
+}
+
+func (q *Quiver[N, E, C]) AllOutneighbors(src QuiverIndex) (outneighbors []Neighbor[E]) {
+	q.ForEachOutneighbor(
+		src,
+		func(neighbor Neighbor[E]) {
+			outneighbors = append(outneighbors, neighbor)
+		},
+	)
+	return
+}
+
+func (q *Quiver[N, E, C]) AllInneighbors(src QuiverIndex) (inneighbors []Neighbor[E]) {
+	q.ForEachInneighbor(
+		src,
+		func(neighbor Neighbor[E]) {
+			inneighbors = append(inneighbors, neighbor)
+		},
+	)
 	return
 }
 

@@ -114,8 +114,33 @@ func (q *Quiver[N, E, C]) ApplyUpdateAndEmitWalks(
 
 const QUIVER_EMIT_SIMPLE_WALKS_DFS_MEMOIZATION_MAX_SIZE = 10
 
-func (q Quiver[N, E, C]) EmitSimpleWalksFromFwd(Aout_simple_walks chan []*E, src QuiverIndex) {
-	// TODO
+func (q Quiver[N, E, C]) EmitSimpleWalksFromFwd(out_simple_walks chan []*E, src QuiverIndex) {
+	backing_prefix := make([]*E, 0)
+	q.EmitSimpleWalksFromFwdMutPrefix(out_simple_walks, src, &backing_prefix)
+}
+
+func (q Quiver[N, E, C]) EmitSimpleWalksFromFwdMutPrefix(
+	out_simple_walks chan []*E,
+	src QuiverIndex,
+	prefix *[]*E,
+) {
+	curr := *prefix
+	out_simple_walks <- curr
+	q.ForEachOutneighbor(
+		src,
+		func(neighbor Neighbor[E]) {
+			*prefix = append(*prefix, &neighbor.via_edge)
+			curr_prime := *prefix
+			q.EmitSimpleWalksFromFwdMutPrefix(
+				out_simple_walks,
+				neighbor.dst,
+
+				&curr_prime,
+			)
+			(*prefix)[len(*prefix)-1] = nil
+			*prefix = (*prefix)[:len(*prefix)-1]
+		},
+	)
 }
 
 func (q Quiver[N, E, C]) EmitSimpleWalksFromToRev(
