@@ -43,7 +43,9 @@ type QuiverUpdateDst[N any, E any, C ReversibleAssoc[E, QuiverIndex]] interface 
 	ResolveAsQuiverUpdateDst(q_ptr *Quiver[N, E, C]) (index QuiverIndex)
 }
 
-type QuiverSeenSet *TrustingDirectQuiverSeenSet
+type QuiverSeenSet struct {
+	*TrustingDirectQuiverSeenSet
+}
 
 type TrustingDirectQuiverSeenSet struct {
 	mu   sync.Mutex

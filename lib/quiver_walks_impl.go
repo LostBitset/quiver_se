@@ -116,7 +116,9 @@ func NewQuiverSeenSet() (seen QuiverSeenSet) {
 	backing_trustingdirect := TrustingDirectQuiverSeenSet{
 		seen: make(map[QuiverIndex]struct{}),
 	}
-	seen = &backing_trustingdirect
+	seen = QuiverSeenSet{
+		&backing_trustingdirect,
+	}
 	return
 }
 
@@ -147,4 +149,11 @@ func (q Quiver[N, E, C]) EmitSimpleWalksFromToRevSeen(
 	seen QuiverSeenSet,
 ) {
 	// TODO
+}
+
+func (seen *TrustingDirectQuiverSeenSet) Check(index QuiverIndex) (has bool) {
+	seen.mu.Lock()
+	defer seen.mu.Unlock()
+	_, has = seen.seen[index]
+	return
 }
