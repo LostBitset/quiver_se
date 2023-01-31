@@ -100,14 +100,18 @@ func (q *Quiver[N, E, C]) ApplyUpdateAndEmitWalks(
 			}
 			prefixes = append(prefixes, prefix)
 		}
+		fmt.Println(prefixes)
 		for suffix := range walk_suffixes {
 			for _, prefix := range prefixes {
+				l_prefix := prefix
+				l_suffix := suffix
+				fmt.Printf("(prefix=%v, suffix=%v)\n", l_prefix, l_suffix)
 				out_walks <- QuiverWalk[N, E]{
 					start,
 					[]*[]E{
-						&prefix,
+						&l_prefix,
 						&update_walk_chunk,
-						&suffix,
+						&l_suffix,
 					},
 				}
 			}
@@ -134,8 +138,9 @@ func (q Quiver[N, E, C]) EmitSimpleWalksFromFwdPrefix(
 	prefix *[]E,
 	seen PHashMap[QuiverIndex, struct{}],
 ) {
-	fmt.Printf("FF- sending *prefix as %v\n", *prefix)
-	out_simple_walks <- *prefix
+	curr := *prefix
+	fmt.Printf("FF- sending *prefix as %v\n", curr)
+	out_simple_walks <- curr
 	fmt.Printf("FF- just calling ForEachOutneighbor")
 	q.ForEachOutneighbor(
 		src,
