@@ -1,5 +1,9 @@
 package qse
 
+import (
+	"sync"
+)
+
 func NewPhantomQuiverAssociation[N any, E any, C ReversibleAssoc[E, QuiverIndex]]() (
 	phantom_association PhantomQuiverAssociation[N, E, C],
 ) {
@@ -83,13 +87,23 @@ func (q *Quiver[N, E, C]) ApplyUpdateAndEmitWalks(
 	update_src, update_dst := q.ApplyUpdate(update)
 	start := start_unresolved.ResolveAsQuiverUpdateDst(q)
 	update_walk_chunk := []*E{&update.edge}
+	var wg sync.WaitGroup
+	wg.Add(2)
 	walk_prefixes := make(chan []*E)
 	walk_suffixes := make(chan []*E)
-	go q.EmitSimpleWalksFromToRev(walk_prefixes, start, update_src)
-	go q.EmitSimpleWalksFromFwd(walk_suffixes, update_dst)
+	go func() {
+		defer wg.Done()
+		q.EmitSimpleWalksFromToRev(walk_prefixes, start, update_src)
+	}()
+	go func() {
+		defer wg.Done()
+		q.EmitSimpleWalksFromFwd(walk_suffixes, update_dst)
+	}()
+	wgsig := StartWaitGroupSignal(wg)
 	go func() {
 		known_suffixes := make([][]*E, 0)
 		known_prefixes := make([][]*E, 0)
+	sendNewWalksLoop:
 		for {
 			select {
 			case prefix := <-walk_prefixes:
@@ -107,9 +121,21 @@ func (q *Quiver[N, E, C]) ApplyUpdateAndEmitWalks(
 						[]*[]*E{&known_prefix, &update_walk_chunk, &suffix},
 					}
 				}
+			case <-wgsig:
+				break sendNewWalksLoop
+			default:
 			}
 		}
 	}()
+}
+
+func StartWaitGroupSignal(wg sync.WaitGroup) (wgsig chan struct{}) {
+	wgsig = make(chan struct{})
+	go func() {
+		wg.Wait()
+		wgsig <- struct{}{}
+	}()
+	return
 }
 
 const QUIVER_EMIT_SIMPLE_WALKS_DFS_MEMOIZATION_MAX_SIZE = 10
