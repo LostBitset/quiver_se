@@ -115,44 +115,6 @@ func (q *Quiver[N, E, C]) ApplyUpdateAndEmitWalks(
 const QUIVER_EMIT_SIMPLE_WALKS_DFS_MEMOIZATION_MAX_SIZE = 10
 
 func (q Quiver[N, E, C]) EmitSimpleWalksFromFwd(Aout_simple_walks chan []*E, src QuiverIndex) {
-	prefix := make([]*E, 0)
-	index_stack := make([]uint, 0)
-	cursor := src
-	outneighbors_memo := make(map[QuiverIndex]*[]Neighbor[E])
-dfsLoop:
-	for {
-		var outneighbors []Neighbor[E]
-		if memoized, ok := outneighbors_memo[cursor]; ok {
-			outneighbors = *memoized
-		} else {
-			outneighbors = q.AllOutneighbors(cursor)
-			for len(outneighbors_memo) >= (QUIVER_EMIT_SIMPLE_WALKS_DFS_MEMOIZATION_MAX_SIZE - 1) {
-			destroyOneKeyLoop:
-				for key := range outneighbors_memo {
-					delete(outneighbors_memo, key)
-					break destroyOneKeyLoop
-				}
-			}
-			outneighbors_memo[cursor] = &outneighbors
-		}
-		index_stack[len(index_stack)-1]++
-		top_index := index_stack[len(index_stack)-1]
-		if top_index >= uint(len(outneighbors)) {
-			prefix[len(prefix)-1] = nil
-			prefix = prefix[:(len(prefix) - 1)]
-			var zero_uint uint
-			index_stack[len(index_stack)-1] = zero_uint
-			index_stack = index_stack[:(len(index_stack) - 1)]
-			if len(index_stack) == 0 {
-				break dfsLoop
-			} else {
-				continue dfsLoop
-			}
-		}
-		new_neighbor := outneighbors[top_index]
-		prefix[len(prefix)-1] = &new_neighbor.via_edge
-		cursor = new_neighbor.dst
-	}
 	// TODO
 }
 
