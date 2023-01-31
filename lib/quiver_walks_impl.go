@@ -134,7 +134,6 @@ func (q Quiver[N, E, C]) EmitSimpleWalksFromFwdMutPrefix(
 			q.EmitSimpleWalksFromFwdMutPrefix(
 				out_simple_walks,
 				neighbor.dst,
-
 				&curr_prime,
 			)
 			(*prefix)[len(*prefix)-1] = nil
