@@ -135,8 +135,7 @@ func (q Quiver[N, E, C]) EmitSimpleWalksFromFwdPrefix(
 	seen PHashMap[QuiverIndex, struct{}],
 ) {
 	fmt.Printf("FF- sending *prefix as %v\n", *prefix)
-	curr := *prefix
-	out_simple_walks <- curr
+	out_simple_walks <- *prefix
 	fmt.Printf("FF- just calling ForEachOutneighbor")
 	q.ForEachOutneighbor(
 		src,
@@ -145,9 +144,8 @@ func (q Quiver[N, E, C]) EmitSimpleWalksFromFwdPrefix(
 				return
 			}
 			fmt.Printf("FF- got neighbor %v\n", neighbor)
-			curr := make([]E, len(*prefix)+1)
-			copy(*prefix, curr)
-			curr[len(*prefix)] = neighbor.via_edge
+			curr := *prefix
+			curr = append(curr, neighbor.via_edge)
 			q.EmitSimpleWalksFromFwdPrefix(
 				out_simple_walks,
 				neighbor.dst,
@@ -176,8 +174,9 @@ func (q Quiver[N, E, C]) EmitSimpleWalksFromToRevPrefix(
 	seen PHashMap[QuiverIndex, struct{}],
 ) {
 	if src == true_dst {
-		fmt.Printf("FTR sending *prefix as %v\n", *prefix)
-		out_simple_walks <- *prefix
+		curr := *prefix
+		fmt.Printf("FTR sending *prefix as %v\n", curr)
+		out_simple_walks <- curr
 	}
 	fmt.Println("FTR just calling ForEachInneighbor...")
 	q.ForEachInneighbor(
