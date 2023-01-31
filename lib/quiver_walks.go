@@ -1,9 +1,5 @@
 package qse
 
-import (
-	"sync"
-)
-
 // A nicely packaged way to represent association with a particular quiver
 type PhantomQuiverAssociation[N any, E any, C ReversibleAssoc[E, QuiverIndex]] struct {
 	phantom_node PhantomData[N]
@@ -41,13 +37,4 @@ type QuiverIntendedNode[N any, E any, C ReversibleAssoc[E, QuiverIndex]] struct 
 
 type QuiverUpdateDst[N any, E any, C ReversibleAssoc[E, QuiverIndex]] interface {
 	ResolveAsQuiverUpdateDst(q_ptr *Quiver[N, E, C]) (index QuiverIndex)
-}
-
-type QuiverSeenSet struct {
-	*TrustingDirectQuiverSeenSet
-}
-
-type TrustingDirectQuiverSeenSet struct {
-	mu   sync.Mutex
-	seen map[QuiverIndex]struct{}
 }

@@ -112,18 +112,8 @@ func (q *Quiver[N, E, C]) ApplyUpdateAndEmitWalks(
 	}()
 }
 
-func NewQuiverSeenSet() (seen QuiverSeenSet) {
-	backing_trustingdirect := TrustingDirectQuiverSeenSet{
-		seen: make(map[QuiverIndex]struct{}),
-	}
-	seen = QuiverSeenSet{
-		&backing_trustingdirect,
-	}
-	return
-}
-
 func (q Quiver[N, E, C]) EmitSimpleWalksFromFwd(out_simple_walks chan *[]*E, src QuiverIndex) {
-	q.EmitSimpleWalksFromFwdSeen(out_simple_walks, src, NewQuiverSeenSet())
+	q.EmitSimpleWalksFromFwdSeen(out_simple_walks, src, make(map[QuiverIndex]struct{}))
 }
 
 func (q Quiver[N, E, C]) EmitSimpleWalksFromToRev(
@@ -131,29 +121,22 @@ func (q Quiver[N, E, C]) EmitSimpleWalksFromToRev(
 	src QuiverIndex,
 	dst QuiverIndex,
 ) {
-	q.EmitSimpleWalksFromToRevSeen(out_simple_walks, src, dst, NewQuiverSeenSet())
+	q.EmitSimpleWalksFromToRevSeen(out_simple_walks, src, dst, make(map[QuiverIndex]struct{}))
 }
 
 func (q Quiver[N, E, C]) EmitSimpleWalksFromFwdSeen(
 	out_simple_walks chan *[]*E,
 	src QuiverIndex,
-	seen QuiverSeenSet,
+	seen map[QuiverIndex]struct{},
 ) {
-	// TODO
+	// T2ODO
 }
 
 func (q Quiver[N, E, C]) EmitSimpleWalksFromToRevSeen(
 	out_simple_walks chan *[]*E,
 	src QuiverIndex,
 	dst QuiverIndex,
-	seen QuiverSeenSet,
+	seen map[QuiverIndex]struct{},
 ) {
 	// TODO
-}
-
-func (seen *TrustingDirectQuiverSeenSet) Check(index QuiverIndex) (has bool) {
-	seen.mu.Lock()
-	defer seen.mu.Unlock()
-	_, has = seen.seen[index]
-	return
 }
