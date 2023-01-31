@@ -129,7 +129,7 @@ func (q Quiver[N, E, C]) EmitSimpleWalksFromFwdSeen(
 	src QuiverIndex,
 	seen map[QuiverIndex]struct{},
 ) {
-	// T2ODO
+	// TODO
 }
 
 func (q Quiver[N, E, C]) EmitSimpleWalksFromToRevSeen(
