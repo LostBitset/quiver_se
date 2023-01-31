@@ -99,7 +99,7 @@ func (q *Quiver[N, E, C]) ApplyUpdateAndEmitWalks(
 		defer wg.Done()
 		q.EmitSimpleWalksFromFwd(walk_suffixes, update_dst)
 	}()
-	wgsig := StartWaitGroupSignal(wg)
+	wgsig := StartWaitGroupSignal(&wg)
 	go func() {
 		known_suffixes := make([][]*E, 0)
 		known_prefixes := make([][]*E, 0)
@@ -129,7 +129,7 @@ func (q *Quiver[N, E, C]) ApplyUpdateAndEmitWalks(
 	}()
 }
 
-func StartWaitGroupSignal(wg sync.WaitGroup) (wgsig chan struct{}) {
+func StartWaitGroupSignal(wg *sync.WaitGroup) (wgsig chan struct{}) {
 	wgsig = make(chan struct{})
 	go func() {
 		wg.Wait()
