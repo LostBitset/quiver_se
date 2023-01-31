@@ -86,31 +86,25 @@ func (q *Quiver[N, E, C]) ApplyUpdateAndEmitWalks(
 ) {
 	update_src, update_dst := q.ApplyUpdate(update)
 	start := start_unresolved.ResolveAsQuiverUpdateDst(q)
-	update_walk_chunk := []*E{&update.edge}
-	walk_prefixes := make(chan []*E)
-	walk_suffixes := make(chan []*E)
-	fmt.Println("FromToRev started")
-	q.EmitSimpleWalksFromToRev(walk_prefixes, start, update_src)
-	fmt.Println("FromToRev finished, FromFwd started")
-	q.EmitSimpleWalksFromFwd(walk_suffixes, update_dst)
-	fmt.Println("FromFwd finished")
-	close(walk_prefixes)
-	close(walk_suffixes)
+	update_walk_chunk := []E{update.edge}
+	walk_prefixes := make(chan []E)
+	walk_suffixes := make(chan []E)
+	fmt.Println("goroutine started (handles prefixes then suffixes)")
 	go func() {
 		defer close(out_walks)
-		prefixes := make([][]*E, 0)
-		for prefix := range walk_prefixes {
+		prefixes := make([][]E, 0)
+		for prefix_flipped := range walk_prefixes {
+			prefix := make([]E, len(prefix_flipped))
+			for i := range prefix {
+				prefix[i] = prefix_flipped[len(prefix)-(i+1)]
+			}
 			prefixes = append(prefixes, prefix)
 		}
-		for suffix_flipped := range walk_suffixes {
-			suffix := make([]*E, len(suffix_flipped))
-			for i := range suffix {
-				suffix[i] = suffix_flipped[len(suffix)-(i+1)]
-			}
+		for suffix := range walk_suffixes {
 			for _, prefix := range prefixes {
 				out_walks <- QuiverWalk[N, E]{
 					start,
-					[]*[]*E{
+					[]*[]E{
 						&prefix,
 						&update_walk_chunk,
 						&suffix,
@@ -119,50 +113,69 @@ func (q *Quiver[N, E, C]) ApplyUpdateAndEmitWalks(
 			}
 		}
 	}()
+	fmt.Println("FromToRev started")
+	q.EmitSimpleWalksFromToRev(walk_prefixes, start, update_src)
+	close(walk_prefixes)
+	fmt.Println("FromToRev finished, FromFwd started")
+	q.EmitSimpleWalksFromFwd(walk_suffixes, update_dst)
+	close(walk_suffixes)
+	fmt.Println("FromFwd finished")
 }
 
-func (q Quiver[N, E, C]) EmitSimpleWalksFromFwd(out_simple_walks chan []*E, src QuiverIndex) {
-	backing_prefix := make([]*E, 0)
+func (q Quiver[N, E, C]) EmitSimpleWalksFromFwd(out_simple_walks chan []E, src QuiverIndex) {
+	backing_prefix := make([]E, 0)
 	seen := NewPHashMap[QuiverIndex, struct{}]()
-	q.EmitSimpleWalksFromFwdMutPrefix(out_simple_walks, src, &backing_prefix, seen)
+	q.EmitSimpleWalksFromFwdPrefix(out_simple_walks, src, &backing_prefix, seen)
 }
 
-func (q Quiver[N, E, C]) EmitSimpleWalksFromFwdMutPrefix(
-	out_simple_walks chan []*E,
+func (q Quiver[N, E, C]) EmitSimpleWalksFromFwdPrefix(
+	out_simple_walks chan []E,
 	src QuiverIndex,
-	prefix *[]*E,
+	prefix *[]E,
 	seen PHashMap[QuiverIndex, struct{}],
 ) {
-	// TODO
+	fmt.Printf("FF- sending *prefix as %v\n", *prefix)
+	out_simple_walks <- *prefix
 }
 
 func (q Quiver[N, E, C]) EmitSimpleWalksFromToRev(
-	out_simple_walks chan []*E,
+	out_simple_walks chan []E,
 	src QuiverIndex,
 	dst QuiverIndex,
 ) {
-	backing_prefix := make([]*E, 0)
+	backing_prefix := make([]E, 0)
 	seen := NewPHashMap[QuiverIndex, struct{}]()
-	q.EmitSimpleWalksFromToRevMutPrefix(out_simple_walks, src, dst, &backing_prefix, seen)
+	q.EmitSimpleWalksFromToRevPrefix(out_simple_walks, src, dst, &backing_prefix, seen)
 }
 
-func (q Quiver[N, E, C]) EmitSimpleWalksFromToRevMutPrefix(
-	out_simple_walks chan []*E,
+func (q Quiver[N, E, C]) EmitSimpleWalksFromToRevPrefix(
+	out_simple_walks chan []E,
 	src QuiverIndex,
 	true_dst QuiverIndex,
-	prefix *[]*E,
+	prefix *[]E,
 	seen PHashMap[QuiverIndex, struct{}],
 ) {
 	if src == true_dst {
-		fmt.Println("start send")
+		fmt.Printf("FTR sending *prefix as %v\n", *prefix)
 		out_simple_walks <- *prefix
-		fmt.Println("end send")
 	}
-	fmt.Println("just calling ForEachInneighbor...")
+	fmt.Println("FTR just calling ForEachInneighbor...")
 	q.ForEachInneighbor(
 		src,
 		func(neighbor Neighbor[E]) {
-			fmt.Printf("got neighbor %v\n", neighbor)
+			if seen.HasKey(neighbor.dst) {
+				return
+			}
+			fmt.Printf("FTR got neighbor %v\n", neighbor)
+			curr := *prefix
+			curr = append(curr, neighbor.via_edge)
+			q.EmitSimpleWalksFromToRevPrefix(
+				out_simple_walks,
+				neighbor.dst,
+				true_dst,
+				&curr,
+				seen.Clone().Assoc(neighbor.dst, struct{}{}),
+			)
 		},
 	)
 }

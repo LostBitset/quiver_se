@@ -144,9 +144,7 @@ func TestQuiverWalks(t *testing.T) {
 	for walk_chunked := range walks_chan {
 		new_walk := make([]int, 0)
 		for _, chunk := range walk_chunked.edges_chunked {
-			for _, edge := range *chunk {
-				new_walk = append(new_walk, *edge)
-			}
+			new_walk = append(new_walk, *chunk...)
 		}
 		walks = append(walks, new_walk)
 	}

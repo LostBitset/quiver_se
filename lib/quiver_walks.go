@@ -16,7 +16,7 @@ type QuiverIndexParameterized[N any, E any, C ReversibleAssoc[E, QuiverIndex]] s
 // Allow edges to be stored in pointers to chunks to limit (to some extent) duplication
 type QuiverWalk[N any, E any] struct {
 	start         QuiverIndex
-	edges_chunked []*[]*E
+	edges_chunked []*[]E
 }
 
 // A new edge (and possibly a new node) being added to a quiver
