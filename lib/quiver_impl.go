@@ -34,7 +34,7 @@ func (obj SimpleReversibleAssoc[A, B]) ForEachPair(fn func(A, B)) {
 	}
 }
 
-func (q *Quiver[N, E, C]) insert_node(node_value N, container C) (idx QuiverIndex) {
+func (q *Quiver[N, E, C]) InsertNode(node_value N, container C) (idx QuiverIndex) {
 	node := QuiverNode[N, E, C]{
 		node_value,
 		make(map[QuiverIndex]struct{}),
@@ -45,7 +45,7 @@ func (q *Quiver[N, E, C]) insert_node(node_value N, container C) (idx QuiverInde
 	return
 }
 
-func (q *Quiver[N, E, C]) insert_edge(src, dst QuiverIndex, edge_value E) {
+func (q *Quiver[N, E, C]) InsertEdge(src, dst QuiverIndex, edge_value E) {
 	src_node, dst_node := q.arena[src], q.arena[dst]
 	src_node.edges.Insert(edge_value, dst)
 	dst_node.parents[src] = struct{}{}
@@ -56,7 +56,7 @@ type Neighbor[E any] struct {
 	dst      QuiverIndex
 }
 
-func (q *Quiver[N, E, C]) all_outneighbors(src QuiverIndex) (outneighbors []Neighbor[E]) {
+func (q *Quiver[N, E, C]) AllOutneighbors(src QuiverIndex) (outneighbors []Neighbor[E]) {
 	src_node := q.arena[src]
 	src_node.edges.ForEachPair(func(edge E, dst QuiverIndex) {
 		neighbor := Neighbor[E]{
@@ -68,7 +68,7 @@ func (q *Quiver[N, E, C]) all_outneighbors(src QuiverIndex) (outneighbors []Neig
 	return
 }
 
-func (q *Quiver[N, E, C]) all_inneighbors(src QuiverIndex) (inneighbors []Neighbor[E]) {
+func (q *Quiver[N, E, C]) AllInneighbors(src QuiverIndex) (inneighbors []Neighbor[E]) {
 	src_node := q.arena[src]
 	for parent := range src_node.parents {
 		parent_node := q.arena[parent]
@@ -83,8 +83,8 @@ func (q *Quiver[N, E, C]) all_inneighbors(src QuiverIndex) (inneighbors []Neighb
 	return
 }
 
-func (q *SimpleQuiver[N, E]) insert_node_simple(node_value N) (idx QuiverIndex) {
+func (q *SimpleQuiver[N, E]) InsertNodeSimple(node_value N) (idx QuiverIndex) {
 	container := NewSimpleRA[E, QuiverIndex]()
-	idx = q.insert_node(node_value, &container)
+	idx = q.InsertNode(node_value, &container)
 	return
 }

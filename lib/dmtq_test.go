@@ -10,9 +10,9 @@ func TestDMTQ(t *testing.T) {
 	var q Quiver[uint32_H, PHashMap[Literal[uint32_H], struct{}], *DMT[uint32_H, QuiverIndex]]
 	n1_container := NewDMT[uint32_H, QuiverIndex]()
 	n2_container := NewDMT[uint32_H, QuiverIndex]()
-	n1 := q.insert_node(uint32_H{1}, &n1_container)
-	n2 := q.insert_node(uint32_H{2}, &n2_container)
-	q.insert_edge(
+	n1 := q.InsertNode(uint32_H{1}, &n1_container)
+	n2 := q.InsertNode(uint32_H{2}, &n2_container)
+	q.InsertEdge(
 		n1,
 		n2,
 		StdlibMapToPHashMap(
@@ -22,7 +22,7 @@ func TestDMTQ(t *testing.T) {
 			},
 		),
 	)
-	q.insert_edge(
+	q.InsertEdge(
 		n1,
 		n2,
 		StdlibMapToPHashMap(
@@ -32,7 +32,7 @@ func TestDMTQ(t *testing.T) {
 			},
 		),
 	)
-	n1_outneighbors := q.all_outneighbors(n1)
+	n1_outneighbors := q.AllOutneighbors(n1)
 	n1_outneighbors_stdlib_map := make([]Neighbor[map[Literal[uint32_H]]struct{}], 0)
 	for _, neighbor := range n1_outneighbors {
 		neighbor_stdlib_map := Neighbor[map[Literal[uint32_H]]struct{}]{

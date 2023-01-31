@@ -61,7 +61,7 @@ func (indexp QuiverIndexParameterized[N, E, C]) ResolveAsQuiverUpdateDst(q_ptr *
 func (intended_node QuiverIntendedNode[N, E, C]) ResolveAsQuiverUpdateDst(q_ptr *Quiver[N, E, C]) (
 	index QuiverIndex,
 ) {
-	index = q_ptr.insert_node(
+	index = q_ptr.InsertNode(
 		intended_node.node,
 		intended_node.container,
 	)
@@ -71,7 +71,7 @@ func (intended_node QuiverIntendedNode[N, E, C]) ResolveAsQuiverUpdateDst(q_ptr 
 func (q *Quiver[N, E, C]) ApplyUpdate(update QuiverUpdate[N, E, C]) (src, dst QuiverIndex) {
 	src = update.src
 	dst = update.dst.ResolveAsQuiverUpdateDst(q)
-	q.insert_edge(src, dst, update.edge)
+	q.InsertEdge(src, dst, update.edge)
 	return
 }
 
