@@ -182,7 +182,8 @@ func (q Quiver[N, E, C]) EmitSimpleWalksFromToRev(
 	dst QuiverIndex,
 ) {
 	backing_prefix := make([]*E, 0)
-	q.EmitSimpleWalksFromToRevMutPrefix(out_simple_walks, src, dst, &backing_prefix)
+	seen := NewPHashMap[QuiverIndex, struct{}]()
+	q.EmitSimpleWalksFromToRevMutPrefix(out_simple_walks, src, dst, &backing_prefix, seen)
 }
 
 func (q Quiver[N, E, C]) EmitSimpleWalksFromToRevMutPrefix(
@@ -190,6 +191,7 @@ func (q Quiver[N, E, C]) EmitSimpleWalksFromToRevMutPrefix(
 	src QuiverIndex,
 	true_dst QuiverIndex,
 	prefix *[]*E,
+	seen PHashMap[QuiverIndex, struct{}],
 ) {
 	curr := *prefix
 	out_simple_walks <- curr
@@ -197,6 +199,9 @@ func (q Quiver[N, E, C]) EmitSimpleWalksFromToRevMutPrefix(
 	q.ForEachInneighbor(
 		src,
 		func(neighbor Neighbor[E]) {
+			if seen.HasKey(neighbor.dst) {
+				return
+			}
 			*prefix = append(*prefix, &neighbor.via_edge)
 			curr_prime := *prefix
 			if neighbor.dst == true_dst {
@@ -209,6 +214,7 @@ func (q Quiver[N, E, C]) EmitSimpleWalksFromToRevMutPrefix(
 				neighbor.dst,
 				true_dst,
 				&curr_prime,
+				seen.Assoc(neighbor.dst, struct{}{}),
 			)
 			(*prefix)[len(*prefix)-1] = nil
 			*prefix = (*prefix)[:len(*prefix)-1]
