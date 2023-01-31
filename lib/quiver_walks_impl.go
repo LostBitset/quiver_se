@@ -156,6 +156,7 @@ func (q Quiver[N, E, C]) EmitSimpleWalksFromFwdMutPrefix(
 	q.ForEachOutneighbor(
 		src,
 		func(neighbor Neighbor[E]) {
+			fmt.Printf("somehow found neighbor %v\n", neighbor)
 			*prefix = append(*prefix, &neighbor.via_edge)
 			curr_prime := *prefix
 			q.EmitSimpleWalksFromFwdMutPrefix(
