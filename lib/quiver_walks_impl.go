@@ -113,30 +113,13 @@ func (q *Quiver[N, E, C]) ApplyUpdateAndEmitWalks(
 }
 
 func (q Quiver[N, E, C]) EmitSimpleWalksFromFwd(out_simple_walks chan *[]*E, src QuiverIndex) {
-	q.EmitSimpleWalksFromFwdSeen(out_simple_walks, src, make(map[QuiverIndex]struct{}))
+	// TODO
 }
 
 func (q Quiver[N, E, C]) EmitSimpleWalksFromToRev(
 	out_simple_walks chan *[]*E,
 	src QuiverIndex,
 	dst QuiverIndex,
-) {
-	q.EmitSimpleWalksFromToRevSeen(out_simple_walks, src, dst, make(map[QuiverIndex]struct{}))
-}
-
-func (q Quiver[N, E, C]) EmitSimpleWalksFromFwdSeen(
-	out_simple_walks chan *[]*E,
-	src QuiverIndex,
-	seen map[QuiverIndex]struct{},
-) {
-	// TODO
-}
-
-func (q Quiver[N, E, C]) EmitSimpleWalksFromToRevSeen(
-	out_simple_walks chan *[]*E,
-	src QuiverIndex,
-	dst QuiverIndex,
-	seen map[QuiverIndex]struct{},
 ) {
 	// TODO
 }
