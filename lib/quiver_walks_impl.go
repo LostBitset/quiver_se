@@ -123,7 +123,6 @@ func (q *Quiver[N, E, C]) ApplyUpdateAndEmitWalks(
 				}
 			case <-wgsig:
 				break sendNewWalksLoop
-			default:
 			}
 		}
 	}()
