@@ -93,10 +93,12 @@ func (q *Quiver[N, E, C]) ApplyUpdateAndEmitWalks(
 	walk_prefixes := make(chan []*E)
 	walk_suffixes := make(chan []*E)
 	go func() {
+		defer close(walk_prefixes)
 		defer wg.Done()
 		q.EmitSimpleWalksFromToRev(walk_prefixes, start, update_src)
 	}()
 	go func() {
+		defer close(walk_suffixes)
 		defer wg.Done()
 		q.EmitSimpleWalksFromFwd(walk_suffixes, update_dst)
 	}()
@@ -106,6 +108,21 @@ func (q *Quiver[N, E, C]) ApplyUpdateAndEmitWalks(
 		known_prefixes := make([][]*E, 0)
 	sendNewWalksLoop:
 		for {
+			fmt.Printf("lengths: %v, %v\n", len(known_prefixes), len(known_suffixes))
+			// DBG
+			walks := make([][]E, 0)
+			for _, walk_chunked := range known_prefixes {
+				new_walk := make([]E, 0)
+				for _, edge := range walk_chunked {
+					new_walk = append(new_walk, *edge)
+				}
+				walks = append(walks, new_walk)
+			}
+			fmt.Println("bgn")
+			fmt.Println(walks)
+			fmt.Println("end")
+			// DBG
+		recvSimpleWalksSelect:
 			select {
 			case prefix := <-walk_prefixes:
 				for _, known_suffix := range known_suffixes {
@@ -115,7 +132,10 @@ func (q *Quiver[N, E, C]) ApplyUpdateAndEmitWalks(
 					}
 				}
 				known_prefixes = append(known_prefixes, prefix)
-			case suffix := <-walk_suffixes:
+			case suffix, ok := <-walk_suffixes:
+				if !ok {
+					break recvSimpleWalksSelect
+				}
 				for _, known_prefix := range known_prefixes {
 					out_walks <- QuiverWalk[N, E]{
 						start,
@@ -196,6 +216,7 @@ func (q Quiver[N, E, C]) EmitSimpleWalksFromToRevMutPrefix(
 	q.ForEachInneighbor(
 		src,
 		func(neighbor Neighbor[E]) {
+			fmt.Printf("neighbor in FromToRev - %v\n", neighbor)
 			if seen.HasKey(neighbor.dst) {
 				return
 			}

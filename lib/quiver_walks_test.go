@@ -97,7 +97,7 @@ func TestQuiverUpdatesCyclic(t *testing.T) {
 	)
 }
 
-func TestQuiverWalksAcyclic(t *testing.T) {
+func TestQuiverWalks(t *testing.T) {
 	var q SimpleQuiver[int, int]
 	n1 := q.InsertNodeSimple(7)
 	n2 := q.InsertNodeSimple(8)
