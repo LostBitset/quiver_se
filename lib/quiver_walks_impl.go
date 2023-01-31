@@ -83,20 +83,20 @@ func (q *Quiver[N, E, C]) ApplyUpdateAndEmitWalks(
 	update_src, update_dst := q.ApplyUpdate(update)
 	start := start_unresolved.ResolveAsQuiverUpdateDst(q)
 	update_walk_chunk := []*E{&update.edge}
-	walk_prefixes := make(chan *[]*E)
-	walk_suffixes := make(chan *[]*E)
+	walk_prefixes := make(chan []*E)
+	walk_suffixes := make(chan []*E)
 	go q.EmitSimpleWalksFromToRev(walk_prefixes, start, update_src)
 	go q.EmitSimpleWalksFromFwd(walk_suffixes, update_dst)
 	go func() {
-		known_suffixes := make([]*[]*E, 0)
-		known_prefixes := make([]*[]*E, 0)
+		known_suffixes := make([][]*E, 0)
+		known_prefixes := make([][]*E, 0)
 		for {
 			select {
 			case prefix := <-walk_prefixes:
 				for _, known_suffix := range known_suffixes {
 					out_walks <- QuiverWalk[N, E]{
 						start,
-						[]*[]*E{prefix, &update_walk_chunk, known_suffix},
+						[]*[]*E{&prefix, &update_walk_chunk, &known_suffix},
 					}
 				}
 				known_prefixes = append(known_prefixes, prefix)
@@ -104,7 +104,7 @@ func (q *Quiver[N, E, C]) ApplyUpdateAndEmitWalks(
 				for _, known_prefix := range known_prefixes {
 					out_walks <- QuiverWalk[N, E]{
 						start,
-						[]*[]*E{known_prefix, &update_walk_chunk, suffix},
+						[]*[]*E{&known_prefix, &update_walk_chunk, &suffix},
 					}
 				}
 			}
@@ -112,12 +112,12 @@ func (q *Quiver[N, E, C]) ApplyUpdateAndEmitWalks(
 	}()
 }
 
-func (q Quiver[N, E, C]) EmitSimpleWalksFromFwd(out_simple_walks chan *[]*E, src QuiverIndex) {
+func (q Quiver[N, E, C]) EmitSimpleWalksFromFwd(out_simple_walks chan []*E, src QuiverIndex) {
 	// TODO
 }
 
 func (q Quiver[N, E, C]) EmitSimpleWalksFromToRev(
-	out_simple_walks chan *[]*E,
+	out_simple_walks chan []*E,
 	src QuiverIndex,
 	dst QuiverIndex,
 ) {
