@@ -2,7 +2,6 @@ package qse
 
 import (
 	"fmt"
-	"sync"
 )
 
 func NewPhantomQuiverAssociation[N any, E any, C ReversibleAssoc[E, QuiverIndex]]() (
@@ -88,76 +87,35 @@ func (q *Quiver[N, E, C]) ApplyUpdateAndEmitWalks(
 	update_src, update_dst := q.ApplyUpdate(update)
 	start := start_unresolved.ResolveAsQuiverUpdateDst(q)
 	update_walk_chunk := []*E{&update.edge}
-	var wg sync.WaitGroup
-	wg.Add(2)
 	walk_prefixes := make(chan []*E)
 	walk_suffixes := make(chan []*E)
+	fmt.Println("FromToRev started")
+	q.EmitSimpleWalksFromToRev(walk_prefixes, start, update_src)
+	fmt.Println("FromToRev finished, FromFwd started")
+	q.EmitSimpleWalksFromFwd(walk_suffixes, update_dst)
+	fmt.Println("FromFwd finished")
+	close(walk_prefixes)
+	close(walk_suffixes)
 	go func() {
-		defer close(walk_prefixes)
-		defer wg.Done()
-		q.EmitSimpleWalksFromToRev(walk_prefixes, start, update_src)
-	}()
-	go func() {
-		defer close(walk_suffixes)
-		defer wg.Done()
-		q.EmitSimpleWalksFromFwd(walk_suffixes, update_dst)
-	}()
-	wgsig := StartWaitGroupSignal(&wg)
-	go func() {
-		known_suffixes := make([][]*E, 0)
-		known_prefixes := make([][]*E, 0)
-	sendNewWalksLoop:
-		for {
-			fmt.Printf("lengths: %v, %v\n", len(known_prefixes), len(known_suffixes))
-			// DBG
-			walks := make([][]E, 0)
-			for _, walk_chunked := range known_prefixes {
-				new_walk := make([]E, 0)
-				for _, edge := range walk_chunked {
-					new_walk = append(new_walk, *edge)
+		defer close(out_walks)
+		prefixes := make([][]*E, 0)
+		for prefix := range walk_prefixes {
+			prefixes = append(prefixes, prefix)
+		}
+		for suffix := range walk_suffixes {
+			for _, prefix := range prefixes {
+				out_walks <- QuiverWalk[N, E]{
+					start,
+					[]*[]*E{
+						&prefix,
+						&update_walk_chunk,
+						&suffix,
+					},
 				}
-				walks = append(walks, new_walk)
-			}
-			fmt.Println("bgn")
-			fmt.Println(walks)
-			fmt.Println("end")
-			// DBG
-		recvSimpleWalksSelect:
-			select {
-			case prefix := <-walk_prefixes:
-				for _, known_suffix := range known_suffixes {
-					out_walks <- QuiverWalk[N, E]{
-						start,
-						[]*[]*E{&prefix, &update_walk_chunk, &known_suffix},
-					}
-				}
-				known_prefixes = append(known_prefixes, prefix)
-			case suffix, ok := <-walk_suffixes:
-				if !ok {
-					break recvSimpleWalksSelect
-				}
-				for _, known_prefix := range known_prefixes {
-					out_walks <- QuiverWalk[N, E]{
-						start,
-						[]*[]*E{&known_prefix, &update_walk_chunk, &suffix},
-					}
-				}
-			case <-wgsig:
-				break sendNewWalksLoop
 			}
 		}
-		close(out_walks)
 	}()
-}
-
-func StartWaitGroupSignal(wg *sync.WaitGroup) (wgsig chan struct{}) {
-	wgsig = make(chan struct{})
-	go func() {
-		wg.Wait()
-		fmt.Println("WAIT GROUP ENDED")
-		wgsig <- struct{}{}
-	}()
-	return
+	fmt.Println("FUNCTION ENDED")
 }
 
 func (q Quiver[N, E, C]) EmitSimpleWalksFromFwd(out_simple_walks chan []*E, src QuiverIndex) {
@@ -213,29 +171,33 @@ func (q Quiver[N, E, C]) EmitSimpleWalksFromToRevMutPrefix(
 	prefix *[]*E,
 	seen PHashMap[QuiverIndex, struct{}],
 ) {
+	fmt.Printf("call in FromToRev src=%v, prefix=%v\n", src, prefix)
 	q.ForEachInneighbor(
 		src,
 		func(neighbor Neighbor[E]) {
-			fmt.Printf("neighbor in FromToRev - %v\n", neighbor)
-			if seen.HasKey(neighbor.dst) {
-				return
+		recurseOnceLoop:
+			for ok := true; ok; ok = false {
+				fmt.Printf("neighbor in FromToRev - %v\n", neighbor)
+				if seen.HasKey(neighbor.dst) {
+					break recurseOnceLoop
+				}
+				*prefix = append(*prefix, &neighbor.via_edge)
+				curr_prime := *prefix
+				if neighbor.dst == true_dst {
+					fmt.Printf("FromToRev (terminal) ! %v\n", curr_prime)
+					out_simple_walks <- curr_prime
+					break recurseOnceLoop
+				}
+				q.EmitSimpleWalksFromToRevMutPrefix(
+					out_simple_walks,
+					neighbor.dst,
+					true_dst,
+					&curr_prime,
+					seen.Assoc(neighbor.dst, struct{}{}),
+				)
+				(*prefix)[len(*prefix)-1] = nil
+				*prefix = (*prefix)[:len(*prefix)-1]
 			}
-			*prefix = append(*prefix, &neighbor.via_edge)
-			curr_prime := *prefix
-			if neighbor.dst == true_dst {
-				fmt.Printf("FromToRev (terminal) ! %v\n", curr_prime)
-				out_simple_walks <- curr_prime
-				return
-			}
-			q.EmitSimpleWalksFromToRevMutPrefix(
-				out_simple_walks,
-				neighbor.dst,
-				true_dst,
-				&curr_prime,
-				seen.Assoc(neighbor.dst, struct{}{}),
-			)
-			(*prefix)[len(*prefix)-1] = nil
-			*prefix = (*prefix)[:len(*prefix)-1]
 		},
 	)
 }
