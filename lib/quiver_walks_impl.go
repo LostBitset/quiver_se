@@ -142,10 +142,31 @@ func (q Quiver[N, E, C]) EmitSimpleWalksFromFwdMutPrefix(
 	)
 }
 
-func (q Quiver[N, E, C]) EmitSimpleWalksFromToRev(
+func (q Quiver[N, E, C]) EmitSimpleWalksFromToRevMutPrefix(
 	out_simple_walks chan []*E,
 	src QuiverIndex,
 	dst QuiverIndex,
+	prefix *[]*E,
 ) {
-	// TODO
+	curr := *prefix
+	out_simple_walks <- curr
+	q.ForEachInneighbor(
+		src,
+		func(neighbor Neighbor[E]) {
+			*prefix = append(*prefix, &neighbor.via_edge)
+			curr_prime := *prefix
+			if neighbor.dst == dst {
+				out_simple_walks <- curr_prime
+				return
+			}
+			q.EmitSimpleWalksFromFwdMutPrefix(
+				out_simple_walks,
+				neighbor.dst,
+				&curr_prime,
+			)
+			(*prefix)[len(*prefix)-1] = nil
+			*prefix = (*prefix)[:len(*prefix)-1]
+			return
+		},
+	)
 }
