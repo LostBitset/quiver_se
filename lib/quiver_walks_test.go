@@ -1,7 +1,6 @@
 package qse
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -148,7 +147,13 @@ func TestQuiverWalks(t *testing.T) {
 		}
 		walks = append(walks, new_walk)
 	}
-	fmt.Println(walks)
-	fmt.Println("ok should fail now")
-	assert.True(t, len(walks) == -1)
+	assert.ElementsMatch(
+		t,
+		[][]int{
+			{99},
+			{60, 30, 99},
+			{90, 30, 99},
+		},
+		walks,
+	)
 }
