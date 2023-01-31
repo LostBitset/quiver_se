@@ -102,7 +102,11 @@ func (q *Quiver[N, E, C]) ApplyUpdateAndEmitWalks(
 		for prefix := range walk_prefixes {
 			prefixes = append(prefixes, prefix)
 		}
-		for suffix := range walk_suffixes {
+		for suffix_flipped := range walk_suffixes {
+			suffix := make([]*E, len(suffix_flipped))
+			for i := range suffix {
+				suffix[i] = suffix_flipped[len(suffix)-(i+1)]
+			}
 			for _, prefix := range prefixes {
 				out_walks <- QuiverWalk[N, E]{
 					start,
@@ -115,7 +119,6 @@ func (q *Quiver[N, E, C]) ApplyUpdateAndEmitWalks(
 			}
 		}
 	}()
-	fmt.Println("FUNCTION ENDED")
 }
 
 func (q Quiver[N, E, C]) EmitSimpleWalksFromFwd(out_simple_walks chan []*E, src QuiverIndex) {
@@ -130,28 +133,7 @@ func (q Quiver[N, E, C]) EmitSimpleWalksFromFwdMutPrefix(
 	prefix *[]*E,
 	seen PHashMap[QuiverIndex, struct{}],
 ) {
-	curr := *prefix
-	out_simple_walks <- curr
-	fmt.Printf("FromFwd ! %v\n", curr)
-	q.ForEachOutneighbor(
-		src,
-		func(neighbor Neighbor[E]) {
-			if seen.HasKey(neighbor.dst) {
-				return
-			}
-			fmt.Printf("somehow found neighbor %v\n", neighbor)
-			*prefix = append(*prefix, &neighbor.via_edge)
-			curr_prime := *prefix
-			q.EmitSimpleWalksFromFwdMutPrefix(
-				out_simple_walks,
-				neighbor.dst,
-				&curr_prime,
-				seen.Assoc(neighbor.dst, struct{}{}),
-			)
-			(*prefix)[len(*prefix)-1] = nil
-			*prefix = (*prefix)[:len(*prefix)-1]
-		},
-	)
+	// TODO
 }
 
 func (q Quiver[N, E, C]) EmitSimpleWalksFromToRev(
@@ -171,33 +153,16 @@ func (q Quiver[N, E, C]) EmitSimpleWalksFromToRevMutPrefix(
 	prefix *[]*E,
 	seen PHashMap[QuiverIndex, struct{}],
 ) {
-	fmt.Printf("call in FromToRev src=%v, prefix=%v\n", src, prefix)
+	if src == true_dst {
+		fmt.Println("start send")
+		out_simple_walks <- *prefix
+		fmt.Println("end send")
+	}
+	fmt.Println("just calling ForEachInneighbor...")
 	q.ForEachInneighbor(
 		src,
 		func(neighbor Neighbor[E]) {
-		recurseOnceLoop:
-			for ok := true; ok; ok = false {
-				fmt.Printf("neighbor in FromToRev - %v\n", neighbor)
-				if seen.HasKey(neighbor.dst) {
-					break recurseOnceLoop
-				}
-				*prefix = append(*prefix, &neighbor.via_edge)
-				curr_prime := *prefix
-				if neighbor.dst == true_dst {
-					fmt.Printf("FromToRev (terminal) ! %v\n", curr_prime)
-					out_simple_walks <- curr_prime
-					break recurseOnceLoop
-				}
-				q.EmitSimpleWalksFromToRevMutPrefix(
-					out_simple_walks,
-					neighbor.dst,
-					true_dst,
-					&curr_prime,
-					seen.Assoc(neighbor.dst, struct{}{}),
-				)
-				(*prefix)[len(*prefix)-1] = nil
-				*prefix = (*prefix)[:len(*prefix)-1]
-			}
+			fmt.Printf("got neighbor %v\n", neighbor)
 		},
 	)
 }
