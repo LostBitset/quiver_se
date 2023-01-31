@@ -1,6 +1,7 @@
 package qse
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -143,5 +144,6 @@ func TestQuiverWalksAcyclic(t *testing.T) {
 	for walk := range walks_chan {
 		walks = append(walks, walk)
 	}
+	fmt.Println(walks)
 	assert.True(t, len(walks) == -1)
 }
