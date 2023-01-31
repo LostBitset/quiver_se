@@ -201,7 +201,6 @@ func (q Quiver[N, E, C]) EmitSimpleWalksFromToRevMutPrefix(
 			)
 			(*prefix)[len(*prefix)-1] = nil
 			*prefix = (*prefix)[:len(*prefix)-1]
-			return
 		},
 	)
 }
