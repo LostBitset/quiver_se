@@ -1,6 +1,7 @@
 package qse
 
 import (
+	"fmt"
 	"sync"
 )
 
@@ -125,6 +126,7 @@ func (q *Quiver[N, E, C]) ApplyUpdateAndEmitWalks(
 				break sendNewWalksLoop
 			}
 		}
+		close(out_walks)
 	}()
 }
 
@@ -132,12 +134,11 @@ func StartWaitGroupSignal(wg *sync.WaitGroup) (wgsig chan struct{}) {
 	wgsig = make(chan struct{})
 	go func() {
 		wg.Wait()
+		fmt.Println("WAIT GROUP ENDED")
 		wgsig <- struct{}{}
 	}()
 	return
 }
-
-const QUIVER_EMIT_SIMPLE_WALKS_DFS_MEMOIZATION_MAX_SIZE = 10
 
 func (q Quiver[N, E, C]) EmitSimpleWalksFromFwd(out_simple_walks chan []*E, src QuiverIndex) {
 	backing_prefix := make([]*E, 0)
@@ -151,6 +152,7 @@ func (q Quiver[N, E, C]) EmitSimpleWalksFromFwdMutPrefix(
 ) {
 	curr := *prefix
 	out_simple_walks <- curr
+	fmt.Printf("FromFwd ! %v\n", curr)
 	q.ForEachOutneighbor(
 		src,
 		func(neighbor Neighbor[E]) {
@@ -184,12 +186,14 @@ func (q Quiver[N, E, C]) EmitSimpleWalksFromToRevMutPrefix(
 ) {
 	curr := *prefix
 	out_simple_walks <- curr
+	fmt.Printf("FromToRev ! %v\n", curr)
 	q.ForEachInneighbor(
 		src,
 		func(neighbor Neighbor[E]) {
 			*prefix = append(*prefix, &neighbor.via_edge)
 			curr_prime := *prefix
 			if neighbor.dst == dst {
+				fmt.Printf("FromToRev (terminal) ! %v\n", curr)
 				out_simple_walks <- curr_prime
 				return
 			}
