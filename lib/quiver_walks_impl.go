@@ -136,6 +136,7 @@ func (q Quiver[N, E, C]) EmitSimpleWalksFromFwdPrefix(
 ) {
 	fmt.Printf("FF- sending *prefix as %v\n", *prefix)
 	out_simple_walks <- *prefix
+	// TODO
 }
 
 func (q Quiver[N, E, C]) EmitSimpleWalksFromToRev(
