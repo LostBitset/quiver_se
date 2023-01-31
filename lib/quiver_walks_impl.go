@@ -142,13 +142,15 @@ func StartWaitGroupSignal(wg *sync.WaitGroup) (wgsig chan struct{}) {
 
 func (q Quiver[N, E, C]) EmitSimpleWalksFromFwd(out_simple_walks chan []*E, src QuiverIndex) {
 	backing_prefix := make([]*E, 0)
-	q.EmitSimpleWalksFromFwdMutPrefix(out_simple_walks, src, &backing_prefix)
+	seen := NewPHashMap[QuiverIndex, struct{}]()
+	q.EmitSimpleWalksFromFwdMutPrefix(out_simple_walks, src, &backing_prefix, seen)
 }
 
 func (q Quiver[N, E, C]) EmitSimpleWalksFromFwdMutPrefix(
 	out_simple_walks chan []*E,
 	src QuiverIndex,
 	prefix *[]*E,
+	seen PHashMap[QuiverIndex, struct{}],
 ) {
 	curr := *prefix
 	out_simple_walks <- curr
@@ -156,6 +158,9 @@ func (q Quiver[N, E, C]) EmitSimpleWalksFromFwdMutPrefix(
 	q.ForEachOutneighbor(
 		src,
 		func(neighbor Neighbor[E]) {
+			if seen.HasKey(neighbor.dst) {
+				return
+			}
 			fmt.Printf("somehow found neighbor %v\n", neighbor)
 			*prefix = append(*prefix, &neighbor.via_edge)
 			curr_prime := *prefix
@@ -163,6 +168,7 @@ func (q Quiver[N, E, C]) EmitSimpleWalksFromFwdMutPrefix(
 				out_simple_walks,
 				neighbor.dst,
 				&curr_prime,
+				seen.Assoc(neighbor.dst, struct{}{}),
 			)
 			(*prefix)[len(*prefix)-1] = nil
 			*prefix = (*prefix)[:len(*prefix)-1]
@@ -182,7 +188,7 @@ func (q Quiver[N, E, C]) EmitSimpleWalksFromToRev(
 func (q Quiver[N, E, C]) EmitSimpleWalksFromToRevMutPrefix(
 	out_simple_walks chan []*E,
 	src QuiverIndex,
-	dst QuiverIndex,
+	true_dst QuiverIndex,
 	prefix *[]*E,
 ) {
 	curr := *prefix
@@ -193,14 +199,15 @@ func (q Quiver[N, E, C]) EmitSimpleWalksFromToRevMutPrefix(
 		func(neighbor Neighbor[E]) {
 			*prefix = append(*prefix, &neighbor.via_edge)
 			curr_prime := *prefix
-			if neighbor.dst == dst {
+			if neighbor.dst == true_dst {
 				fmt.Printf("FromToRev (terminal) ! %v\n", curr)
 				out_simple_walks <- curr_prime
 				return
 			}
-			q.EmitSimpleWalksFromFwdMutPrefix(
+			q.EmitSimpleWalksFromToRevMutPrefix(
 				out_simple_walks,
 				neighbor.dst,
+				true_dst,
 				&curr_prime,
 			)
 			(*prefix)[len(*prefix)-1] = nil
