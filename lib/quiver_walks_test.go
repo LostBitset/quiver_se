@@ -1,7 +1,6 @@
 package qse
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -217,14 +216,36 @@ func TestQuiverWalksInduceCycle(t *testing.T) {
 		new_walk := make([]int, 0)
 		for _, chunk := range walk_chunked.edges_chunked {
 			new_walk = append(new_walk, *chunk...)
-			new_walk = append(new_walk, -1) // Boundaries
 		}
 		walks = append(walks, new_walk)
 	}
-	fmt.Println(walks)
-	assert.ElementsMatch(
+	assert.Equal(t, 84, len(walks))
+	assert.Contains(
 		t,
-		[][]int{},
 		walks,
+		[]int{
+			60, 44, 88, 55,
+		},
+	)
+	assert.Contains(
+		t,
+		walks,
+		[]int{
+			60, 44, 88, 55, 88,
+		},
+	)
+	assert.Contains(
+		t,
+		walks,
+		[]int{
+			60, 44, 88, 55, 88, 60,
+		},
+	)
+	assert.Contains(
+		t,
+		walks,
+		[]int{
+			60, 44, 88, 55, 88, 90,
+		},
 	)
 }

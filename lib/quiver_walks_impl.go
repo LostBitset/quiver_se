@@ -1,5 +1,9 @@
 package qse
 
+import (
+	"fmt"
+)
+
 func NewPhantomQuiverAssociation[N any, E any, C ReversibleAssoc[E, QuiverIndex]]() (
 	phantom_association PhantomQuiverAssociation[N, E, C],
 ) {
@@ -85,6 +89,7 @@ func (q *Quiver[N, E, C]) ApplyUpdateAndEmitWalks(
 	update_walk_chunk := []E{update.edge}
 	walk_prefixes := make(chan []E)
 	walk_suffixes := make(chan []E)
+	fmt.Println("goroutine started")
 	go func() {
 		defer close(out_walks)
 		prefixes := make([][]E, 0)
@@ -99,6 +104,7 @@ func (q *Quiver[N, E, C]) ApplyUpdateAndEmitWalks(
 			for _, prefix := range prefixes {
 				l_prefix := prefix
 				l_suffix := suffix
+				fmt.Printf("(prefix=%v, suffix=%v)\n", l_prefix, l_suffix)
 				out_walks <- QuiverWalk[N, E]{
 					start,
 					[]*[]E{
@@ -111,12 +117,16 @@ func (q *Quiver[N, E, C]) ApplyUpdateAndEmitWalks(
 		}
 	}()
 	go func() {
-		q.EmitSimpleWalksFromToRev(walk_prefixes, start, update_src)
+		fmt.Println("FromToRev started")
+		q.EmitSimpleWalksFromToRev(walk_prefixes, update_src, start)
 		close(walk_prefixes)
+		fmt.Println("FromToRev finished")
 	}()
 	go func() {
+		fmt.Println("FromFwd started")
 		q.EmitSimpleWalksFromFwd(walk_suffixes, update_dst)
 		close(walk_suffixes)
+		fmt.Println("FromFwd finished")
 	}()
 }
 
@@ -133,13 +143,16 @@ func (q Quiver[N, E, C]) EmitSimpleWalksFromFwdPrefix(
 	seen PHashMap[QuiverIndex, struct{}],
 ) {
 	curr := *prefix
+	fmt.Printf("FF- sending *prefix as %v\n", curr)
 	out_simple_walks <- curr
+	fmt.Printf("FF- just calling ForEachOutneighbor")
 	q.ForEachOutneighbor(
 		src,
 		func(neighbor Neighbor[E]) {
 			if seen.HasKey(neighbor.dst) {
 				return
 			}
+			fmt.Printf("FF- got neighbor %v\n", neighbor)
 			curr := *prefix
 			curr = append(curr, neighbor.via_edge)
 			q.EmitSimpleWalksFromFwdPrefix(
@@ -171,14 +184,17 @@ func (q Quiver[N, E, C]) EmitSimpleWalksFromToRevPrefix(
 ) {
 	if src == true_dst {
 		curr := *prefix
+		fmt.Printf("FTR sending *prefix as %v\n", curr)
 		out_simple_walks <- curr
 	}
+	fmt.Println("FTR just calling ForEachInneighbor...")
 	q.ForEachInneighbor(
 		src,
 		func(neighbor Neighbor[E]) {
 			if seen.HasKey(neighbor.dst) {
 				return
 			}
+			fmt.Printf("FTR got neighbor %v\n", neighbor)
 			curr := *prefix
 			curr = append(curr, neighbor.via_edge)
 			q.EmitSimpleWalksFromToRevPrefix(
