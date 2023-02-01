@@ -44,6 +44,28 @@ func TestDMTQWarden(t *testing.T) {
 	}
 	in_updates <- update
 	close(in_updates)
-	// TODO
-	assert.True(t, false)
+	assert.Equal(
+		t,
+		0,
+		len(dmtq.AllInneighbors(top_node)),
+	)
+	assert.Equal(
+		t,
+		1,
+		len(dmtq.AllOutneighbors(top_node)),
+	)
+	walks := make([][]PHashMap[Literal[uint32_H], struct{}], 0)
+	for walk_chunked := range out_walks {
+		new_walk := make([]PHashMap[Literal[uint32_H], struct{}], 0)
+		for _, chunk := range walk_chunked.edges_chunked {
+			new_walk = append(new_walk, *chunk...)
+		}
+		walks = append(walks, new_walk)
+	}
+	assert.Equal(t, 1, len(walks))
+	assert.Equal(t, 1, len(walks[0]))
+	assert.True(
+		t,
+		walks[0][0].HasKey(Literal[uint32_H]{uint32_H{47}, false}),
+	)
 }
