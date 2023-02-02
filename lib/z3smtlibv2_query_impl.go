@@ -33,7 +33,11 @@ func (query Z3SMTLibv2Query) Run() (output string) {
 	z3_cmd := exec.Command("z3", "-smt2", temp_smt2_file.Name())
 	z3_out, err_cmd := z3_cmd.Output()
 	if err_cmd != nil {
-		panic(err_cmd)
+		switch err_cmd.(type) {
+		case *exec.ExitError:
+		default:
+			panic(err_cmd)
+		}
 	}
 	output = string(z3_out)
 	return
