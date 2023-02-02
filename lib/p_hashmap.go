@@ -9,7 +9,7 @@ import (
 // Effectively does the same thing as in Rust
 // Unused type parameters are *usually* a mistake
 // so it's nice to be explicit
-type PhantomData[T any] struct {}
+type PhantomData[T any] struct{}
 
 // A persistent hash map
 // Struct embedding would just make things confusing because
@@ -20,4 +20,3 @@ type PHashMap[K comparable, V any] struct {
 	phantom_key   PhantomData[K]
 	phantom_value PhantomData[V]
 }
-

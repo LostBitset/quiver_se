@@ -4,9 +4,11 @@ type LiteralSystemSolverless[ATOM any] struct {
 	idsrc IdSource
 }
 
+type IdLiteral[T comparable] Literal[WithId_H[T]]
+
 type NumericId = uint32
 
-type IdH[T any] struct {
+type WithId_H[T comparable] struct {
 	value T
 	id    NumericId
 }
