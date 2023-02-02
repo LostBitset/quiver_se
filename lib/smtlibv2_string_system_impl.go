@@ -1,5 +1,7 @@
 package qse
 
+import "strings"
+
 func (sys SMTLibv2StringSystem) MakeAtom(expr string) (atom WithId_H[string]) {
 	atom = WithId_H[string]{
 		expr,
@@ -8,8 +10,25 @@ func (sys SMTLibv2StringSystem) MakeAtom(expr string) (atom WithId_H[string]) {
 	return
 }
 
-func (sys SMTLibv2StringSystem) CheckSat(conjunction []string) (sctx SMTLibv2StringSolvedCtx) {
-	// TODO
+func (sys SMTLibv2StringSystem) CheckSat(
+	conjunction []IdLiteral[string],
+	free_funs []SMTFreeFun[string, string],
+) (sctx SMTLibv2StringSolvedCtx) {
+	var sb strings.Builder
+	sb.WriteString(
+		sys.GeneratePrelude(),
+	)
+	sb.WriteString(
+		sys.GenerateDecls(free_funs),
+	)
+	for i, lit := range conjunction {
+		clause := SMTLibv2ExpandStringLiteral(lit)
+		clause_marked := sys.MarkClauseIndex(clause, i)
+		assertion := SMTLibv2WrapAssertion(clause_marked)
+		sb.WriteString(assertion)
+	}
+	resp := QueryZ3SMTLibv2Complete(sb.String())
+	sctx = ParseSMTLibv2StringSolvedCtx(resp)
 	return
 }
 
