@@ -222,7 +222,7 @@ func SMTLibv2WrapAssertion(clause string) (s_expr string) {
 	return
 }
 
-func (sctx SMTLibv2StringSolvedCtx) IsSat() (is bool) {
+func (sctx SMTLibv2StringSolvedCtx) IsSat() (is *bool) {
 	is = sctx.sat
 	return
 }
