@@ -39,7 +39,7 @@ func (sys SMTLibv2StringSystem) CheckSat(
 		sb.WriteRune('\n')
 	}
 	sb.WriteString(sys.Epilogue())
-	resp := QueryZ3SMTLibv2Complete(sb.String())
+	resp := NewZ3SMTLibv2Query(sb.String()).Run()
 	sctx = sys.ParseSolvedCtx(resp)
 	return
 }
