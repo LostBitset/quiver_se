@@ -5,7 +5,7 @@ type SMTLibv2StringSystem struct {
 }
 
 type SMTLibv2StringSolvedCtx struct {
-	sat   bool
+	sat   *bool
 	model *string
 	mus   *[]int
 }

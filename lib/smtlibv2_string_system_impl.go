@@ -2,6 +2,7 @@ package qse
 
 import (
 	"fmt"
+	"regexp"
 	"strings"
 )
 
@@ -38,7 +39,7 @@ func (sys SMTLibv2StringSystem) CheckSat(
 	}
 	sb.WriteString(sys.Epilogue())
 	resp := QueryZ3SMTLibv2Complete(sb.String())
-	sctx = ParseSMTLibv2StringSolvedCtx(resp)
+	sctx = sys.ParseSolvedCtx(resp)
 	return
 }
 
@@ -53,17 +54,25 @@ func (sys SMTLibv2StringSystem) Prologue() (part string) {
 	return
 }
 
+// Don't change the order of the `%!...%` substitutions!
+// This gets turned into a regex, so also avoid regex special chars
+// Only ".()|[]" are checked right now
+// Other code depends on it because golang doesn't support named capture groups in regexes!
+const SMTLIBV2_STRING_SYSTEM_OUTPUT_FORMAT = `
+;; Solver done, response below @@ ::smtlibv2-invocation @@ <SMTLibv2StringSystem>.Epilogue
+[|resp
+	[|resp.sat %!sat%|]
+	[|resp.mus %!mus%|]
+	[|resp.mdl %!mdl%|]|]
+`
+
 func (sys SMTLibv2StringSystem) Epilogue() (part string) {
-	output_format := `
-	[|resp
-		[|resp.sat %!sat%|]
-		[|resp.mus %!mus%|]
-		[|resp.mdl %!mdl%|]|]
-	`
+	output_format := SMTLIBV2_STRING_SYSTEM_OUTPUT_FORMAT
 	var sb strings.Builder
 	sb.WriteString(`
 	;; Get the results from the SMT solver @@ <SMTLibv2StringSystem>.Epilogue
 	;; This mostly s-exprs, but special lists are delimited with "[|" and "|]" @@ ...
+	;; This allows it to be matched quickly with regexes @@ ...
 	`)
 	for _, token := range strings.Split(output_format, "%") {
 		switch token {
@@ -81,10 +90,57 @@ func (sys SMTLibv2StringSystem) Epilogue() (part string) {
 		sb.WriteRune('\n')
 	}
 	sb.WriteString(`
-	;; EOF
+	;; MARK EOF
 	`)
 	part = sb.String()
 	return
+}
+
+func (sys SMTLibv2StringSystem) ParseSolvedCtx(str string) (sctx SMTLibv2StringSolvedCtx) {
+	re_comments := regexp.MustCompile(`;;[^\n]\n`)
+	str_resp := strings.TrimSpace(
+		string(
+			re_comments.ReplaceAllLiteral(
+				[]byte(str),
+				[]byte{},
+			),
+		),
+	)
+	str_resp = strings.ReplaceAll(str_resp, ".", "\\.")
+	str_resp = strings.ReplaceAll(str_resp, "(", "\\(")
+	str_resp = strings.ReplaceAll(str_resp, ")", "\\)")
+	str_resp = strings.ReplaceAll(str_resp, "|", "\\|")
+	str_resp = strings.ReplaceAll(str_resp, "[", "\\[")
+	str_resp = strings.ReplaceAll(str_resp, "]", "\\]")
+	re_substitutions := regexp.MustCompile(`%![^%]%`)
+	resp_regex := strings.TrimSpace(
+		string(
+			re_substitutions.ReplaceAllLiteral(
+				[]byte(SMTLIBV2_STRING_SYSTEM_OUTPUT_FORMAT),
+				[]byte(`([^\\|\\]]+)`),
+			),
+		),
+	)
+	re_resp := regexp.MustCompile(resp_regex)
+	re_resp_output := re_resp.FindStringSubmatch(str_resp)
+	capture_groups := re_resp_output[1:]
+	sat_trimmed := strings.TrimSpace(capture_groups[0])
+	t, f := true, false
+	switch sat_trimmed {
+	case "sat":
+		model := strings.TrimSpace(capture_groups[2])
+		sctx = SMTLibv2StringSolvedCtx{
+			&t,
+			&model,
+			nil,
+		}
+	case "unsat":
+		mus_str := strings.TrimSpace(capture_groups[1])
+		mus_str = strings.ReplaceAll(mus_str, "(", "")
+		mus_str = strings.ReplaceAll(mus_str, ")", "")
+		mus_str = strings.ReplaceAll(mus_str, "ga_", "")
+
+	}
 }
 
 func (sys SMTLibv2StringSystem) GenDecls(free_funs []SMTFreeFun[string, string]) (part string) {

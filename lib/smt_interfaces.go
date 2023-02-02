@@ -13,7 +13,7 @@ type SMTSystem[
 
 // A context in which an SMT solver has been invoked and results are available
 type SMTSolvedContext[MODEL any] interface {
-	IsSat() bool
+	IsSat() *bool
 	GetModel() *MODEL
 	ExtractMUS() *[]int
 }
