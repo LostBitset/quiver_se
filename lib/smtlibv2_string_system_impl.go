@@ -3,6 +3,7 @@ package qse
 import (
 	"fmt"
 	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -139,8 +140,36 @@ func (sys SMTLibv2StringSystem) ParseSolvedCtx(str string) (sctx SMTLibv2StringS
 		mus_str = strings.ReplaceAll(mus_str, "(", "")
 		mus_str = strings.ReplaceAll(mus_str, ")", "")
 		mus_str = strings.ReplaceAll(mus_str, "ga_", "")
-
+		mus_elements_numeric := strings.Fields(mus_str)
+		mus := make([]int, len(mus_elements_numeric))
+		for i := range mus_elements_numeric {
+			integer, err := strconv.Atoi(mus_elements_numeric[i])
+			if err != nil {
+				panic(fmt.Errorf(
+					"ERR! bad solver output: %s\n",
+					err.Error(),
+				))
+			}
+			mus[i] = integer
+		}
+		sctx = SMTLibv2StringSolvedCtx{
+			&f,
+			nil,
+			&mus,
+		}
+	case "unknown":
+		sctx = SMTLibv2StringSolvedCtx{
+			nil,
+			nil,
+			nil,
+		}
+	default:
+		panic(fmt.Errorf(
+			"ERR! bad solver output: (check-sat) result, given in [|resp.sat ...|], was \"%s\"\n",
+			sat_trimmed,
+		))
 	}
+	return
 }
 
 func (sys SMTLibv2StringSystem) GenDecls(free_funs []SMTFreeFun[string, string]) (part string) {
