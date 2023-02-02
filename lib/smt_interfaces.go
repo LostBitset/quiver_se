@@ -1,8 +1,8 @@
 package qse
 
 // A system which provides basic interfaces to an SMT solver
-type SMTSystem[EXPR any, MODEL any, SCTX SMTSolvedContext[MODEL]] interface {
-	Not(EXPR) EXPR
+type SMTSystem[EXPR hashable, MODEL any, SCTX SMTSolvedContext[MODEL]] interface {
+	ExpandLit(Literal[EXPR]) EXPR
 	CheckSat([]EXPR) SCTX
 }
 
