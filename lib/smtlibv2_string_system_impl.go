@@ -1,6 +1,9 @@
 package qse
 
-import "strings"
+import (
+	"fmt"
+	"strings"
+)
 
 func (sys SMTLibv2StringSystem) MakeAtom(expr string) (atom WithId_H[string]) {
 	atom = WithId_H[string]{
@@ -19,16 +22,69 @@ func (sys SMTLibv2StringSystem) CheckSat(
 		sys.Prelude(),
 	)
 	sb.WriteString(
-		sys.GenerateDecls(free_funs),
+		sys.GenDecls(free_funs),
 	)
 	for i, lit := range conjunction {
-		clause := SMTLibv2ExpandStringLiteral(lit)
+		clause := sys.ExpandStringLiteral(lit)
 		clause_marked := sys.MarkClauseIndex(clause, i)
 		assertion := SMTLibv2WrapAssertion(clause_marked)
 		sb.WriteString(assertion)
 	}
 	resp := QueryZ3SMTLibv2Complete(sb.String())
 	sctx = ParseSMTLibv2StringSolvedCtx(resp)
+	return
+}
+
+func (sys SMTLibv2StringSystem) Prelude() (part string) {
+	part = `
+	;; GENERATED SMTLibv2 code, targeting z3 @@ <qse.SMTLibv2StringSystem>.Prelude
+
+	;; Force MUC generation @@ <qse.SMTLibv2StringSystem>.Prelude
+	(set-option :produce-unsat-cores true)
+	(set-option :smt.core.minimize true) ;; *z3 specific* @@ <qse.SMTLibv2StringSystem>.Prelude
+	`
+	return
+}
+
+func (sys SMTLibv2StringSystem) GenDecls(free_funs []SMTFreeFun[string, string]) (part string) {
+	var sb strings.Builder
+	sb.WriteString(`
+	;; Declarations, generated from free_funs @@ <qse.SMTLibv2StringSystem>.GenDecls
+	`)
+	for _, free_fun := range free_funs {
+		sb.WriteString(sys.DeclSExpr(free_fun))
+		sb.WriteRune('\n')
+	}
+	part = sb.String()
+	return
+}
+
+func (sys SMTLibv2StringSystem) DeclSExpr(free_fun SMTFreeFun[string, string]) (s_expr string) {
+	s_expr = fmt.Sprintf(
+		"(declare-fun %s (%s) %s)",
+		free_fun.name,
+		strings.Join(free_fun.args, " "),
+		free_fun.ret,
+	)
+	return
+}
+
+func (sys SMTLibv2StringSystem) ExpandStringLiteral(lit IdLiteral[string]) (s_expr string) {
+	s_expr = lit.value.value
+	if !lit.eq {
+		s_expr = fmt.Sprintf(
+			"(not %s)",
+			s_expr,
+		)
+	}
+	return
+}
+
+func (sys SMTLibv2StringSystem) MarkClauseIndex(clause string, index uint) (clause_marked string) {
+	clause_marked = fmt.Sprintf(
+		"(! %s :named ga_%d)",
+		clause, index,
+	)
 	return
 }
 
