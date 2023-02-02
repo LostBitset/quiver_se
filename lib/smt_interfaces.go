@@ -1,12 +1,8 @@
 package qse
 
-type SMTSystemSolverless[EXPR any] interface {
-	Not(EXPR) EXPR
-}
-
 // A system which provides basic interfaces to an SMT solver
 type SMTSystem[EXPR any, MODEL any, SCTX SMTSolvedContext[MODEL]] interface {
-	SMTSystemSolverless[EXPR]
+	Not(EXPR) EXPR
 	CheckSat([]EXPR) SCTX
 }
 
