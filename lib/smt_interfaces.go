@@ -8,7 +8,6 @@ type SMTSystem[
 	MODEL any,
 	SCTX SMTSolvedContext[MODEL],
 ] interface {
-	ExpandLit(Literal[EXPR]) EXPR
 	CheckSat([]EXPR, []SMTFreeFun[IDENT, SORT]) SCTX
 }
 
