@@ -19,29 +19,36 @@ func (sys SMTLibv2StringSystem) CheckSat(
 ) (sctx SMTLibv2StringSolvedCtx) {
 	var sb strings.Builder
 	sb.WriteString(
-		sys.Prelude(),
+		sys.Prologue(),
 	)
 	sb.WriteString(
 		sys.GenDecls(free_funs),
 	)
+	sb.WriteString(`
+	;; Clauses of the conjunction, as assertions @@ <qse.SMTLibv2StringSystem>.CheckSat
+	;; All should be named, but only at the top level @@ ...
+	;; This allows MUC generation to produce an MUS @@ ...
+	`)
 	for i, lit := range conjunction {
 		clause := sys.ExpandStringLiteral(lit)
-		clause_marked := sys.MarkClauseIndex(clause, i)
+		clause_marked := sys.MarkClauseIndex(clause, uint(i))
 		assertion := SMTLibv2WrapAssertion(clause_marked)
 		sb.WriteString(assertion)
+		sb.WriteRune('\n')
 	}
+	sb.WriteString(sys.Epilogue())
 	resp := QueryZ3SMTLibv2Complete(sb.String())
 	sctx = ParseSMTLibv2StringSolvedCtx(resp)
 	return
 }
 
-func (sys SMTLibv2StringSystem) Prelude() (part string) {
+func (sys SMTLibv2StringSystem) Prologue() (part string) {
 	part = `
-	;; GENERATED SMTLibv2 code, targeting z3 @@ <qse.SMTLibv2StringSystem>.Prelude
+	;; GENERATED SMTLibv2 code, targeting z3 @@ <qse.SMTLibv2StringSystem>.Prologue
 
-	;; Force MUC generation @@ <qse.SMTLibv2StringSystem>.Prelude
+	;; Force MUC generation @@ <qse.SMTLibv2StringSystem>.Prologue
 	(set-option :produce-unsat-cores true)
-	(set-option :smt.core.minimize true) ;; *z3 specific* @@ <qse.SMTLibv2StringSystem>.Prelude
+	(set-option :smt.core.minimize true) ;; *z3 specific* @@ <qse.SMTLibv2StringSystem>.Prologue
 	`
 	return
 }
@@ -84,6 +91,14 @@ func (sys SMTLibv2StringSystem) MarkClauseIndex(clause string, index uint) (clau
 	clause_marked = fmt.Sprintf(
 		"(! %s :named ga_%d)",
 		clause, index,
+	)
+	return
+}
+
+func SMTLibv2WrapAssertion(clause string) (s_expr string) {
+	s_expr = fmt.Sprintf(
+		"(assert %s)",
+		clause,
 	)
 	return
 }
