@@ -15,3 +15,8 @@ func (wi WithId_H[T]) Hash32() (fixed_digest uint32) {
 	fixed_digest = uint32_H{wi.id}.Hash32()
 	return
 }
+
+func (wi WithId_H[T]) GeneralDeref() (val T) {
+	val = wi.value
+	return
+}

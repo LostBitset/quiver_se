@@ -1,10 +1,6 @@
 package qse
 
-type LiteralSystemSolverless[ATOM any] struct {
-	idsrc IdSource
-}
-
-type IdLiteral[T comparable] Literal[WithId_H[T]]
+type IdLiteral[ATOM comparable] Literal[WithId_H[ATOM]]
 
 type NumericId = uint32
 
