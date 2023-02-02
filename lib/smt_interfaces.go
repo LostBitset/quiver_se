@@ -10,5 +10,5 @@ type SMTSystem[EXPR any, MODEL any, SCTX SMTSolvedContext[MODEL]] interface {
 type SMTSolvedContext[MODEL any] interface {
 	IsSat() bool
 	GetModel() *MODEL
-	ExtractMUS() []int
+	ExtractMUS() *[]int
 }
