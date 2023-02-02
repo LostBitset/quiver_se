@@ -53,6 +53,40 @@ func (sys SMTLibv2StringSystem) Prologue() (part string) {
 	return
 }
 
+func (sys SMTLibv2StringSystem) Epilogue() (part string) {
+	output_format := `
+	(~>EXTERN#resp
+		(~>EXTERN#resp.sat %!sat%)
+		(~>EXTERN#resp.mus %!mus%)
+		(~>EXTERN#resp.mdl %!mdl%))
+	`
+	var sb strings.Builder
+	sb.WriteString(`
+	;; Get the results from the SMT solver @@ <SMTLibv2StringSystem>.Epilogue
+	;; Outputs in s-expr format, with specifial idents preceded by "~>EXTERN#" @@ ...
+	`)
+	for _, token := range strings.Split(output_format, "%") {
+		switch token {
+		case "!sat":
+			sb.WriteString("(check-sat)")
+		case "!mus":
+			sb.WriteString("(get-unsat-core)")
+		case "!mdl":
+			sb.WriteString("(get-model)")
+		default:
+			sb.WriteString(
+				fmt.Sprintf("(echo \"%s\")", token),
+			)
+		}
+		sb.WriteRune('\n')
+	}
+	sb.WriteString(`
+	;; EOF
+	`)
+	part = sb.String()
+	return
+}
+
 func (sys SMTLibv2StringSystem) GenDecls(free_funs []SMTFreeFun[string, string]) (part string) {
 	var sb strings.Builder
 	sb.WriteString(`
