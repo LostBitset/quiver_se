@@ -55,15 +55,15 @@ func (sys SMTLibv2StringSystem) Prologue() (part string) {
 
 func (sys SMTLibv2StringSystem) Epilogue() (part string) {
 	output_format := `
-	(~>EXTERN#resp
-		(~>EXTERN#resp.sat %!sat%)
-		(~>EXTERN#resp.mus %!mus%)
-		(~>EXTERN#resp.mdl %!mdl%))
+	[|resp
+		[|resp.sat %!sat%|]
+		[|resp.mus %!mus%|]
+		[|resp.mdl %!mdl%|]|]
 	`
 	var sb strings.Builder
 	sb.WriteString(`
 	;; Get the results from the SMT solver @@ <SMTLibv2StringSystem>.Epilogue
-	;; Outputs in s-expr format, with specifial idents preceded by "~>EXTERN#" @@ ...
+	;; This mostly s-exprs, but special lists are delimited with "[|" and "|]" @@ ...
 	`)
 	for _, token := range strings.Split(output_format, "%") {
 		switch token {
