@@ -16,7 +16,7 @@ func (sys SMTLibv2StringSystem) CheckSat(
 ) (sctx SMTLibv2StringSolvedCtx) {
 	var sb strings.Builder
 	sb.WriteString(
-		sys.GeneratePrelude(),
+		sys.Prelude(),
 	)
 	sb.WriteString(
 		sys.GenerateDecls(free_funs),
