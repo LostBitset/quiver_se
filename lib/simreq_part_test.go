@@ -1,7 +1,6 @@
 package qse
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -56,7 +55,6 @@ func TestSiMReQPart(t *testing.T) {
 	close(in_updates)
 	models := make([]string, 0)
 	for model := range out_models {
-		fmt.Println(model)
 		models = append(models, model)
 	}
 	assert.Equal(t, 1, len(models))
