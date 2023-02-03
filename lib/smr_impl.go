@@ -72,8 +72,18 @@ func (is_sleeping SMRIsSleeping) Wake() (was bool) {
 func (smr_config SMRConfig[ATOM, IDENT, SORT, MODEL, SCTX, SYS]) Start() {
 	wakeup_chan := make(chan struct{})
 	is_sleeping := NewSMRIsSleeping()
+	eternal_slumber := make(chan struct{})
 	go func() {
+		defer close(smr_config.out_models)
+		defer close(wakeup_chan)
+		defer close(eternal_slumber)
+	runSMRLoop:
 		for {
+			select {
+			case <-eternal_slumber:
+				break runSMRLoop
+			default:
+			}
 			for smr_config.RunSMR() {
 			}
 			is_sleeping.Sleep()
@@ -81,7 +91,10 @@ func (smr_config SMRConfig[ATOM, IDENT, SORT, MODEL, SCTX, SYS]) Start() {
 		}
 	}()
 	go func() {
-		defer close(wakeup_chan)
+		defer func() {
+			wakeup_chan <- struct{}{}
+			eternal_slumber <- struct{}{}
+		}()
 		for canidate := range smr_config.in_canidates {
 			smr_config.unfinished.Append(canidate)
 			if !is_sleeping.Wake() {
