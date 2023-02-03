@@ -1,10 +1,5 @@
 package qse
 
-import (
-	"encoding/binary"
-	"hash/fnv"
-)
-
 func StartSiMReQ[
 	QNODE any,
 	ATOM comparable,
@@ -54,7 +49,7 @@ func StartSiMReQ[
 		defer close(canidates)
 		processed_hashes := make(map[uint32]struct{})
 		for walk_recv := range walks {
-			hasher := fnv.New32a()
+			sum := uint32(0xE4E4)
 			walk_chunked := walk_recv.value
 			processed_ids := make(map[NumericId]struct{})
 			walk := make([]IdLiteral[ATOM], 0)
@@ -65,18 +60,15 @@ func StartSiMReQ[
 						if _, ok := processed_ids[key.value.id]; !ok {
 							walk = append(walk, IdLiteral[ATOM](key))
 							processed_ids[key.value.id] = struct{}{}
-							hasher.Write(
-								binary.LittleEndian.AppendUint32([]byte{}, key.value.id),
-							)
+							sum ^= FixDigest32(key.value.id, 0x4E)
 						}
 					}
 				}
 			}
-			walk_hash := hasher.Sum32()
-			if _, ok := processed_hashes[walk_hash]; ok {
+			if _, ok := processed_hashes[sum]; ok {
 				continue
 			}
-			processed_hashes[walk_hash] = struct{}{}
+			processed_hashes[sum] = struct{}{}
 			canidates <- SMTQueryDNFClause[ATOM, IDENT, SORT]{
 				walk,
 				walk_recv.augment,

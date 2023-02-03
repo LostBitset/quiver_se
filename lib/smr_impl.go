@@ -149,15 +149,25 @@ func (smr_config SMRConfig[ATOM, IDENT, SORT, MODEL, SCTX, SYS]) SMRIterationUnf
 		} else {
 			mus := *sctx.ExtractMUS()
 			conjunction := &elem.conjunction
+			InsertionSortInPlace(mus)
+			DedupSortedInPlace(&mus)
+			offset := 0
 			for _, index := range mus {
+				index := index - offset
 				SpliceOutReclaim(conjunction, index)
+				offset++
 			}
 		}
 	}
+	InsertionSortInPlace(finished)
+	DedupSortedInPlace(&finished)
+	offset := 0
 	for _, index := range finished {
+		index := index - offset
 		SpliceOutReclaim(
 			&smr_config.unfinished.arr,
 			index,
 		)
+		offset++
 	}
 }
