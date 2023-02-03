@@ -114,6 +114,25 @@ func (smr_config SMRConfig[ATOM, IDENT, SORT, MODEL, SCTX, SYS]) SMRIterationUnf
 	finished := make([]int, 0)
 	for i := range smr_config.unfinished.arr {
 		elem := smr_config.unfinished.arr[i]
-		smr_config.sys.CheckSat()
+		sctx := smr_config.sys.CheckSat(
+			elem.conjunction,
+			elem.free_funs,
+		)
+		is_sat_ptr := sctx.IsSat()
+		if is_sat_ptr == nil {
+			finished = append(finished, i)
+			continue
+		}
+		if *is_sat_ptr {
+			// TODO sat case
+		} else {
+			// TODO unsat case
+		}
+	}
+	for _, index := range finished {
+		SpliceOutReclaim(
+			&smr_config.unfinished.arr,
+			index,
+		)
 	}
 }
