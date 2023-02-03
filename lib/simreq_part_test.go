@@ -1,7 +1,6 @@
 package qse
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -80,8 +79,6 @@ func TestSiMReQPart(t *testing.T) {
 	for model := range out_models {
 		models = append(models, model)
 	}
-	fmt.Println("models:")
-	fmt.Println(models)
 	assert.Equal(t, 1, len(models))
 	model := models[0]
 	assert.Contains(t, model, "(define-fun a () Int\n    1)")
