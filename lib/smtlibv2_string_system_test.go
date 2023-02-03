@@ -43,6 +43,6 @@ func TestSMTLibv2StringSystemUnsat(t *testing.T) {
 	assert.ElementsMatch(
 		t,
 		[]int{0, 1},
-		sctx.ExtractMUS(),
+		*sctx.ExtractMUS(),
 	)
 }

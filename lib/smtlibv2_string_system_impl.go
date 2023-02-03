@@ -40,7 +40,6 @@ func (sys SMTLibv2StringSystem) CheckSat(
 	}
 	sb.WriteString(sys.Epilogue())
 	resp := NewZ3SMTLibv2Query(sb.String()).Run()
-	fmt.Println(resp)
 	sctx = sys.ParseSolvedCtx(resp)
 	return
 }
@@ -124,7 +123,6 @@ func (sys SMTLibv2StringSystem) ParseSolvedCtx(str string) (sctx SMTLibv2StringS
 			),
 		),
 	)
-	fmt.Println(resp_regex)
 	re_resp := regexp.MustCompile(resp_regex)
 	re_resp_output := re_resp.FindStringSubmatch(resp_str)
 	capture_groups := re_resp_output[1:]
