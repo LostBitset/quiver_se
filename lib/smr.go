@@ -17,4 +17,5 @@ type SMRConfig[
 	in_canidates chan map[NumericId]IdLiteral[ATOM]
 	out_models   chan map[NumericId]IdLiteral[ATOM]
 	sys          SYS
+	unfinished   []map[NumericId]IdLiteral[ATOM]
 }
