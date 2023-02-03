@@ -75,7 +75,7 @@ func TestDMTQWarden(t *testing.T) {
 	top_outneighbors := dmtq.AllOutneighbors(top_node)
 	assert.Equal(
 		t,
-		1,
+		2,
 		len(top_outneighbors),
 	)
 	walks := make([][]PHashMap[Literal[uint32_H], struct{}], 0)
