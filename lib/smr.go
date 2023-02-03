@@ -22,7 +22,9 @@ type SMRConfig[
 	unfinished   SMRUnfinishedArray[ATOM]
 }
 
-type SMRUnfinishedArray[ATOM comparable] *TrustingNoCopySMRUnfinishedArray[ATOM]
+type SMRUnfinishedArray[ATOM comparable] struct {
+	*TrustingNoCopySMRUnfinishedArray[ATOM]
+}
 
 type TrustingNoCopySMRUnfinishedArray[ATOM comparable] struct {
 	arr []map[NumericId]IdLiteral[ATOM]

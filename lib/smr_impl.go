@@ -33,11 +33,26 @@ func NewSMRUnfinishedArray[ATOM comparable]() (unfinished SMRUnfinishedArray[ATO
 	backing_nocopy := TrustingNoCopySMRUnfinishedArray[ATOM]{
 		arr: make([]map[uint32]IdLiteral[ATOM], 0),
 	}
-	unfinished = &backing_nocopy
+	unfinished = SMRUnfinishedArray[ATOM]{
+		&backing_nocopy,
+	}
 	return
 }
 
 func (smr_config SMRConfig[ATOM, IDENT, SORT, MODEL, SCTX, SYS]) Start() {
-	// TODO
-	go func() {}()
+	go func() {
+		for canidate := range smr_config.in_canidates {
+			smr_config.unfinished.Append(canidate)
+		}
+	}()
+	go func() {
+		defer close(smr_config.out_models)
+		smr_config.RunSMR()
+	}()
+}
+
+func (unfinished *TrustingNoCopySMRUnfinishedArray[ATOM]) Append(elems ...map[NumericId]IdLiteral[ATOM]) {
+	unfinished.mu.Lock()
+	defer unfinished.mu.Unlock()
+	unfinished.arr = append(unfinished.arr, elems...)
 }
