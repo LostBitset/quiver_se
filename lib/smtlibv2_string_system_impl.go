@@ -40,6 +40,7 @@ func (sys SMTLibv2StringSystem) CheckSat(
 	}
 	sb.WriteString(sys.Epilogue())
 	resp := NewZ3SMTLibv2Query(sb.String()).Run()
+	fmt.Println(resp)
 	sctx = sys.ParseSolvedCtx(resp)
 	return
 }
