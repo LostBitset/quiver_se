@@ -30,3 +30,12 @@ type TrustingNoCopySMRUnfinishedArray[ATOM comparable] struct {
 	arr []map[NumericId]IdLiteral[ATOM]
 	mu  sync.Mutex
 }
+
+type SMRIsSleeping struct {
+	*TrustingNoCopySMRIsSleeping
+}
+
+type TrustingNoCopySMRIsSleeping struct {
+	is bool
+	mu sync.Mutex
+}
