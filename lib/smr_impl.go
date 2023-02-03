@@ -1,5 +1,7 @@
 package qse
 
+import "fmt"
+
 func NewSMRConfig[
 	ATOM comparable,
 	IDENT any,
@@ -53,6 +55,13 @@ func NewSMRIsSleeping() (is_sleeping SMRIsSleeping) {
 	return
 }
 
+func (is_sleeping SMRIsSleeping) Check() (is bool) {
+	is_sleeping.mu.Lock()
+	defer is_sleeping.mu.Unlock()
+	is = is_sleeping.is
+	return
+}
+
 func (is_sleeping SMRIsSleeping) Sleep() (was bool) {
 	is_sleeping.mu.Lock()
 	defer is_sleeping.mu.Unlock()
@@ -72,32 +81,35 @@ func (is_sleeping SMRIsSleeping) Wake() (was bool) {
 func (smr_config SMRConfig[ATOM, IDENT, SORT, MODEL, SCTX, SYS]) Start() {
 	wakeup_chan := make(chan struct{})
 	is_sleeping := NewSMRIsSleeping()
-	eternal_slumber := make(chan struct{})
+	eternal_slumber := NewSMRIsSleeping()
 	go func() {
 		defer close(smr_config.out_models)
 		defer close(wakeup_chan)
-		defer close(eternal_slumber)
 	runSMRLoop:
 		for {
-			select {
-			case <-eternal_slumber:
+			if eternal_slumber.Check() {
+				fmt.Print("(recv eternal slumber)")
 				break runSMRLoop
-			default:
 			}
+			fmt.Print("(smr will stay awake)")
 			for smr_config.RunSMR() {
 			}
+			fmt.Print("(smr sleeping)")
 			is_sleeping.Sleep()
 			<-wakeup_chan
+			fmt.Print("(smr awoke)")
 		}
 	}()
 	go func() {
 		defer func() {
+			fmt.Print("(send eternal slumber)")
 			wakeup_chan <- struct{}{}
-			eternal_slumber <- struct{}{}
+			eternal_slumber.Sleep()
 		}()
 		for canidate := range smr_config.in_canidates {
 			smr_config.unfinished.Append(canidate)
 			if !is_sleeping.Wake() {
+				fmt.Print("(send normal wakeup)")
 				wakeup_chan <- struct{}{}
 			}
 		}
