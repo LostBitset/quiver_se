@@ -1,7 +1,5 @@
 package qse
 
-import "fmt"
-
 func NewPhantomQuiverAssociation[N any, E any, C ReversibleAssoc[E, QuiverIndex]]() (
 	phantom_association PhantomQuiverAssociation[N, E, C],
 ) {
@@ -43,6 +41,7 @@ func NewQuiverIntendedNode[N any, E any, C ReversibleAssoc[E, QuiverIndex], UNUS
 	intended_node = QuiverIntendedNode[N, E, C]{
 		node,
 		container,
+		nil,
 		NewPhantomQuiverAssociation[N, E, C](),
 	}
 	return
@@ -67,6 +66,9 @@ func (intended_node QuiverIntendedNode[N, E, C]) ResolveAsQuiverUpdateDst(q_ptr 
 		intended_node.node,
 		intended_node.container,
 	)
+	if intended_node.cb != nil {
+		(*intended_node.cb)(index)
+	}
 	return
 }
 
@@ -96,7 +98,6 @@ func (q *Quiver[N, E, C]) ApplyUpdateAndEmitWalks(
 			for i := range prefix {
 				prefix[i] = prefix_flipped[len(prefix)-(i+1)]
 			}
-			fmt.Println("got prefix")
 			prefixes = append(prefixes, prefix)
 		}
 		for suffix_flipped := range walk_suffixes {
@@ -104,11 +105,9 @@ func (q *Quiver[N, E, C]) ApplyUpdateAndEmitWalks(
 			for i := range suffix {
 				suffix[i] = suffix_flipped[len(suffix)-(i+1)]
 			}
-			fmt.Println("got suffix")
 			for _, prefix := range prefixes {
 				l_prefix := prefix
 				l_suffix := suffix
-				fmt.Println("SEND")
 				out_walks <- QuiverWalk[N, E]{
 					start,
 					[]*[]E{

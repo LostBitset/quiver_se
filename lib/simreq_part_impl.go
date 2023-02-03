@@ -1,5 +1,7 @@
 package qse
 
+import "fmt"
+
 func StartSiMReQ[
 	QNODE any,
 	ATOM comparable,
@@ -22,6 +24,7 @@ func StartSiMReQ[
 	out_models chan MODEL,
 	sys SYS,
 ) (
+	dmtq Quiver[QNODE, PHashMap[Literal[WithId_H[ATOM]], struct{}], *DMT[WithId_H[ATOM], QuiverIndex]],
 	top_node QuiverIndex,
 	fail_node QuiverIndex,
 ) {
@@ -33,7 +36,6 @@ func StartSiMReQ[
 	smr_config := NewSMRConfig[ATOM, IDENT, SORT, MODEL, SCTX](
 		canidates, out_models, sys,
 	)
-	var dmtq Quiver[QNODE, PHashMap[Literal[WithId_H[ATOM]], struct{}], *DMT[WithId_H[ATOM], QuiverIndex]]
 	top_node_dmt := NewDMT[WithId_H[ATOM], QuiverIndex]()
 	var zero_node QNODE
 	top_node = dmtq.InsertNode(zero_node, &top_node_dmt)
@@ -46,8 +48,12 @@ func StartSiMReQ[
 	}
 	smr_config.Start()
 	go func() {
+		defer fmt.Println("<end> canidate intermediary")
+		defer fmt.Println("walks and canidates are now closed")
 		defer close(canidates)
+		fmt.Println("<bgn> canidate intermediary")
 		for walk_recv := range walks {
+			fmt.Println("recieved walk from dmtq warden, rewriting before sending to smr...")
 			walk_chunked := walk_recv.value
 			walk := make([]IdLiteral[ATOM], 0)
 			for _, chunk := range walk_chunked.edges_chunked {
@@ -58,10 +64,12 @@ func StartSiMReQ[
 					}
 				}
 			}
+			fmt.Println("rewritten, sending...")
 			canidates <- SMTQueryDNFClause[ATOM, IDENT, SORT]{
 				walk,
 				walk_recv.augment,
 			}
+			fmt.Println("sent")
 		}
 	}()
 	warden_config.Start()

@@ -15,10 +15,41 @@ func TestSiMReQPart(t *testing.T) {
 	out_models := make(chan string)
 	var idsrc IdSource
 	sys := SMTLibv2StringSystem{idsrc}
-	top_node, fail_node := StartSiMReQ[int, string, string, string, string, SMTLibv2StringSolvedCtx](
+	dmtq, top_node, fail_node := StartSiMReQ[int, string, string, string, string, SMTLibv2StringSolvedCtx](
 		in_updates, out_models, sys,
 	)
 	update_dmt := NewDMT[WithId_H[string], QuiverIndex]()
+	intended_node := dmtq.NewIntendedNode(47, &update_dmt)
+	intended_node_cb_backing := func(index QuiverIndex) {
+		fmt.Println("cb bgn")
+		in_updates <- Augmented[
+			QuiverUpdate[int, PHashMap[Literal[WithId_H[string]], struct{}], *DMT[WithId_H[string], QuiverIndex]],
+			[]SMTFreeFun[string, string],
+		]{
+			QuiverUpdate[
+				int, PHashMap[Literal[WithId_H[string]], struct{}], *DMT[WithId_H[string], QuiverIndex],
+			]{
+				index,
+				dmtq.ParameterizeIndex(fail_node),
+				StdlibMapToPHashMap(
+					map[Literal[WithId_H[string]]]struct{}{
+						{
+							WithId_H[string]{"(= b 4)", idsrc.Gen()},
+							true,
+						}: {},
+					},
+				),
+			},
+			[]SMTFreeFun[string, string]{
+				{"a", []string{}, "Int"},
+				{"b", []string{}, "Int"},
+			},
+		}
+		fmt.Println("send in cb done")
+		close(in_updates)
+		fmt.Println("cb end")
+	}
+	intended_node.cb = &intended_node_cb_backing
 	in_updates <- Augmented[
 		QuiverUpdate[int, PHashMap[Literal[WithId_H[string]], struct{}], *DMT[WithId_H[string], QuiverIndex]],
 		[]SMTFreeFun[string, string],
@@ -27,15 +58,7 @@ func TestSiMReQPart(t *testing.T) {
 			int, PHashMap[Literal[WithId_H[string]], struct{}], *DMT[WithId_H[string], QuiverIndex],
 		]{
 			top_node,
-			NewQuiverIntendedNode[
-				int,
-				PHashMap[Literal[WithId_H[string]], struct{}],
-				*DMT[WithId_H[string], QuiverIndex],
-				any,
-			](
-				47,
-				&update_dmt,
-			),
+			intended_node,
 			StdlibMapToPHashMap(
 				map[Literal[WithId_H[string]]]struct{}{
 					{
@@ -54,7 +77,6 @@ func TestSiMReQPart(t *testing.T) {
 			{"b", []string{}, "Int"},
 		},
 	}
-	close(in_updates)
 	models := make([]string, 0)
 	for model := range out_models {
 		models = append(models, model)
