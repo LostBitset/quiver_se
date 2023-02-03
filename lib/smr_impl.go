@@ -127,7 +127,11 @@ func (smr_config SMRConfig[ATOM, IDENT, SORT, MODEL, SCTX, SYS]) SMRIterationUnf
 			smr_config.out_models <- *sctx.GetModel()
 			finished = append(finished, i)
 		} else {
-			// TODO unsat case
+			mus := *sctx.ExtractMUS()
+			conjunction := &elem.conjunction
+			for _, index := range mus {
+				SpliceOutReclaim(conjunction, index)
+			}
 		}
 	}
 	for _, index := range finished {
