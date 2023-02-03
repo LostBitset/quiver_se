@@ -103,8 +103,8 @@ func (smr_config SMRConfig[ATOM, IDENT, SORT, MODEL, SCTX, SYS]) Start() {
 	go func() {
 		defer func() {
 			fmt.Print("(send eternal slumber)")
-			wakeup_chan <- struct{}{}
 			eternal_slumber.Sleep()
+			wakeup_chan <- struct{}{}
 		}()
 		for canidate := range smr_config.in_canidates {
 			smr_config.unfinished.Append(canidate)
