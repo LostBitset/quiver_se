@@ -35,7 +35,7 @@ func TestSiMReQPart(t *testing.T) {
 					StdlibMapToPHashMap(
 						map[Literal[WithId_H[string]]]struct{}{
 							{
-								WithId_H[string]{"(= b 4)", idsrc.Gen()},
+								WithId_H[string]{"(= a b)", idsrc.Gen()},
 								true,
 							}: {},
 						},
@@ -46,9 +46,7 @@ func TestSiMReQPart(t *testing.T) {
 					{"b", []string{}, "Int"},
 				},
 			}
-			fmt.Println("send in cb done")
 			close(in_updates)
-			fmt.Println("cb end")
 		}()
 	}
 	intended_node.cb = &intended_node_cb_backing
@@ -83,11 +81,8 @@ func TestSiMReQPart(t *testing.T) {
 	for model := range out_models {
 		models = append(models, model)
 	}
-	fmt.Println("models:")
-	fmt.Println(models)
 	assert.Equal(t, 1, len(models))
 	model := models[0]
-	fmt.Println("model:")
-	fmt.Println(model)
 	assert.Contains(t, model, "(define-fun a () Int\n    1)")
+	assert.Contains(t, model, "(define-fun b () Int\n    1)")
 }

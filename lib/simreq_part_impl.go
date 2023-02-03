@@ -1,6 +1,10 @@
 package qse
 
-import "fmt"
+import (
+	"encoding/binary"
+	"fmt"
+	"hash/fnv"
+)
 
 func StartSiMReQ[
 	QNODE any,
@@ -52,18 +56,33 @@ func StartSiMReQ[
 		defer fmt.Println("walks and canidates are now closed")
 		defer close(canidates)
 		fmt.Println("<bgn> canidate intermediary")
+		processed_hashes := make(map[uint32]struct{})
 		for walk_recv := range walks {
 			fmt.Println("recieved walk from dmtq warden, rewriting before sending to smr...")
+			hasher := fnv.New32a()
 			walk_chunked := walk_recv.value
+			processed_ids := make(map[NumericId]struct{})
 			walk := make([]IdLiteral[ATOM], 0)
 			for _, chunk := range walk_chunked.edges_chunked {
 				for _, set := range *chunk {
 					stdlib_set := set.ToStdlibMap()
 					for key := range stdlib_set {
-						walk = append(walk, IdLiteral[ATOM](key))
+						if _, ok := processed_ids[key.value.id]; !ok {
+							walk = append(walk, IdLiteral[ATOM](key))
+							processed_ids[key.value.id] = struct{}{}
+							hasher.Write(
+								binary.LittleEndian.AppendUint32([]byte{}, key.value.id),
+							)
+						}
 					}
 				}
 			}
+			walk_hash := hasher.Sum32()
+			if _, ok := processed_hashes[walk_hash]; ok {
+				fmt.Println("skipping (duplicate)")
+				continue
+			}
+			processed_hashes[walk_hash] = struct{}{}
 			fmt.Println("rewritten as: bgn")
 			fmt.Println(walk)
 			fmt.Println("end, sending...")
