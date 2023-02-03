@@ -21,33 +21,35 @@ func TestSiMReQPart(t *testing.T) {
 	update_dmt := NewDMT[WithId_H[string], QuiverIndex]()
 	intended_node := dmtq.NewIntendedNode(47, &update_dmt)
 	intended_node_cb_backing := func(index QuiverIndex) {
-		fmt.Println("cb bgn")
-		in_updates <- Augmented[
-			QuiverUpdate[int, PHashMap[Literal[WithId_H[string]], struct{}], *DMT[WithId_H[string], QuiverIndex]],
-			[]SMTFreeFun[string, string],
-		]{
-			QuiverUpdate[
-				int, PHashMap[Literal[WithId_H[string]], struct{}], *DMT[WithId_H[string], QuiverIndex],
+		go func() {
+			fmt.Println("cb bgn")
+			in_updates <- Augmented[
+				QuiverUpdate[int, PHashMap[Literal[WithId_H[string]], struct{}], *DMT[WithId_H[string], QuiverIndex]],
+				[]SMTFreeFun[string, string],
 			]{
-				index,
-				dmtq.ParameterizeIndex(fail_node),
-				StdlibMapToPHashMap(
-					map[Literal[WithId_H[string]]]struct{}{
-						{
-							WithId_H[string]{"(= b 4)", idsrc.Gen()},
-							true,
-						}: {},
-					},
-				),
-			},
-			[]SMTFreeFun[string, string]{
-				{"a", []string{}, "Int"},
-				{"b", []string{}, "Int"},
-			},
-		}
-		fmt.Println("send in cb done")
-		close(in_updates)
-		fmt.Println("cb end")
+				QuiverUpdate[
+					int, PHashMap[Literal[WithId_H[string]], struct{}], *DMT[WithId_H[string], QuiverIndex],
+				]{
+					index,
+					dmtq.ParameterizeIndex(fail_node),
+					StdlibMapToPHashMap(
+						map[Literal[WithId_H[string]]]struct{}{
+							{
+								WithId_H[string]{"(= b 4)", idsrc.Gen()},
+								true,
+							}: {},
+						},
+					),
+				},
+				[]SMTFreeFun[string, string]{
+					{"a", []string{}, "Int"},
+					{"b", []string{}, "Int"},
+				},
+			}
+			fmt.Println("send in cb done")
+			close(in_updates)
+			fmt.Println("cb end")
+		}()
 	}
 	intended_node.cb = &intended_node_cb_backing
 	in_updates <- Augmented[
@@ -81,8 +83,11 @@ func TestSiMReQPart(t *testing.T) {
 	for model := range out_models {
 		models = append(models, model)
 	}
+	fmt.Println("models:")
+	fmt.Println(models)
 	assert.Equal(t, 1, len(models))
 	model := models[0]
+	fmt.Println("model:")
 	fmt.Println(model)
 	assert.Contains(t, model, "(define-fun a () Int\n    1)")
 }

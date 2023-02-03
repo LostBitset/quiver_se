@@ -64,7 +64,9 @@ func StartSiMReQ[
 					}
 				}
 			}
-			fmt.Println("rewritten, sending...")
+			fmt.Println("rewritten as: bgn")
+			fmt.Println(walk)
+			fmt.Println("end, sending...")
 			canidates <- SMTQueryDNFClause[ATOM, IDENT, SORT]{
 				walk,
 				walk_recv.augment,
