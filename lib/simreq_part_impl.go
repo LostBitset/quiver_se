@@ -1,5 +1,7 @@
 package qse
 
+import "fmt"
+
 func StartSiMReQ[
 	QNODE any,
 	ATOM comparable,
@@ -51,9 +53,13 @@ func StartSiMReQ[
 		for walk_recv := range walks {
 			sum := uint32(0xE4E4)
 			walk_chunked := walk_recv.value
+			chunks := walk_chunked.edges_chunked
+			if len(*chunks[len(chunks)-1]) == 0 {
+				continue
+			}
 			processed_ids := make(map[NumericId]struct{})
 			walk := make([]IdLiteral[ATOM], 0)
-			for _, chunk := range walk_chunked.edges_chunked {
+			for _, chunk := range chunks {
 				for _, set := range *chunk {
 					stdlib_set := set.ToStdlibMap()
 					for key := range stdlib_set {
@@ -65,13 +71,14 @@ func StartSiMReQ[
 					}
 				}
 			}
+			fmt.Println()
 			if _, ok := processed_hashes[sum]; ok {
 				continue
 			}
 			processed_hashes[sum] = struct{}{}
 			canidates <- SMRDNFClause[ATOM, IDENT, SORT]{
-				walk,
-				[]IdLiteral[ATOM]{},
+				walk[:len(walk)],
+				walk[:len(walk)], // this bit is very much a TODO
 				walk_recv.augment,
 			}
 		}
