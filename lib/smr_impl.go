@@ -80,15 +80,18 @@ func (smr_config SMRConfig[ATOM, IDENT, SORT, MODEL, SCTX, SYS]) Start() {
 	wakeup_chan := make(chan struct{})
 	is_sleeping := NewSMRIsSleeping()
 	eternal_slumber := NewSMRIsSleeping()
+	eternal_slumber.Wake()
 	go func() {
 		defer close(smr_config.out_models)
 		defer close(wakeup_chan)
 	runSMRLoop:
 		for {
 			if eternal_slumber.Check() {
+				for !smr_config.RunSMR() {
+				}
 				break runSMRLoop
 			}
-			for smr_config.RunSMR() {
+			for !smr_config.RunSMR() {
 			}
 			is_sleeping.Sleep()
 			<-wakeup_chan
