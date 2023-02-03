@@ -125,6 +125,7 @@ func (smr_config SMRConfig[ATOM, IDENT, SORT, MODEL, SCTX, SYS]) SMRIterationUnf
 		}
 		if *is_sat_ptr {
 			smr_config.out_models <- *sctx.GetModel()
+			finished = append(finished, i)
 		} else {
 			// TODO unsat case
 		}
