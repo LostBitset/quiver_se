@@ -15,7 +15,7 @@ func NewSMRConfig[
 	],
 ](
 	in_canidates chan SMTQueryDNFClause[ATOM, IDENT, SORT],
-	out_models chan SMTQueryDNFClause[ATOM, IDENT, SORT],
+	out_models chan MODEL,
 	sys SYS,
 ) (
 	smr_config SMRConfig[ATOM, IDENT, SORT, MODEL, SCTX, SYS],
@@ -124,7 +124,7 @@ func (smr_config SMRConfig[ATOM, IDENT, SORT, MODEL, SCTX, SYS]) SMRIterationUnf
 			continue
 		}
 		if *is_sat_ptr {
-			// TODO sat case
+			smr_config.out_models <- *sctx.GetModel()
 		} else {
 			// TODO unsat case
 		}

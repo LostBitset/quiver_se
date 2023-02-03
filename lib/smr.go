@@ -17,7 +17,7 @@ type SMRConfig[
 	],
 ] struct {
 	in_canidates chan SMTQueryDNFClause[ATOM, IDENT, SORT]
-	out_models   chan SMTQueryDNFClause[ATOM, IDENT, SORT]
+	out_models   chan MODEL
 	sys          SYS
 	unfinished   SMRUnfinishedArray[ATOM, IDENT, SORT]
 }
