@@ -37,8 +37,8 @@ func TestSiMReQPart(t *testing.T) {
 								true,
 							}: {},
 							{
-								WithId_H[string]{"(> b 0)", idsrc.Gen()},
-								true,
+								WithId_H[string]{"(= b 9)", idsrc.Gen()},
+								false,
 							}: {},
 						},
 					),
