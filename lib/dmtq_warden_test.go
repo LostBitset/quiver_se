@@ -2,7 +2,6 @@ package qse
 
 import (
 	"testing"
-	"time"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -66,18 +65,6 @@ func TestDMTQWarden(t *testing.T) {
 	in_updates <- NewAugmentedSimple(update1)
 	in_updates <- NewAugmentedSimple(update2)
 	close(in_updates)
-	<-time.After(20 * time.Millisecond)
-	assert.Equal(
-		t,
-		0,
-		len(dmtq.AllInneighbors(top_node)),
-	)
-	top_outneighbors := dmtq.AllOutneighbors(top_node)
-	assert.Equal(
-		t,
-		2,
-		len(top_outneighbors),
-	)
 	walks := make([][]PHashMap[Literal[uint32_H], struct{}], 0)
 	for walk_recv := range out_walks {
 		walk_chunked := walk_recv.value
@@ -92,5 +79,16 @@ func TestDMTQWarden(t *testing.T) {
 	assert.True(
 		t,
 		walks[0][0].HasKey(Literal[uint32_H]{uint32_H{47}, false}),
+	)
+	assert.Equal(
+		t,
+		0,
+		len(dmtq.AllInneighbors(top_node)),
+	)
+	top_outneighbors := dmtq.AllOutneighbors(top_node)
+	assert.Equal(
+		t,
+		2,
+		len(top_outneighbors),
 	)
 }
