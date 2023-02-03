@@ -66,7 +66,7 @@ func TestDMTQWarden(t *testing.T) {
 	in_updates <- NewAugmentedSimple(update1)
 	in_updates <- NewAugmentedSimple(update2)
 	close(in_updates)
-	<-time.After(250 * time.Millisecond)
+	<-time.After(20 * time.Millisecond)
 	assert.Equal(
 		t,
 		0,
