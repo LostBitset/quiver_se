@@ -14,7 +14,7 @@ func NewSMRConfig[
 		SCTX,
 	],
 ](
-	in_canidates chan SMTQueryDNFClause[ATOM, IDENT, SORT],
+	in_canidates chan SMRDNFClause[ATOM, IDENT, SORT],
 	out_models chan MODEL,
 	sys SYS,
 ) (
@@ -35,7 +35,7 @@ func NewSMRUnfinishedArray[
 	SORT any,
 ]() (unfinished SMRUnfinishedArray[ATOM, IDENT, SORT]) {
 	backing_nocopy := TrustingNoCopySMRUnfinishedArray[ATOM, IDENT, SORT]{
-		arr: make([]SMTQueryDNFClause[ATOM, IDENT, SORT], 0),
+		arr: make([]SMRDNFClause[ATOM, IDENT, SORT], 0),
 	}
 	unfinished = SMRUnfinishedArray[ATOM, IDENT, SORT]{
 		&backing_nocopy,
@@ -112,7 +112,7 @@ func (smr_config SMRConfig[ATOM, IDENT, SORT, MODEL, SCTX, SYS]) Start() {
 }
 
 func (unfinished *TrustingNoCopySMRUnfinishedArray[ATOM, IDENT, SORT]) Append(
-	elems ...SMTQueryDNFClause[ATOM, IDENT, SORT],
+	elems ...SMRDNFClause[ATOM, IDENT, SORT],
 ) {
 	unfinished.mu.Lock()
 	defer unfinished.mu.Unlock()
@@ -134,8 +134,11 @@ func (smr_config SMRConfig[ATOM, IDENT, SORT, MODEL, SCTX, SYS]) SMRIterationUnf
 	finished := make([]int, 0)
 	for i := range smr_config.unfinished.arr {
 		elem := smr_config.unfinished.arr[i]
+		combined := make([]IdLiteral[ATOM], 0)
+		combined = append(combined, elem.conjunction_r...)
+		combined = append(combined, elem.conjunction_f...)
 		sctx := smr_config.sys.CheckSat(
-			elem.conjunction,
+			combined,
 			elem.free_funs,
 		)
 		is_sat_ptr := sctx.IsSat()
@@ -148,13 +151,16 @@ func (smr_config SMRConfig[ATOM, IDENT, SORT, MODEL, SCTX, SYS]) SMRIterationUnf
 			finished = append(finished, i)
 		} else {
 			mus := *sctx.ExtractMUS()
-			conjunction := &elem.conjunction
 			InsertionSortInPlace(mus)
 			DedupSortedInPlace(&mus)
 			offset := 0
+		smrReductionLoop:
 			for _, index := range mus {
+				if index >= len(elem.conjunction_r) {
+					break smrReductionLoop
+				}
 				index := index - offset
-				SpliceOutReclaim(conjunction, index)
+				SpliceOutReclaim(&elem.conjunction_r, index)
 				offset++
 			}
 		}

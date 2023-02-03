@@ -7,7 +7,7 @@ import (
 )
 
 func TestSMR(t *testing.T) {
-	in_canidates := make(chan SMTQueryDNFClause[string, string, string])
+	in_canidates := make(chan SMRDNFClause[string, string, string])
 	out_models := make(chan string)
 	var idsrc IdSource
 	smr_config := NewSMRConfig[
@@ -18,7 +18,7 @@ func TestSMR(t *testing.T) {
 		SMTLibv2StringSystem{idsrc},
 	)
 	smr_config.Start()
-	in_canidates <- SMTQueryDNFClause[string, string, string]{
+	in_canidates <- SMRDNFClause[string, string, string]{
 		[]IdLiteral[string]{
 			{
 				WithId_H[string]{"(< a b)", idsrc.Gen()},
@@ -33,6 +33,7 @@ func TestSMR(t *testing.T) {
 				false,
 			},
 		},
+		[]IdLiteral[string]{},
 		[]SMTFreeFun[string, string]{
 			{
 				"a",

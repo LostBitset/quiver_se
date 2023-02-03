@@ -30,7 +30,7 @@ func StartSiMReQ[
 		QuiverWalk[QNODE, PHashMap[Literal[WithId_H[ATOM]], struct{}]],
 		[]SMTFreeFun[IDENT, SORT],
 	])
-	canidates := make(chan SMTQueryDNFClause[ATOM, IDENT, SORT])
+	canidates := make(chan SMRDNFClause[ATOM, IDENT, SORT])
 	smr_config := NewSMRConfig[ATOM, IDENT, SORT, MODEL, SCTX](
 		canidates, out_models, sys,
 	)
@@ -69,8 +69,9 @@ func StartSiMReQ[
 				continue
 			}
 			processed_hashes[sum] = struct{}{}
-			canidates <- SMTQueryDNFClause[ATOM, IDENT, SORT]{
+			canidates <- SMRDNFClause[ATOM, IDENT, SORT]{
 				walk,
+				[]IdLiteral[ATOM]{},
 				walk_recv.augment,
 			}
 		}
