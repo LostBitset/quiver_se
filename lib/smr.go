@@ -14,7 +14,7 @@ type SMRConfig[
 		SCTX,
 	],
 ] struct {
-	in_canidates chan PHashMap[IdLiteral[ATOM], struct{}]
-	out_models   chan PHashMap[IdLiteral[ATOM], struct{}]
+	in_canidates chan map[NumericId]IdLiteral[ATOM]
+	out_models   chan map[NumericId]IdLiteral[ATOM]
 	sys          SYS
 }
