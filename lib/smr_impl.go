@@ -14,8 +14,8 @@ func NewSMRConfig[
 		SCTX,
 	],
 ](
-	in_canidates chan map[NumericId]IdLiteral[ATOM],
-	out_models chan map[NumericId]IdLiteral[ATOM],
+	in_canidates chan SMTQueryDNFClause[ATOM, IDENT, SORT],
+	out_models chan SMTQueryDNFClause[ATOM, IDENT, SORT],
 	sys SYS,
 ) (
 	smr_config SMRConfig[ATOM, IDENT, SORT, MODEL, SCTX, SYS],
@@ -24,16 +24,20 @@ func NewSMRConfig[
 		in_canidates: in_canidates,
 		out_models:   out_models,
 		sys:          sys,
-		unfinished:   NewSMRUnfinishedArray[ATOM](),
+		unfinished:   NewSMRUnfinishedArray[ATOM, IDENT, SORT](),
 	}
 	return
 }
 
-func NewSMRUnfinishedArray[ATOM comparable]() (unfinished SMRUnfinishedArray[ATOM]) {
-	backing_nocopy := TrustingNoCopySMRUnfinishedArray[ATOM]{
-		arr: make([]map[uint32]IdLiteral[ATOM], 0),
+func NewSMRUnfinishedArray[
+	ATOM comparable,
+	IDENT any,
+	SORT any,
+]() (unfinished SMRUnfinishedArray[ATOM, IDENT, SORT]) {
+	backing_nocopy := TrustingNoCopySMRUnfinishedArray[ATOM, IDENT, SORT]{
+		arr: make([]SMTQueryDNFClause[ATOM, IDENT, SORT], 0),
 	}
-	unfinished = SMRUnfinishedArray[ATOM]{
+	unfinished = SMRUnfinishedArray[ATOM, IDENT, SORT]{
 		&backing_nocopy,
 	}
 	return
@@ -87,8 +91,8 @@ func (smr_config SMRConfig[ATOM, IDENT, SORT, MODEL, SCTX, SYS]) Start() {
 	}()
 }
 
-func (unfinished *TrustingNoCopySMRUnfinishedArray[ATOM]) Append(
-	elems ...map[NumericId]IdLiteral[ATOM],
+func (unfinished *TrustingNoCopySMRUnfinishedArray[ATOM, IDENT, SORT]) Append(
+	elems ...SMTQueryDNFClause[ATOM, IDENT, SORT],
 ) {
 	unfinished.mu.Lock()
 	defer unfinished.mu.Unlock()
@@ -107,5 +111,9 @@ func (smr_config SMRConfig[ATOM, IDENT, SORT, MODEL, SCTX, SYS]) RunSMR() (done 
 }
 
 func (smr_config SMRConfig[ATOM, IDENT, SORT, MODEL, SCTX, SYS]) SMRIterationUnfinishedUnlocked() {
-	// TODO
+	finished := make([]int, 0)
+	for i := range smr_config.unfinished.arr {
+		elem := smr_config.unfinished.arr[i]
+		smr_config.sys.CheckSat()
+	}
 }

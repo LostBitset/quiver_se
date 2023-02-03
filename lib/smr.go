@@ -16,18 +16,35 @@ type SMRConfig[
 		SCTX,
 	],
 ] struct {
-	in_canidates chan map[NumericId]IdLiteral[ATOM]
-	out_models   chan map[NumericId]IdLiteral[ATOM]
+	in_canidates chan SMTQueryDNFClause[ATOM, IDENT, SORT]
+	out_models   chan SMTQueryDNFClause[ATOM, IDENT, SORT]
 	sys          SYS
-	unfinished   SMRUnfinishedArray[ATOM]
+	unfinished   SMRUnfinishedArray[ATOM, IDENT, SORT]
 }
 
-type SMRUnfinishedArray[ATOM comparable] struct {
-	*TrustingNoCopySMRUnfinishedArray[ATOM]
+type SMTQueryDNFClause[
+	ATOM comparable,
+	IDENT any,
+	SORT any,
+] struct {
+	conjunction []IdLiteral[ATOM]
+	free_funs   []SMTFreeFun[IDENT, SORT]
 }
 
-type TrustingNoCopySMRUnfinishedArray[ATOM comparable] struct {
-	arr []map[NumericId]IdLiteral[ATOM]
+type SMRUnfinishedArray[
+	ATOM comparable,
+	IDENT any,
+	SORT any,
+] struct {
+	*TrustingNoCopySMRUnfinishedArray[ATOM, IDENT, SORT]
+}
+
+type TrustingNoCopySMRUnfinishedArray[
+	ATOM comparable,
+	IDENT any,
+	SORT any,
+] struct {
+	arr []SMTQueryDNFClause[ATOM, IDENT, SORT]
 	mu  sync.Mutex
 }
 
