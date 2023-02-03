@@ -1,7 +1,5 @@
 package qse
 
-import "fmt"
-
 func NewSMRConfig[
 	ATOM comparable,
 	IDENT any,
@@ -88,28 +86,22 @@ func (smr_config SMRConfig[ATOM, IDENT, SORT, MODEL, SCTX, SYS]) Start() {
 	runSMRLoop:
 		for {
 			if eternal_slumber.Check() {
-				fmt.Print("(recv eternal slumber)")
 				break runSMRLoop
 			}
-			fmt.Print("(smr will stay awake)")
 			for smr_config.RunSMR() {
 			}
-			fmt.Print("(smr sleeping)")
 			is_sleeping.Sleep()
 			<-wakeup_chan
-			fmt.Print("(smr awoke)")
 		}
 	}()
 	go func() {
 		defer func() {
-			fmt.Print("(send eternal slumber)")
 			eternal_slumber.Sleep()
 			wakeup_chan <- struct{}{}
 		}()
 		for canidate := range smr_config.in_canidates {
 			smr_config.unfinished.Append(canidate)
 			if !is_sleeping.Wake() {
-				fmt.Print("(send normal wakeup)")
 				wakeup_chan <- struct{}{}
 			}
 		}

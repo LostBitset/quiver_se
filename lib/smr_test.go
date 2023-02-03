@@ -1,7 +1,6 @@
 package qse
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -18,10 +17,7 @@ func TestSMR(t *testing.T) {
 		out_models,
 		SMTLibv2StringSystem{idsrc},
 	)
-	fmt.Print("start...")
 	smr_config.Start()
-	fmt.Println("ok")
-	fmt.Print("send canidate...")
 	in_canidates <- SMTQueryDNFClause[string, string, string]{
 		[]IdLiteral[string]{
 			{
@@ -50,16 +46,10 @@ func TestSMR(t *testing.T) {
 			},
 		},
 	}
-	fmt.Println("ok")
-	fmt.Print("close canidates channel...")
 	close(in_canidates)
-	fmt.Println("ok")
-	fmt.Print("recv models...")
 	models := make([]string, 0)
 	for model := range out_models {
-		fmt.Print("(recv)")
 		models = append(models, model)
 	}
-	fmt.Println("ok")
 	assert.Equal(t, 1, len(models))
 }
