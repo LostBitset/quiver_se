@@ -8,17 +8,23 @@ import (
 
 func TestDMTQWarden(t *testing.T) {
 	in_updates := make(
-		chan QuiverUpdate[
-			uint32_H, PHashMap[Literal[uint32_H], struct{}], *DMT[uint32_H, QuiverIndex],
+		chan Augmented[
+			QuiverUpdate[
+				uint32_H, PHashMap[Literal[uint32_H], struct{}], *DMT[uint32_H, QuiverIndex],
+			],
+			struct{},
 		],
 	)
 	out_walks := make(
-		chan QuiverWalk[uint32_H, PHashMap[Literal[uint32_H], struct{}]],
+		chan Augmented[
+			QuiverWalk[uint32_H, PHashMap[Literal[uint32_H], struct{}]],
+			struct{},
+		],
 	)
 	var dmtq Quiver[uint32_H, PHashMap[Literal[uint32_H], struct{}], *DMT[uint32_H, QuiverIndex]]
 	top_node_dmt := NewDMT[uint32_H, QuiverIndex]()
 	top_node := dmtq.InsertNode(uint32_H{0}, &top_node_dmt)
-	warden_config := DMTQWardenConfig[uint32_H, uint32_H]{
+	warden_config := DMTQWardenConfig[uint32_H, uint32_H, struct{}]{
 		in_updates: in_updates,
 		out_walks:  out_walks,
 		walk_src:   top_node,
@@ -42,7 +48,7 @@ func TestDMTQWarden(t *testing.T) {
 			},
 		),
 	}
-	in_updates <- update
+	in_updates <- NewAugmentedSimple(update)
 	close(in_updates)
 	assert.Equal(
 		t,
@@ -55,7 +61,8 @@ func TestDMTQWarden(t *testing.T) {
 		len(dmtq.AllOutneighbors(top_node)),
 	)
 	walks := make([][]PHashMap[Literal[uint32_H], struct{}], 0)
-	for walk_chunked := range out_walks {
+	for walk_recv := range out_walks {
+		walk_chunked := walk_recv.value
 		new_walk := make([]PHashMap[Literal[uint32_H], struct{}], 0)
 		for _, chunk := range walk_chunked.edges_chunked {
 			new_walk = append(new_walk, *chunk...)

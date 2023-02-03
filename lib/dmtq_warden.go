@@ -1,8 +1,19 @@
 package qse
 
-type DMTQWardenConfig[N any, ATOM hashable] struct {
-	in_updates chan QuiverUpdate[N, PHashMap[Literal[ATOM], struct{}], *DMT[ATOM, QuiverIndex]]
-	out_walks  chan QuiverWalk[N, PHashMap[Literal[ATOM], struct{}]]
-	walk_src   QuiverIndex
-	dmtq       Quiver[N, PHashMap[Literal[ATOM], struct{}], *DMT[ATOM, QuiverIndex]]
+type DMTQWardenConfig[N any, ATOM hashable, AUG any] struct {
+	in_updates chan Augmented[
+		QuiverUpdate[N, PHashMap[Literal[ATOM], struct{}], *DMT[ATOM, QuiverIndex]],
+		AUG,
+	]
+	out_walks chan Augmented[
+		QuiverWalk[N, PHashMap[Literal[ATOM], struct{}]],
+		AUG,
+	]
+	walk_src QuiverIndex
+	dmtq     Quiver[N, PHashMap[Literal[ATOM], struct{}], *DMT[ATOM, QuiverIndex]]
+}
+
+type Augmented[A any, B any] struct {
+	value   A
+	augment B
 }
