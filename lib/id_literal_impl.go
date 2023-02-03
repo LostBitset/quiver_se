@@ -20,3 +20,19 @@ func (wi WithId_H[T]) GeneralDeref() (val T) {
 	val = wi.value
 	return
 }
+
+func (lit IdLiteral[ATOM]) Hash() (digest digest_t) {
+	digest = lit.value.Hash()
+	if !lit.eq {
+		digest = WrapInvert(digest)
+	}
+	return
+}
+
+func (lit IdLiteral[ATOM]) Hash32() (fixed_digest uint32) {
+	fixed_digest = lit.value.Hash32()
+	if !lit.eq {
+		fixed_digest = WrapInvert32(fixed_digest)
+	}
+	return
+}

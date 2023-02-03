@@ -125,6 +125,12 @@ func (sys SMTLibv2StringSystem) ParseSolvedCtx(str string) (sctx SMTLibv2StringS
 	re_resp := regexp.MustCompile(resp_regex)
 	re_resp_output := re_resp.FindStringSubmatch(str_resp)
 	capture_groups := re_resp_output[1:]
+	if len(capture_groups) != 3 {
+		panic(fmt.Errorf(
+			"ERR! bad solver output: expected 3 capture groups, got %v",
+			capture_groups,
+		))
+	}
 	sat_trimmed := strings.TrimSpace(capture_groups[0])
 	t, f := true, false
 	switch sat_trimmed {
