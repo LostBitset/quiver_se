@@ -10,6 +10,7 @@ type DMTQWardenConfig[N any, ATOM hashable, AUG any] struct {
 		AUG,
 	]
 	walk_src QuiverIndex
+	walk_dst QuiverIndex
 	dmtq     Quiver[N, PHashMap[Literal[ATOM], struct{}], *DMT[ATOM, QuiverIndex]]
 }
 

@@ -23,6 +23,7 @@ func StartSiMReQ[
 	sys SYS,
 ) (
 	top_node QuiverIndex,
+	fail_node QuiverIndex,
 ) {
 	walks := make(chan Augmented[
 		QuiverWalk[QNODE, PHashMap[Literal[WithId_H[ATOM]], struct{}]],
@@ -40,6 +41,7 @@ func StartSiMReQ[
 		in_updates: in_updates,
 		out_walks:  walks,
 		walk_src:   top_node,
+		walk_dst:   fail_node,
 		dmtq:       dmtq,
 	}
 	smr_config.Start()

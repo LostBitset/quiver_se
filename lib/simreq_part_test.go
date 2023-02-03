@@ -1,6 +1,7 @@
 package qse
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -14,7 +15,7 @@ func TestSiMReQPart(t *testing.T) {
 	out_models := make(chan string)
 	var idsrc IdSource
 	sys := SMTLibv2StringSystem{idsrc}
-	top_node := StartSiMReQ[int, string, string, string, string, SMTLibv2StringSolvedCtx](
+	top_node, fail_node := StartSiMReQ[int, string, string, string, string, SMTLibv2StringSolvedCtx](
 		in_updates, out_models, sys,
 	)
 	update_dmt := NewDMT[WithId_H[string], QuiverIndex]()
@@ -50,6 +51,7 @@ func TestSiMReQPart(t *testing.T) {
 		},
 		[]SMTFreeFun[string, string]{
 			{"a", []string{}, "Int"},
+			{"b", []string{}, "Int"},
 		},
 	}
 	close(in_updates)
@@ -59,5 +61,6 @@ func TestSiMReQPart(t *testing.T) {
 	}
 	assert.Equal(t, 1, len(models))
 	model := models[0]
+	fmt.Println(model)
 	assert.Contains(t, model, "(define-fun a () Int\n    1)")
 }

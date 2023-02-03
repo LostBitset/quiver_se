@@ -1,5 +1,7 @@
 package qse
 
+import "fmt"
+
 func NewPhantomQuiverAssociation[N any, E any, C ReversibleAssoc[E, QuiverIndex]]() (
 	phantom_association PhantomQuiverAssociation[N, E, C],
 ) {
@@ -79,6 +81,7 @@ func (q *Quiver[N, E, C]) ApplyUpdateAndEmitWalks(
 	out_walks chan QuiverWalk[N, E],
 	update QuiverUpdate[N, E, C],
 	start_unresolved QuiverIndexParameterized[N, E, C],
+	dst_final QuiverIndex,
 ) {
 	update_src, update_dst := q.ApplyUpdate(update)
 	start := start_unresolved.ResolveAsQuiverUpdateDst(q)
@@ -93,12 +96,19 @@ func (q *Quiver[N, E, C]) ApplyUpdateAndEmitWalks(
 			for i := range prefix {
 				prefix[i] = prefix_flipped[len(prefix)-(i+1)]
 			}
+			fmt.Println("got prefix")
 			prefixes = append(prefixes, prefix)
 		}
-		for suffix := range walk_suffixes {
+		for suffix_flipped := range walk_suffixes {
+			suffix := make([]E, len(suffix_flipped))
+			for i := range suffix {
+				suffix[i] = suffix_flipped[len(suffix)-(i+1)]
+			}
+			fmt.Println("got suffix")
 			for _, prefix := range prefixes {
 				l_prefix := prefix
 				l_suffix := suffix
+				fmt.Println("SEND")
 				out_walks <- QuiverWalk[N, E]{
 					start,
 					[]*[]E{
@@ -115,41 +125,9 @@ func (q *Quiver[N, E, C]) ApplyUpdateAndEmitWalks(
 		close(walk_prefixes)
 	}()
 	go func() {
-		q.EmitSimpleWalksFromFwd(walk_suffixes, update_dst)
+		q.EmitSimpleWalksFromToRev(walk_suffixes, dst_final, update_dst)
 		close(walk_suffixes)
 	}()
-}
-
-func (q Quiver[N, E, C]) EmitSimpleWalksFromFwd(out_simple_walks chan []E, src QuiverIndex) {
-	backing_prefix := make([]E, 0)
-	seen := NewPHashMap[QuiverIndex, struct{}]()
-	q.EmitSimpleWalksFromFwdPrefix(out_simple_walks, src, &backing_prefix, seen)
-}
-
-func (q Quiver[N, E, C]) EmitSimpleWalksFromFwdPrefix(
-	out_simple_walks chan []E,
-	src QuiverIndex,
-	prefix *[]E,
-	seen PHashMap[QuiverIndex, struct{}],
-) {
-	curr := *prefix
-	out_simple_walks <- curr
-	q.ForEachOutneighbor(
-		src,
-		func(neighbor Neighbor[E]) {
-			if seen.HasKey(neighbor.dst) {
-				return
-			}
-			curr := *prefix
-			curr = append(curr, neighbor.via_edge)
-			q.EmitSimpleWalksFromFwdPrefix(
-				out_simple_walks,
-				neighbor.dst,
-				&curr,
-				seen.Clone().Assoc(neighbor.dst, struct{}{}),
-			)
-		},
-	)
 }
 
 func (q Quiver[N, E, C]) EmitSimpleWalksFromToRev(
@@ -158,16 +136,18 @@ func (q Quiver[N, E, C]) EmitSimpleWalksFromToRev(
 	dst QuiverIndex,
 ) {
 	backing_prefix := make([]E, 0)
-	seen := NewPHashMap[QuiverIndex, struct{}]()
+	seen := NewPHashMap[QuiverIndex, uint8]()
 	q.EmitSimpleWalksFromToRevPrefix(out_simple_walks, src, dst, &backing_prefix, seen)
 }
+
+const QUIVER_SIMPLE_WALKS_MAX_TRAVERSAL_CYCLE_COUNT = 1
 
 func (q Quiver[N, E, C]) EmitSimpleWalksFromToRevPrefix(
 	out_simple_walks chan []E,
 	src QuiverIndex,
 	true_dst QuiverIndex,
 	prefix *[]E,
-	seen PHashMap[QuiverIndex, struct{}],
+	seen PHashMap[QuiverIndex, uint8],
 ) {
 	if src == true_dst {
 		curr := *prefix
@@ -176,8 +156,12 @@ func (q Quiver[N, E, C]) EmitSimpleWalksFromToRevPrefix(
 	q.ForEachInneighbor(
 		src,
 		func(neighbor Neighbor[E]) {
-			if seen.HasKey(neighbor.dst) {
-				return
+			prev_count := uint8(0)
+			if count, ok := seen.Index(neighbor.dst); ok {
+				if count >= QUIVER_SIMPLE_WALKS_MAX_TRAVERSAL_CYCLE_COUNT {
+					return
+				}
+				prev_count = count
 			}
 			curr := *prefix
 			curr = append(curr, neighbor.via_edge)
@@ -186,7 +170,7 @@ func (q Quiver[N, E, C]) EmitSimpleWalksFromToRevPrefix(
 				neighbor.dst,
 				true_dst,
 				&curr,
-				seen.Clone().Assoc(neighbor.dst, struct{}{}),
+				seen.Clone().Assoc(neighbor.dst, prev_count+1),
 			)
 		},
 	)

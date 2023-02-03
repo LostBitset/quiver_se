@@ -15,6 +15,7 @@ func (warden_config DMTQWardenConfig[N, ATOM, AUG]) Start() {
 				warden_config.dmtq.ParameterizeIndex(
 					warden_config.walk_src,
 				),
+				warden_config.walk_dst,
 			)
 			wg.Add(1)
 			go func() {

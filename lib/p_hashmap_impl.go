@@ -55,7 +55,12 @@ func (pm PHashMap[K, V]) HasKey(key K) (has bool) {
 func (pm PHashMap[K, V]) Index(key K) (val V, ok bool) {
 	var val_raw any
 	val_raw, ok = pm.inner.Index(key)
-	val = val_raw.(V)
+	if !ok {
+		var zero_val V
+		val = zero_val
+	} else {
+		val = val_raw.(V)
+	}
 	return
 }
 
