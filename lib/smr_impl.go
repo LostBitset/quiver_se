@@ -46,13 +46,20 @@ func (smr_config SMRConfig[ATOM, IDENT, SORT, MODEL, SCTX, SYS]) Start() {
 		}
 	}()
 	go func() {
-		defer close(smr_config.out_models)
-		smr_config.RunSMR()
+		for !smr_config.RunSMR() {
+		}
 	}()
 }
 
-func (unfinished *TrustingNoCopySMRUnfinishedArray[ATOM]) Append(elems ...map[NumericId]IdLiteral[ATOM]) {
+func (unfinished *TrustingNoCopySMRUnfinishedArray[ATOM]) Append(
+	elems ...map[NumericId]IdLiteral[ATOM],
+) {
 	unfinished.mu.Lock()
 	defer unfinished.mu.Unlock()
 	unfinished.arr = append(unfinished.arr, elems...)
+}
+
+func (smr_config SMRConfig[ATOM, IDENT, SORT, MODEL, SCTX, SYS]) RunSMR() (done bool) {
+	// TODO
+	return
 }
