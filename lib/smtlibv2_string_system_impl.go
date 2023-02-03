@@ -100,7 +100,7 @@ func (sys SMTLibv2StringSystem) Epilogue() (part string) {
 
 func (sys SMTLibv2StringSystem) ParseSolvedCtx(str string) (sctx SMTLibv2StringSolvedCtx) {
 	re_comments := regexp.MustCompile(`;;[^\n]\n`)
-	str_resp := strings.TrimSpace(
+	resp_str := strings.TrimSpace(
 		string(
 			re_comments.ReplaceAllLiteral(
 				[]byte(str),
@@ -108,23 +108,25 @@ func (sys SMTLibv2StringSystem) ParseSolvedCtx(str string) (sctx SMTLibv2StringS
 			),
 		),
 	)
-	str_resp = strings.ReplaceAll(str_resp, ".", "\\.")
-	str_resp = strings.ReplaceAll(str_resp, "(", "\\(")
-	str_resp = strings.ReplaceAll(str_resp, ")", "\\)")
-	str_resp = strings.ReplaceAll(str_resp, "|", "\\|")
-	str_resp = strings.ReplaceAll(str_resp, "[", "\\[")
-	str_resp = strings.ReplaceAll(str_resp, "]", "\\]")
-	re_substitutions := regexp.MustCompile(`%![^%]%`)
+	match_regex_drv := SMTLIBV2_STRING_SYSTEM_OUTPUT_FORMAT
+	match_regex_drv = strings.ReplaceAll(match_regex_drv, ".", "\\.")
+	match_regex_drv = strings.ReplaceAll(match_regex_drv, "(", "\\(")
+	match_regex_drv = strings.ReplaceAll(match_regex_drv, ")", "\\)")
+	match_regex_drv = strings.ReplaceAll(match_regex_drv, "|", "\\|")
+	match_regex_drv = strings.ReplaceAll(match_regex_drv, "[", "\\[")
+	match_regex_drv = strings.ReplaceAll(match_regex_drv, "]", "\\]")
+	re_substitutions := regexp.MustCompile(`%![^%]+%`)
 	resp_regex := strings.TrimSpace(
 		string(
 			re_substitutions.ReplaceAllLiteral(
-				[]byte(SMTLIBV2_STRING_SYSTEM_OUTPUT_FORMAT),
-				[]byte(`([^\\|\\]]+)`),
+				[]byte(match_regex_drv),
+				[]byte(`([^\|\]]+)`),
 			),
 		),
 	)
+	fmt.Println(resp_regex)
 	re_resp := regexp.MustCompile(resp_regex)
-	re_resp_output := re_resp.FindStringSubmatch(str_resp)
+	re_resp_output := re_resp.FindStringSubmatch(resp_str)
 	capture_groups := re_resp_output[1:]
 	if len(capture_groups) != 3 {
 		panic(fmt.Errorf(
