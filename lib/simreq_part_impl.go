@@ -15,28 +15,28 @@ func StartSiMReQ[
 		SCTX,
 	],
 ](
-	in_updates chan DSEWithCallbacksUpdate[QNODE, ATOM, IDENT, SORT],
+	in_updates chan Augmented[
+		QuiverUpdate[QNODE, PHashMap[Literal[WithId_H[ATOM]], struct{}], *DMT[WithId_H[ATOM], QuiverIndex]],
+		[]SMTFreeFun[IDENT, SORT],
+	],
 	out_models chan MODEL,
 	sys SYS,
 	idsrc IdSource,
 ) {
-	quiver_updates := make(chan QuiverUpdate[
-		QNODE, PHashMap[Literal[WithId_H[ATOM]], struct{}], *DMT[WithId_H[ATOM], QuiverIndex],
-	])
-	walks := make(chan WithSMTFreeFuns[
+	walks := make(chan Augmented[
 		QuiverWalk[QNODE, PHashMap[Literal[WithId_H[ATOM]], struct{}]],
-		IDENT, SORT,
+		[]SMTFreeFun[IDENT, SORT],
 	])
 	canidates := make(chan SMTQueryDNFClause[ATOM, IDENT, SORT])
-	smr_config := NewSMRConfig[ATOM, IDENT, SORT, MODEL, SCTX, SYS](
+	smr_config := NewSMRConfig[ATOM, IDENT, SORT, MODEL, SCTX](
 		canidates, out_models, sys,
 	)
 	var dmtq Quiver[QNODE, PHashMap[Literal[WithId_H[ATOM]], struct{}], *DMT[WithId_H[ATOM], QuiverIndex]]
 	top_node_dmt := NewDMT[WithId_H[ATOM], QuiverIndex]()
 	var zero_node QNODE
 	top_node := dmtq.InsertNode(zero_node, &top_node_dmt)
-	warden_config := DMTQWardenConfig[QNODE, WithId_H[ATOM]]{
-		in_updates: quiver_updates,
+	warden_config := DMTQWardenConfig[QNODE, WithId_H[ATOM], []SMTFreeFun[IDENT, SORT]]{
+		in_updates: in_updates,
 		out_walks:  walks,
 		walk_src:   top_node,
 		dmtq:       dmtq,
@@ -57,8 +57,9 @@ func StartSiMReQ[
 			}
 			canidates <- SMTQueryDNFClause[ATOM, IDENT, SORT]{
 				walk,
-				walk_recv.free_funs,
+				walk_recv.augment,
 			}
 		}
 	}()
+	warden_config.Start()
 }
