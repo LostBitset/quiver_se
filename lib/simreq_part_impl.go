@@ -1,7 +1,5 @@
 package qse
 
-import "fmt"
-
 func StartSiMReQ[
 	QNODE any,
 	ATOM comparable,
@@ -59,6 +57,7 @@ func StartSiMReQ[
 			}
 			processed_ids := make(map[NumericId]struct{})
 			walk := make([]IdLiteral[ATOM], 0)
+			boundaries := make([]int, 0)
 			for _, chunk := range chunks {
 				for _, set := range *chunk {
 					stdlib_set := set.ToStdlibMap()
@@ -70,15 +69,33 @@ func StartSiMReQ[
 						}
 					}
 				}
+				var old_boundary int
+				if len(boundaries) > 0 {
+					old_boundary = boundaries[len(boundaries)-1]
+				} else {
+					old_boundary = 0
+				}
+				new_boundary := len(walk)
+				if old_boundary != new_boundary {
+					boundaries = append(boundaries, new_boundary)
+				}
 			}
-			fmt.Println()
+			if len(boundaries) > 0 && boundaries[len(boundaries)-1] == len(walk) {
+				SpliceOutReclaim(&boundaries, len(boundaries)-1)
+			}
+			var failure_boundary int
+			if len(boundaries) > 0 {
+				failure_boundary = boundaries[len(boundaries)-1]
+			} else {
+				failure_boundary = 0
+			}
 			if _, ok := processed_hashes[sum]; ok {
 				continue
 			}
 			processed_hashes[sum] = struct{}{}
 			canidates <- SMRDNFClause[ATOM, IDENT, SORT]{
-				walk[:len(walk)],
-				walk[:len(walk)], // this bit is very much a TODO
+				walk[:failure_boundary],
+				walk[failure_boundary:],
 				walk_recv.augment,
 			}
 		}

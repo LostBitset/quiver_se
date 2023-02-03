@@ -1,7 +1,5 @@
 package qse
 
-import "fmt"
-
 func NewSMRConfig[
 	ATOM comparable,
 	IDENT any,
@@ -136,7 +134,6 @@ func (smr_config SMRConfig[ATOM, IDENT, SORT, MODEL, SCTX, SYS]) SMRIterationUnf
 	finished := make([]int, 0)
 	for i := range smr_config.unfinished.arr {
 		elem := smr_config.unfinished.arr[i]
-		fmt.Println(elem)
 		combined := make([]IdLiteral[ATOM], 0)
 		combined = append(combined, elem.conjunction_r...)
 		combined = append(combined, elem.conjunction_f...)
