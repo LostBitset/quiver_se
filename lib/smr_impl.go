@@ -102,7 +102,10 @@ func (smr_config SMRConfig[ATOM, IDENT, SORT, MODEL, SCTX, SYS]) RunSMR() (done 
 	if done {
 		return
 	}
-	// bgn TODO
-	// end TODO
+	smr_config.SMRIterationUnfinishedUnlocked()
 	return
+}
+
+func (smr_config SMRConfig[ATOM, IDENT, SORT, MODEL, SCTX, SYS]) SMRIterationUnfinishedUnlocked() {
+	// TODO
 }
