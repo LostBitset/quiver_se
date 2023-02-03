@@ -1,7 +1,6 @@
 package qse
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -22,7 +21,6 @@ func TestSiMReQPart(t *testing.T) {
 	intended_node := dmtq.NewIntendedNode(47, &update_dmt)
 	intended_node_cb_backing := func(index QuiverIndex) {
 		go func() {
-			fmt.Println("cb bgn")
 			in_updates <- Augmented[
 				QuiverUpdate[int, PHashMap[Literal[WithId_H[string]], struct{}], *DMT[WithId_H[string], QuiverIndex]],
 				[]SMTFreeFun[string, string],

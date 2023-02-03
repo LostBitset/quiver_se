@@ -2,7 +2,6 @@ package qse
 
 import (
 	"encoding/binary"
-	"fmt"
 	"hash/fnv"
 )
 
@@ -52,13 +51,9 @@ func StartSiMReQ[
 	}
 	smr_config.Start()
 	go func() {
-		defer fmt.Println("<end> canidate intermediary")
-		defer fmt.Println("walks and canidates are now closed")
 		defer close(canidates)
-		fmt.Println("<bgn> canidate intermediary")
 		processed_hashes := make(map[uint32]struct{})
 		for walk_recv := range walks {
-			fmt.Println("recieved walk from dmtq warden, rewriting before sending to smr...")
 			hasher := fnv.New32a()
 			walk_chunked := walk_recv.value
 			processed_ids := make(map[NumericId]struct{})
@@ -79,18 +74,13 @@ func StartSiMReQ[
 			}
 			walk_hash := hasher.Sum32()
 			if _, ok := processed_hashes[walk_hash]; ok {
-				fmt.Println("skipping (duplicate)")
 				continue
 			}
 			processed_hashes[walk_hash] = struct{}{}
-			fmt.Println("rewritten as: bgn")
-			fmt.Println(walk)
-			fmt.Println("end, sending...")
 			canidates <- SMTQueryDNFClause[ATOM, IDENT, SORT]{
 				walk,
 				walk_recv.augment,
 			}
-			fmt.Println("sent")
 		}
 	}()
 	warden_config.Start()
