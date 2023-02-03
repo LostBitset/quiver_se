@@ -96,9 +96,13 @@ func (unfinished *TrustingNoCopySMRUnfinishedArray[ATOM]) Append(
 }
 
 func (smr_config SMRConfig[ATOM, IDENT, SORT, MODEL, SCTX, SYS]) RunSMR() (done bool) {
-	// TODO
 	smr_config.unfinished.mu.Lock()
 	defer smr_config.unfinished.mu.Unlock()
-	done
+	done = (len(smr_config.unfinished.arr) == 0)
+	if done {
+		return
+	}
+	// bgn TODO
+	// end TODO
 	return
 }
