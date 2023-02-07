@@ -29,3 +29,8 @@ pkg/
 pkg/*
 pkg/**/*
 
+# (Added) Node.js stuff in the callback_streams/ directory
+callback_streams/node_modules/
+callback_streams/node_modules/*
+callback_streams/node_modules/**/*
+
