@@ -8,7 +8,7 @@ const { parseScript } = seafox;
 
 import { strict as assert } from "node:assert";
 
-import { readFile } from "node:fs";
+import { readFile, writeFile } from "node:fs";
 
 var debug;
 
