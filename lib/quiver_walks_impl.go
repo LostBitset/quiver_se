@@ -1,5 +1,9 @@
 package qse
 
+import (
+	log "github.com/sirupsen/logrus"
+)
+
 func NewPhantomQuiverAssociation[N any, E any, C ReversibleAssoc[E, QuiverIndex]]() (
 	phantom_association PhantomQuiverAssociation[N, E, C],
 ) {
@@ -76,6 +80,7 @@ func (q *Quiver[N, E, C]) ApplyUpdate(update QuiverUpdate[N, E, C]) (src, dst Qu
 	src = update.src
 	dst = update.dst.ResolveAsQuiverUpdateDst(q)
 	q.InsertEdge(src, dst, update.edge)
+	log.Info("[quiver_walks/Quiver.ApplyUpdate] Updated quiver. ")
 	return
 }
 

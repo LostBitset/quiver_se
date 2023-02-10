@@ -1,5 +1,9 @@
 package qse
 
+import (
+	log "github.com/sirupsen/logrus"
+)
+
 func StartSiMReQ[
 	QNODE any,
 	ATOM comparable,
@@ -49,6 +53,7 @@ func StartSiMReQ[
 		defer close(canidates)
 		processed_hashes := make(map[uint32]struct{})
 		for walk_recv := range walks {
+			log.Info("[simreq_part/go1(junction)] Received (augmented) quiver walk. ")
 			sum := uint32(0xE4E4)
 			walk_chunked := walk_recv.value
 			chunks := walk_chunked.edges_chunked
@@ -98,6 +103,7 @@ func StartSiMReQ[
 				walk[failure_boundary:],
 				walk_recv.augment,
 			}
+			log.Info("[simreq_part/go1(junction)] Sent (augmented) quiver walk in canidate form. ")
 		}
 	}()
 	warden_config.Start()

@@ -5,6 +5,8 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+
+	log "github.com/sirupsen/logrus"
 )
 
 func (sys SMTLibv2StringSystem) MakeAtom(expr string) (atom WithId_H[string]) {
@@ -19,6 +21,7 @@ func (sys SMTLibv2StringSystem) CheckSat(
 	conjunction []IdLiteral[string],
 	free_funs []SMTFreeFun[string, string],
 ) (sctx SMTLibv2StringSolvedCtx) {
+	log.Info("[smtlibv2_string_system/SMTLibv2StringSystem.CheckSat] Building SMTLibv2 query. ")
 	var sb strings.Builder
 	sb.WriteString(
 		sys.Prologue(),
@@ -40,7 +43,9 @@ func (sys SMTLibv2StringSystem) CheckSat(
 	}
 	sb.WriteString(sys.Epilogue())
 	resp := NewZ3SMTLibv2Query(sb.String()).Run()
+	log.Info("[smtlibv2_string_system/SMTLibv2StringSystem.CheckSat] Parsing SMTLibv2 response. ")
 	sctx = sys.ParseSolvedCtx(resp)
+	log.Info("[smtlibv2_string_system/SMTLibv2StringSystem.CheckSat] Response parsed succesfully. ")
 	return
 }
 

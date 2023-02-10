@@ -1,5 +1,9 @@
 package qse
 
+import (
+	log "github.com/sirupsen/logrus"
+)
+
 func NewSMRConfig[
 	ATOM comparable,
 	IDENT any,
@@ -86,6 +90,7 @@ func (smr_config SMRConfig[ATOM, IDENT, SORT, MODEL, SCTX, SYS]) Start() {
 		defer close(wakeup_chan)
 	runSMRLoop:
 		for {
+			log.Info("[smr/go1] SMR iteration goroutine awake. ")
 			if eternal_slumber.Check() {
 				for !smr_config.RunSMR() {
 				}
@@ -94,6 +99,7 @@ func (smr_config SMRConfig[ATOM, IDENT, SORT, MODEL, SCTX, SYS]) Start() {
 			for !smr_config.RunSMR() {
 			}
 			is_sleeping.Sleep()
+			log.Info("[smr/go1] SMR iteration goroutine asleep. ")
 			<-wakeup_chan
 		}
 	}()
@@ -103,8 +109,10 @@ func (smr_config SMRConfig[ATOM, IDENT, SORT, MODEL, SCTX, SYS]) Start() {
 			wakeup_chan <- struct{}{}
 		}()
 		for canidate := range smr_config.in_canidates {
+			log.Info("[smr/go2] Received canidate. ")
 			smr_config.unfinished.Append(canidate)
 			if !is_sleeping.Wake() {
+				log.Info("[smr/go2] Waking up SMR iteration goroutine. ")
 				wakeup_chan <- struct{}{}
 			}
 		}
@@ -120,12 +128,15 @@ func (unfinished *TrustingNoCopySMRUnfinishedArray[ATOM, IDENT, SORT]) Append(
 }
 
 func (smr_config SMRConfig[ATOM, IDENT, SORT, MODEL, SCTX, SYS]) RunSMR() (done bool) {
+	log.Info("[smr/SMRConfig.RunSMR] Acquiring lock. ")
 	smr_config.unfinished.mu.Lock()
 	defer smr_config.unfinished.mu.Unlock()
 	done = (len(smr_config.unfinished.arr) == 0)
 	if done {
+		log.Info("[smr/SMRConfig.RunSMR] Lock acquired, no work right now. ")
 		return
 	}
+	log.Info("[smr/SMRConfig.RunSMR] Lock aquired, running an SMR iteration. ")
 	smr_config.SMRIterationUnfinishedUnlocked()
 	return
 }

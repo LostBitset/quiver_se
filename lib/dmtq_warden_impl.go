@@ -2,15 +2,19 @@ package qse
 
 import (
 	"sync"
+
+	log "github.com/sirupsen/logrus"
 )
 
 func (warden_config DMTQWardenConfig[N, ATOM, AUG]) Start() {
 	go func() {
 		var wg sync.WaitGroup
 		for update_augmented := range warden_config.in_updates {
+			log.Info("[dmtq_warden/go1] Received (augmented) quiver update. ")
 			update := update_augmented.value
 			augment := update_augmented.augment
 			out_walks_specific := make(chan QuiverWalk[N, PHashMap[Literal[ATOM], struct{}]])
+			log.Info("[dmtq_warden/go1] Applying update to quiver and emitting new walks. ")
 			warden_config.dmtq.ApplyUpdateAndEmitWalks(
 				out_walks_specific,
 				update,
@@ -22,6 +26,7 @@ func (warden_config DMTQWardenConfig[N, ATOM, AUG]) Start() {
 			wg.Add(1)
 			go func() {
 				defer wg.Done()
+				log.Info("[dmtq_warden/go1/go1] Listening for (raw) quiver walks. ")
 				for walk := range out_walks_specific {
 					warden_config.out_walks <- Augmented[
 						QuiverWalk[N, PHashMap[Literal[ATOM], struct{}]],
@@ -30,6 +35,7 @@ func (warden_config DMTQWardenConfig[N, ATOM, AUG]) Start() {
 						walk, augment,
 					}
 				}
+				log.Info("[dmtq_warden/go1/go1] Sent all (augmented) quiver walks. ")
 			}()
 		}
 		go func() {

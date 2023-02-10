@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"encoding/binary"
 	"hash/fnv"
+
+	log "github.com/sirupsen/logrus"
 )
 
 func (n uint32_H) Hash() (digest digest_t) {
@@ -244,6 +246,7 @@ getChildEdgesLoop:
 					inv_subtrie_hash = c.meta
 				}
 				if DigestEqual(buf_subtrie_hash, inv_subtrie_hash) {
+					log.Info("[dmt/DMT.SimplifyNode] Performing non-trie (merkle) simplification. ")
 					unwanted_children = append(unwanted_children, buf_i)
 					unwanted_children = append(unwanted_children, inv_i)
 					t.ShiftChildren(node, buf_i)

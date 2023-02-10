@@ -3,6 +3,8 @@ package qse
 import (
 	"os"
 	"os/exec"
+
+	log "github.com/sirupsen/logrus"
 )
 
 func NewZ3SMTLibv2Query(query_str string) (query Z3SMTLibv2Query) {
@@ -13,6 +15,7 @@ func NewZ3SMTLibv2Query(query_str string) (query Z3SMTLibv2Query) {
 const Z3SMTLibv2Query_TEMP_SMT2_FILENAME_FORMAT = "temp_qse-go_Z3SMTLibv2Query-Run_*_GENERATED.smt2"
 
 func (query Z3SMTLibv2Query) Run() (output string) {
+	log.Info("[z3smtlibv2_query/Z3SMTLibv2Query.Run] Setting up SMT query. ")
 	temp_smt2_file, err_create := os.CreateTemp("/tmp", Z3SMTLibv2Query_TEMP_SMT2_FILENAME_FORMAT)
 	if err_create != nil {
 		panic(err_create)
@@ -30,6 +33,7 @@ func (query Z3SMTLibv2Query) Run() (output string) {
 	}
 	temp_smt2_file.Close()
 	closed = true
+	log.Info("[z3smtlibv2_query/Z3SMTLibv2Query.Run] Querying Z3. ")
 	z3_cmd := exec.Command("z3", "-smt2", temp_smt2_file.Name())
 	z3_out, err_cmd := z3_cmd.Output()
 	if err_cmd != nil {
@@ -39,6 +43,7 @@ func (query Z3SMTLibv2Query) Run() (output string) {
 			panic(err_cmd)
 		}
 	}
+	log.Info("[z3smtlibv2_query/Z3SMTLibv2Query.Run] Successfully queried Z3. ")
 	output = string(z3_out)
 	return
 }
