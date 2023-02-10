@@ -91,6 +91,13 @@ try {
 
 function instrument(contents, estree) {
 	let code = contents;
+	let ims = "// bgn imports-raw (raw)\n\n";
+	for (const [start, end] of estreeImports(estree)) {
+		let im = code.substring(start, end);
+		code = replaceIndexRange(code, start, end, "");
+		ims += `${im}\n`;
+	}
+	ims += "\n// end imports-raw (raw)\n\n";
 	let cb_id = 0;
 	for (const [start, end, ...rest] of estreeFunctions(estree)) {
 		code = replaceIndexRange(
@@ -101,11 +108,18 @@ function instrument(contents, estree) {
 		);
 		cb_id++;
 	}
-	return INSTRUMENTATION_OUTER_TEMPLATE.replace("<%=SCRIPT%>", code);
+	return ims + INSTRUMENTATION_OUTER_TEMPLATE.replace("<%=SCRIPT%>", code);
 }
 
 function* estreeImports(estree) {
-	conlog('TODO!!!');
+	for (const i in estree.body) {
+		let tl = estree.body[i];
+		console.log(tl);
+		if (tl.type == "ImportDeclaration") {
+			let { start, end } = tl;
+			yield [start, end];
+		}
+	}
 }
 
 function* estreeFunctions(estree) {
