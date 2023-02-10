@@ -62,6 +62,14 @@ function instrument(contents, estree) {
 	return code;
 }
 
+function* estreeFunctions(estree) {
+	// TODO everything
+}
+
+function instrumentFunction(orig, id) {
+	// TODO everything
+}
+
 // @UnitTest
 assert.equal(parseScript("console.log(42);").body[0].expression.type, "CallExpression");
 
