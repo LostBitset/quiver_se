@@ -104,6 +104,10 @@ function instrument(contents, estree) {
 	return INSTRUMENTATION_OUTER_TEMPLATE.replace("<%=SCRIPT%>", code);
 }
 
+function* estreeImports(estree) {
+	conlog('TODO!!!');
+}
+
 function* estreeFunctions(estree) {
 	conlog('TODO!!!');
 }
