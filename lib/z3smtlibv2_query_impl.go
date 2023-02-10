@@ -43,7 +43,7 @@ func (query Z3SMTLibv2Query) Run() (output string) {
 			panic(err_cmd)
 		}
 	}
-	log.Info("[z3smtlibv2_query/Z3SMTLibv2Query.Run] Successfully queried Z3. ")
+	log.Info("[z3smtlibv2_query/Z3SMTLibv2Query.Run] Queried Z3 successfully. ")
 	output = string(z3_out)
 	return
 }
