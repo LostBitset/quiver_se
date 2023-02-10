@@ -20,7 +20,6 @@ function conlog(...args) {
 function main(filename) {
 	let new_filename = filename.replace(/\.js$/, ".INSTRUMENTED-cbstream.js");
 	conlog(`Starting (cbstream) instrumentation of file "./${filename}"...`);
-	conlog(`(Output will be saved as "./${new_filename}")`);
 	readFile(filename, (err, contents_buf) => {
 		if (err) throw err;
 		let contents = contents_buf.toString();
@@ -28,13 +27,39 @@ function main(filename) {
 		let estree = parseScript(contents);
 		conlog(`Parsed via seafox (estree.type == "${estree.type}").`);
 		conlog(`Starting instrumentation...`);
-		writeInstrumented(estree, new_filename);
-		conlog(`All done. Instrumented version saved as "./${new_filename}".`);
+		let instrumented = instrument(contents, estree, new_filename);
+		writeFile(new_filename, instrumented, (err) => {
+			if (err) throw err;
+			conlog(`All done. Instrumented version saved as "./${new_filename}".`);
+		});
 	});
 }
 
-function writeInstrumented(estree, outfile) {
-	conlog("[TODO everything]");
+function replaceIndexRange(str, start, end, repl) {
+	return str.substring(0, start) + repl + str.substring(end);
+}
+
+const INSTRUMENTATION_PREFIX = `
+// begin INSTRUMENTATION_PREFIX
+
+// [TODO everything]
+
+// end INSTRUMENTATION_PREFIX
+`;
+
+function instrument(contents, estree) {
+	let code = `${INSTRUMENTATION_PREFIX}\n${contents}`;
+	let cb_id = 0;
+	estreeFunctions(estree).forEach(([start, end, orig]) => {
+		code = replaceIndexRange(
+			code,
+			start,
+			end,
+			instrumentFunction(orig, cb_id),
+		);
+		cb_id++;
+	});
+	return code;
 }
 
 // @UnitTest
