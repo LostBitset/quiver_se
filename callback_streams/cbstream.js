@@ -39,35 +39,77 @@ function replaceIndexRange(str, start, end, repl) {
 	return str.substring(0, start) + repl + str.substring(end);
 }
 
-const INSTRUMENTATION_PREFIX = `
-// begin INSTRUMENTATION_PREFIX
+const INSTRUMENTATION_OUTER_TEMPLATE = `
+// This code has been instrumented by cbstream.js
+// to emit the stream of callbacks that are run
 
-// [TODO everything]
+// bgn decl-prefix (static)
 
-// end INSTRUMENTATION_PREFIX
+let _Q$hCb = false;
+let _Q$sen = 0;
+
+function _Q$cbH(i) {
+	_Q$sen = (_Q$sen + i) % 8;
+}
+
+function _Q$cCb(i) {
+	let h = _Q$hCb;
+	_Q$hCb = true;
+	if (!h) _Q$cbH(i);
+	process.nextTick(() => {
+		_Q$hCb = false;
+	});
+}
+
+function _Q$end() {
+	if (_Q$sen == 0) eval("");
+}
+
+// end decl-prefix (static)
+// bgn entry-point (wraps-instrumented)
+
+function _Q$ent() {
+<%=SCRIPT%>
+}
+
+// end entry-point (wraps-instrumented)
+// bgn main-rescue (static)
+
+try {
+	_Q$cCb(-1); // virtual callback "top"
+	_Q$ent();
+	_Q$end();
+} catch (e) {
+	_Q$cbH(-2); // virtual callback "fail"
+	_Q$end();
+	throw e;
+}
+
+// end main-rescue (static)
+
 `;
 
 function instrument(contents, estree) {
-	let code = `${INSTRUMENTATION_PREFIX}\n${contents}`;
+	let code = contents;
 	let cb_id = 0;
-	estreeFunctions(estree).forEach(([start, end, orig]) => {
+	for (const [start, end, ...rest] of estreeFunctions(estree)) {
 		code = replaceIndexRange(
 			code,
 			start,
 			end,
-			instrumentFunction(orig, cb_id),
+			instrumentFunction(...rest, cb_id),
 		);
 		cb_id++;
-	});
-	return code;
+	}
+	return INSTRUMENTATION_OUTER_TEMPLATE.replace("<%=SCRIPT%>", code);
 }
 
 function* estreeFunctions(estree) {
-	// TODO everything
+	conlog('TODO!!!');
 }
 
-function instrumentFunction(orig, id) {
-	// TODO everything
+function instrumentFunction(orig, estree, id) {
+	conlog('TODO!!!');
 }
 
 // @UnitTest
