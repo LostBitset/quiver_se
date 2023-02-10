@@ -13,14 +13,14 @@ import { readFile } from "node:fs";
 var debug;
 
 function conlog(...args) {
-	if (debug) console.log(...args);
+	if (debug) console.log("INFO[cbstream@node] ", ...args);
 	return undefined;
 }
 
 function main(filename) {
 	let new_filename = filename.replace(/\.js$/, ".INSTRUMENTED-cbstream.js");
 	conlog(`Starting (cbstream) instrumentation of file "./${filename}"...`);
-	conlog(`(This is not intended to be a destructive operation, output will be saved as "./${new_filename}")`);
+	conlog(`(Output will be saved as "./${new_filename}")`);
 	readFile(filename, (err, contents_buf) => {
 		if (err) throw err;
 		let contents = contents_buf.toString();
