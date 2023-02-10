@@ -28,6 +28,8 @@ function _Q$end() {
 // bgn entry-point (wraps-instrumented)
 
 function _Q$ent() {
+import { readFile } from 'node:fs';
+
 console.log(1 + 1);
 
 

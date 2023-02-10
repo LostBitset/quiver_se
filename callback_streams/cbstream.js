@@ -4,7 +4,7 @@
 // call is a new callback being invoked or not
 
 import seafox from "seafox";
-const { parseScript } = seafox;
+const { parseModule } = seafox;
 
 import { strict as assert } from "node:assert";
 
@@ -24,7 +24,7 @@ function main(filename) {
 		if (err) throw err;
 		let contents = contents_buf.toString();
 		conlog(`Read file into memory (${contents.length} bytes).`)
-		let estree = parseScript(contents);
+		let estree = parseModule(contents);
 		conlog(`Parsed via seafox (estree.type == "${estree.type}").`);
 		conlog(`Starting instrumentation...`);
 		let instrumented = instrument(contents, estree, new_filename);
@@ -117,7 +117,7 @@ function instrumentFunction(orig, estree, id) {
 }
 
 // @UnitTest
-assert.equal(parseScript("console.log(42);").body[0].expression.type, "CallExpression");
+assert.equal(parseModule("console.log(42);").body[0].expression.type, "CallExpression");
 
 // @PEBCAK
 assert(process.argv.length == 3 || process.argv.length == 4);
