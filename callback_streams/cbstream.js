@@ -10,33 +10,41 @@ import { strict as assert } from "node:assert";
 
 import { readFile } from "node:fs";
 
+var debug;
+
+function conlog(...args) {
+	if (debug) console.log(...args);
+	return undefined;
+}
+
 function main(filename) {
 	let new_filename = filename.replace(/\.js$/, ".INSTRUMENTED-cbstream.js");
-	console.log(`Starting (cbstream) instrumentation of file "./${filename}"...`);
-	console.log(`(This is not intended to be a destructive operation, output will be saved as "./${new_filename}")`);
+	conlog(`Starting (cbstream) instrumentation of file "./${filename}"...`);
+	conlog(`(This is not intended to be a destructive operation, output will be saved as "./${new_filename}")`);
 	readFile(filename, (err, contents_buf) => {
 		if (err) throw err;
 		let contents = contents_buf.toString();
-		console.log(`Read file into memory (${contents.length} bytes).`)
+		conlog(`Read file into memory (${contents.length} bytes).`)
 		let estree = parseScript(contents);
-		console.log(`Parsed via seafox (estree.type == "${estree.type}").`);
-		console.log(`Starting instrumentation...`);
+		conlog(`Parsed via seafox (estree.type == "${estree.type}").`);
+		conlog(`Starting instrumentation...`);
 		writeInstrumented(estree, new_filename);
-		console.log(`All done. Instrumented version saved as "./${new_filename}".`);
+		conlog(`All done. Instrumented version saved as "./${new_filename}".`);
 	});
 }
 
 function writeInstrumented(estree, outfile) {
-	console.log("[TODO everything]");
+	conlog("[TODO everything]");
 }
 
 // @UnitTest
 assert.equal(parseScript("console.log(42);").body[0].expression.type, "CallExpression");
 
 // @PEBCAK
-assert.equal(process.argv.length, 3)
+assert(process.argv.length == 3 || process.argv.length == 4);
 
 let argument = process.argv[2];
+debug = (process.argv[3] || "") == "debug";
 
 // @PEBCAK
 assert.notEqual(argument.match(/\.js$/), null)
