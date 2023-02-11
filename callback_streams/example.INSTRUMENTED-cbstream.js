@@ -36,63 +36,12 @@ function _Q$end() {
 function _Q$ent() {
 
 
-fs.readFile('something.txt', 'utf8', (err, contents) => {
-	if (err !== null){ _Q$cCb(2); return (_Q$cCb(0); {
+fs.readFile('something.txt', 'utf8', (err, contents) => _Q$cCb(0);{
+	if (err !== null) {
 		throw new Error(err.toString());
 	} else {
-		fs.readFile('something2.txt', 'utf8', (err, con{ _Q$cCb(3); return (tents2) => {
-			if (e_Q$cCb(1);rr !== null) {
-				throw new Error(err.toString());
-			} else {
-				let eq = (x, y) => (x === y);
-				console.log(eq(contents, contents2));
-			}
-		});
-	}
-});
-
-); }
-
-fs.readFile('something.txt', 'utf8', (err, contents) => {
-	if (err !== null)_Q$cCb(0); {
-		throw new Error(err.toString());
-	} else {
-		fs.readFile('something2.txt', 'utf8', (err, contents2) => {
-			if (e_Q$cCb(1);rr !== null) {
-				throw new Error(err.toString());
-			} else {
-				let eq = (x, y) => (x === y);
-				console.log(eq(contents, contents2));
-			}
-		});
-	}
-});
-
-); }
-
-fs.readFile('something.txt', 'utf8', (err, contents) => {
-	if (err !== null){ _Q$cCb(2); return (_Q$cCb(0); {
-		throw new Error(err.toString());
-	} else {
-		fs.readFile('something2.txt', 'utf8', (err, contents2) => {
-			if (e_Q$cCb(1);rr !== null) {
-				throw new Error(err.toString());
-			} else {
-				let eq = (x, y) => (x === y);
-				console.log(eq(contents, contents2));
-			}
-		});
-	}
-});
-
-); }
-
-fs.readFile('something.txt', 'utf8', (err, contents) => {
-	if (err !== null)_Q$cCb(0); {
-		throw new Error(err.toString());
-	} else {
-		fs.readFile('something2.txt', 'utf8', (err, contents2) => {
-			if (e_Q$cCb(1);rr !== null) {
+		fs.readFile('something2.txt', 'utf8', (err, contents2) => _Q$cCb(1);{
+			if (err !== null) {
 				throw new Error(err.toString());
 			} else {
 				let eq = (x, y) => (x === y);

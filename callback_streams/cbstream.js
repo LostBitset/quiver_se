@@ -92,24 +92,31 @@ try {
 function instrument(contents, estree) {
 	console.log(Array.from(estreeSubObjects(estree.body)));
 	let code = contents;
+	let offset = 0;
 	let ims = "// bgn imports-raw (raw)\n\n";
-	for (const [start, end] of estreeImports(estree)) {
+	for (const [rstart, rend] of estreeImports(estree)) {
+		let [start, end] = [rstart - offset, rend - offset];
 		let im = code.substring(start, end);
+		let lbefore = code.length;
 		code = replaceIndexRange(code, start, end, "");
+		offset += lbefore - code.length;
 		ims += `${im}\n`;
 	}
 	ims += "\n// end imports-raw (raw)\n\n";
 	let cb_id = 0;
-	for (const [inject] of estreeBlockFunctions(estree)) {
+	for (const [rinject] of estreeBlockFunctions(estree)) {
+		let inject = rinject - offset;
+		let lbefore = code.length;
 		code = replaceIndexRange(
 			code,
 			inject,
 			inject,
 			injectionForBlockFunction(cb_id),
 		);
+		offset += lbefore - code.length;
 		cb_id++;
 	}
-	for (const [wrap_start, wrap_end] of estreeBlockFunctions(estree)) {
+	/*for (const [wrap_start, wrap_end] of estreeBlockFunctions(estree)) {
 		code = replaceIndexRange(
 			code,
 			wrap_start,
@@ -120,7 +127,7 @@ function instrument(contents, estree) {
 			),
 		);
 		cb_id++;
-	}
+	}*/
 	return ims + INSTRUMENTATION_OUTER_TEMPLATE.replace("<%=SCRIPT%>", code);
 }
 
@@ -137,10 +144,12 @@ function* estreeImports(estree) {
 function isEstreeSubObject(estree_value) {
 	if (typeof estree_value !== "object") return false;
 	if (!estree_value) return false;
+	if (!estree_value.hasOwnProperty("type")) return false;
+	if (estree_value.type == "Identifier") return false;
 	return estree_value.hasOwnProperty("start") && estree_value.hasOwnProperty("end");
 }
 
-function* estreeSubObjects(estree_obj) {
+function* estreeSubObjects(estree_obj, types) {
 	yield estree_obj;
 	for (const [_, v] of Object.entries(estree_obj)) {
 		if (isEstreeSubObject(v)) {
