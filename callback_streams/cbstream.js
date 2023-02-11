@@ -109,8 +109,8 @@ function instrument(contents, estree) {
 		let lbefore = code.length;
 		code = replaceIndexRange(
 			code,
-			inject,
-			inject,
+			inject + 1,
+			inject + 1,
 			injectionForBlockFunction(cb_id),
 		);
 		offset += lbefore - code.length;

@@ -36,11 +36,11 @@ function _Q$end() {
 function _Q$ent() {
 
 
-fs.readFile('something.txt', 'utf8', (err, contents) => _Q$cCb(0);{
+fs.readFile('something.txt', 'utf8', (err, contents) => {_Q$cCb(0);
 	if (err !== null) {
 		throw new Error(err.toString());
 	} else {
-		fs.readFile('something2.txt', 'utf8', (err, contents2) => _Q$cCb(1);{
+		fs.readFile('something2.txt', 'utf8', (err, contents2) => {_Q$cCb(1);
 			if (err !== null) {
 				throw new Error(err.toString());
 			} else {
