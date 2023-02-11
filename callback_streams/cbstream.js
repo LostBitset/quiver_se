@@ -39,56 +39,6 @@ function replaceIndexRange(str, start, end, repl) {
 	return str.substring(0, start) + repl + str.substring(end);
 }
 
-const INSTRUMENTATION_OUTER_TEMPLATE = `
-// This code has been instrumented by cbstream.js
-// to emit the stream of callbacks that are run
-
-// bgn decl-prefix (static)
-
-let _Q$hCb = false;
-let _Q$sen = 0;
-
-function _Q$cbH(i) {
-	_Q$sen = (_Q$sen + i) % 8;
-}
-
-function _Q$cCb(i) {
-	let h = _Q$hCb;
-	_Q$hCb = true;
-	if (!h) _Q$cbH(i);
-	process.nextTick(() => {
-		_Q$hCb = false;
-	});
-}
-
-function _Q$end() {
-	if (_Q$sen == 0) eval("");
-}
-
-// end decl-prefix (static)
-// bgn entry-point (wraps-instrumented)
-
-function _Q$ent() {
-<%=SCRIPT%>
-}
-
-// end entry-point (wraps-instrumented)
-// bgn main-rescue (static)
-
-try {
-	_Q$cCb(-1); // virtual callback "top"
-	_Q$ent();
-	_Q$end();
-} catch (e) {
-	_Q$cbH(-2); // virtual callback "fail"
-	_Q$end();
-	throw e;
-}
-
-// end main-rescue (static)
-
-`;
-
 function instrument(contents, estree) {
 	console.log(Array.from(estreeSubObjects(estree.body)));
 	let code = contents;
@@ -218,6 +168,73 @@ debug = (process.argv[3] || "") == "debug";
 
 // @PEBCAK
 assert.notEqual(argument.match(/\.js$/), null)
+
+const INSTRUMENTATION_OUTER_TEMPLATE = `
+// This code has been instrumented by cbstream.js
+// to emit the stream of callbacks that are run
+
+// bgn decl-prefix (static)
+
+let _Q$hCb = false; // shorthand: has callback
+let _Q$sen = 0;     // shorthand: sentinel
+
+// shorthand: callback handler
+function _Q$cbH(i) {
+	${debug?"console.log(\"[CBSTREAM] Got: \" + i);":""}
+	_Q$sen = (_Q$sen + i) % 8;
+}
+
+// shorthand: claim callback
+function _Q$cCb(i) {
+	let h = _Q$hCb;
+	_Q$hCb = true;
+	if (!h) _Q$cbH(i);
+	process.nextTick(() => {
+		_Q$hCb = false;
+	});
+}
+
+function _Q$end() {
+	if (_Q$sen == 0) eval("");
+}
+
+// shorthand: exception handler
+function _Q$xnH(e) {
+	_Q$cbH(-2); // virtual callback "fail"
+	_Q$end();
+	process.removeListener("uncaughtException", _Q$xnH);
+	throw e;
+}
+
+// end decl-prefix (static)
+// bgn entry-point (wraps-instrumented)
+
+// shorthand: entry point
+function _Q$ent() {
+<%=SCRIPT%>
+}
+
+// end entry-point (wraps-instrumented)
+// bgn main-rescue (static)
+
+// note: transient, this binding will remove itself
+// to observe errors without redirecting them
+process.on("uncaughtException", _Q$xnH);
+
+// note: actual entry point for instrumented code
+try {
+	_Q$cCb(-1); // virtual callback "top"
+	_Q$ent();
+	_Q$end();
+} catch (e) {
+	_Q$cbH(-2); // virtual callback "fail"
+	_Q$end();
+	throw e;
+}
+
+// end main-rescue (static)
+
+`;
 
 main(argument)
 

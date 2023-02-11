@@ -10,13 +10,16 @@ import fs from 'fs';
 
 // bgn decl-prefix (static)
 
-let _Q$hCb = false;
-let _Q$sen = 0;
+let _Q$hCb = false; // shorthand: has callback
+let _Q$sen = 0;     // shorthand: sentinel
 
+// shorthand: callback handler
 function _Q$cbH(i) {
+	console.log("[CBSTREAM] Got: " + i);
 	_Q$sen = (_Q$sen + i) % 8;
 }
 
+// shorthand: claim callback
 function _Q$cCb(i) {
 	let h = _Q$hCb;
 	_Q$hCb = true;
@@ -30,9 +33,18 @@ function _Q$end() {
 	if (_Q$sen == 0) eval("");
 }
 
+// shorthand: exception handler
+function _Q$xnH(e) {
+	_Q$cbH(-2); // virtual callback "fail"
+	_Q$end();
+	process.removeListener("uncaughtException", _Q$xnH);
+	throw e;
+}
+
 // end decl-prefix (static)
 // bgn entry-point (wraps-instrumented)
 
+// shorthand: entry point
 function _Q$ent() {
 
 
@@ -57,6 +69,11 @@ fs.readFile('something.txt', 'utf8', (err, contents) => {_Q$cCb(0);
 // end entry-point (wraps-instrumented)
 // bgn main-rescue (static)
 
+// note: transient, this binding will remove itself
+// to observe errors without redirecting them
+process.on("uncaughtException", _Q$xnH);
+
+// note: actual entry point for instrumented code
 try {
 	_Q$cCb(-1); // virtual callback "top"
 	_Q$ent();
