@@ -116,7 +116,7 @@ function instrument(contents, estree) {
 		offset += lbefore - code.length;
 		cb_id++;
 	}
-	/*for (const [wrap_start, wrap_end] of estreeBlockFunctions(estree)) {
+	for (const [wrap_start, wrap_end] of estreeBlockFunctions(estree)) {
 		code = replaceIndexRange(
 			code,
 			wrap_start,
@@ -127,7 +127,7 @@ function instrument(contents, estree) {
 			),
 		);
 		cb_id++;
-	}*/
+	}
 	return ims + INSTRUMENTATION_OUTER_TEMPLATE.replace("<%=SCRIPT%>", code);
 }
 
