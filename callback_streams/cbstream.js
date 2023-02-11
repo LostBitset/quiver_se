@@ -24,7 +24,7 @@ function main(filename) {
 		if (err) throw err;
 		let contents = contents_buf.toString();
 		conlog(`Read file into memory (${contents.length} bytes).`)
-		let estree = parseModule(contents);
+		let estree = parseModule(contents, {loc: true});
 		conlog(`Parsed via seafox (estree.type == "${estree.type}").`);
 		conlog(`Starting instrumentation...`);
 		let instrumented = instrument(contents, estree, new_filename);
@@ -114,7 +114,6 @@ function instrument(contents, estree) {
 function* estreeImports(estree) {
 	for (const i in estree.body) {
 		let tl = estree.body[i];
-		console.log(tl);
 		if (tl.type == "ImportDeclaration") {
 			let { start, end } = tl;
 			yield [start, end];
