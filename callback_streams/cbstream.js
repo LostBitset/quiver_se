@@ -99,12 +99,24 @@ function instrument(contents, estree) {
 	}
 	ims += "\n// end imports-raw (raw)\n\n";
 	let cb_id = 0;
-	for (const [start, end, ...rest] of estreeFunctions(estree)) {
+	for (const [inject] of estreeBlockFunctions(estree)) {
 		code = replaceIndexRange(
 			code,
-			start,
-			end,
-			instrumentFunction(...rest, cb_id),
+			inject,
+			inject,
+			injectionForBlockFunction(cb_id),
+		);
+		cb_id++;
+	}
+	for (const [wrap_start, wrap_end] of estreeBlockFunctions(estree)) {
+		code = replaceIndexRange(
+			code,
+			wrap_start,
+			wrap_end,
+			wrapForValueFunction(
+				code.substring(wrap_start, wrap_end),
+				cb_id,
+			),
 		);
 		cb_id++;
 	}
@@ -121,11 +133,19 @@ function* estreeImports(estree) {
 	}
 }
 
-function* estreeFunctions(estree) {
+function* estreeBlockFunctions(estree) {
 	conlog('TODO!!!');
 }
 
-function instrumentFunction(orig, estree, id) {
+function* estreeValueFunctions(estree) {
+	conlog('TODO!!!');
+}
+
+function injectionForBlockFunction(id) {
+	conlog('TODO!!!');
+}
+
+function wrapForValueFunction(orig, id) {
 	conlog('TODO!!!');
 }
 
