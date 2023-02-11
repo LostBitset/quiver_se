@@ -90,6 +90,7 @@ try {
 `;
 
 function instrument(contents, estree) {
+	console.log(Array.from(estreeSubObjects(estree.body)));
 	let code = contents;
 	let ims = "// bgn imports-raw (raw)\n\n";
 	for (const [start, end] of estreeImports(estree)) {
@@ -135,12 +136,13 @@ function* estreeImports(estree) {
 
 function isEstreeSubObject(estree_value) {
 	if (typeof estree_value !== "object") return false;
+	if (!estree_value) return false;
 	return estree_value.hasOwnProperty("start") && estree_value.hasOwnProperty("end");
 }
 
 function* estreeSubObjects(estree_obj) {
 	yield estree_obj;
-	for (const [_, v] of estree_obj.entries()) {
+	for (const [_, v] of Object.entries(estree_obj)) {
 		if (isEstreeSubObject(v)) {
 			yield* estreeSubObjects(v);
 		} else if (v instanceof Array) {
@@ -188,7 +190,7 @@ function injectionForBlockFunction(id) {
 }
 
 function wrapForValueFunction(orig, id) {
-	conlog('TODO!!!');
+	return `{ ${injectionForBlockFunction(id)} return (${orig}); }`;
 }
 
 // @UnitTest
