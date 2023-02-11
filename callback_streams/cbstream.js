@@ -133,16 +133,58 @@ function* estreeImports(estree) {
 	}
 }
 
+function isEstreeSubObject(estree_value) {
+	if (typeof estree_value !== "object") return false;
+	return estree_value.hasOwnProperty("start") && estree_value.hasOwnProperty("end");
+}
+
+function* estreeSubObjects(estree_obj) {
+	yield estree_obj;
+	for (const [_, v] of estree_obj.entries()) {
+		if (isEstreeSubObject(v)) {
+			yield* estreeSubObjects(v);
+		} else if (v instanceof Array) {
+			for (const v_sub of v) {
+				if (isEstreeSubObject(v_sub)) {
+					yield* estreeSubObjects(v_sub);
+				}
+			}
+		}
+	}
+}
+
 function* estreeBlockFunctions(estree) {
-	conlog('TODO!!!');
+	for (const sub of estreeSubObjects(estree.body)) {
+		if (!sub.hasOwnProperty("type")) continue;
+		if (sub.type == "ArrowFunctionExpression") {
+			if (sub.body.type == "BlockStatement") {
+				let inject = sub.body.start;
+				yield [inject];
+			}
+		} else if (sub.type == "FunctionDeclaration") {
+			if (sub.hasOwnProperty("generator") && !sub.generator) {
+				let inject = sub.body.start;
+				yield [inject];
+			}
+		}
+	}
 }
 
 function* estreeValueFunctions(estree) {
-	conlog('TODO!!!');
+	for (const sub of estreeSubObjects(estree.body)) {
+		if (!sub.hasOwnProperty("type")) continue;
+		if (sub.type == "ArrowFunctionExpression") {
+			if (sub.body.type !== "BlockStatement") {
+				let wrap_start = sub.body.start;
+				let wrap_end = sub.body.end;
+				yield [wrap_start, wrap_end];
+			}
+		}
+	}
 }
 
 function injectionForBlockFunction(id) {
-	conlog('TODO!!!');
+	return `_Q$cCb(${id});`;
 }
 
 function wrapForValueFunction(orig, id) {
