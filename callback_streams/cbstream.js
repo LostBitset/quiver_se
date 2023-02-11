@@ -116,7 +116,12 @@ function instrument(contents, estree) {
 		offset += lbefore - code.length;
 		cb_id++;
 	}
-	for (const [wrap_start, wrap_end] of estreeValueFunctions(estree)) {
+	for (const [rwrap_start, rwrap_end] of estreeValueFunctions(estree)) {
+		let [wrap_start, wrap_end] = [rwrap_start - offset, rwrap_end - offset];
+		while (code[wrap_start - 1] == "(") {
+			wrap_start--;
+			wrap_end++;
+		}
 		code = replaceIndexRange(
 			code,
 			wrap_start,

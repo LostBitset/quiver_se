@@ -44,7 +44,7 @@ fs.readFile('something.txt', 'utf8', (err, contents) => {_Q$cCb(0);
 			if (err !== null) {
 				throw new Error(err.toString());
 			} else {
-				let eq = (x, y) => ({ _Q$cCb(2); return (x === y); });
+				let eq = (x, y) => { _Q$cCb(2); return ((x === y)); };
 				console.log(eq(contents, contents2));
 			}
 		});
