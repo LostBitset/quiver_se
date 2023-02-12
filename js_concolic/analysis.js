@@ -47,10 +47,11 @@ function conlog(...args) {
         write: function (_iid, name, val, lhs) {
             let result = val;
             logs.push(name);
-            logs.push("write --^ --v");
+            logs.push("write --^ --v --v");
+            logs.push(lhs);
             logs.push(val);
             if (name.startsWith("sym__") && lhs === undefined) {
-                let [fun, sort] = val.split(":");
+                let [fun, sort] = val.ccr.split(":");
                 free_funs.push([fun, sort]);
                 result = ConcolicValue.fromFreeFun([fun, sort]);
             }
