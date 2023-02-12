@@ -21,5 +21,12 @@ cd callback_streams
 cd ..
 echo "[run_tests.sh] Leave subdirectory callback_streams. (pass)"
 
+# Subdirectory: js_concolic
+echo "[run_tests.sh] Enter subdirectory js_concolic..."
+cd js_concolic
+./test.sh || exit 1
+cd ..
+echo "[run_tests.sh] Leave subdirectory js_concolic. (pass)"
+
 echo "[run_tests.sh] All tests in repo passed. #[PASSED_ALL]"
 
