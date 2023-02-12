@@ -16,6 +16,36 @@ function conlog(...args) {
     var pc = [];
 
 	// @extern(jalangi2).analysis_object
-	lkk.analysis = {};
+	lkk.analysis = {
+
+        literal: function (_iid, val) {
+            return {
+                result: ConcolicValue.fromConcrete(val),
+            };
+        },
+
+        binaryPre: function (_iid, op, left, right) {
+            return { op, left, right, skip: true };
+        },
+
+        binary: function (_iid, op, left, right) {
+            return {
+                result: apConcolic(ctBinary[op], left, right),
+            };
+        },
+
+        unaryPre: function (_iid, op, left) {
+            return { op, left, skip: true };
+        },
+
+        unary: function (_iid, op, left) {
+            return {
+                result: apConcolic(ctUnary[op], left),
+            };
+        },
+
+        invokeFunPre: function (iid, f, base, args) {},
+
+    };
 
 }(J$));
