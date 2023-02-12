@@ -3,6 +3,8 @@
 // do not remove the following comment
 // JALANGI DO NOT INSTRUMENT
 
+// Symbolic values should be stored as
+// [expr_string, sort_string] pairs. 
 class ConcolicValue {
     // ccr = concrete, sym = symbolic
     // Symbolic can be null, indicating that only
