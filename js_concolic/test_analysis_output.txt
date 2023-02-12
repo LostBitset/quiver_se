@@ -1,0 +1,13 @@
+foo
+bar
+foo
+bar
+foo
+bar
+foo
+bar
+foo
+bar
+done
+[jalangi2:analysis] At (/home/landon/Documents/repos/__active__/quiver_se/js_concolic/test_analysis_prgm.js:9:17:9:23), the condition was true 10 time(s) and false 1 time(s).
+[jalangi2:analysis] At (/home/landon/Documents/repos/__active__/quiver_se/js_concolic/test_analysis_prgm.js:10:7:10:16), the condition was true 5 time(s) and false 5 time(s).

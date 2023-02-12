@@ -1,0 +1,6 @@
+{
+	"type": "commonjs",
+	"devDependencies": {
+		"jalangi2": "^0.2.6"
+	}
+}
