@@ -176,12 +176,10 @@ const INSTRUMENTATION_OUTER_TEMPLATE = `
 // bgn decl-prefix (static)
 
 let _Q$hCb = false; // shorthand: has callback
-let _Q$sen = 0;     // shorthand: sentinel
 
 // shorthand: callback handler
 function _Q$cbH(i) {
 	${debug?"console.log(\"[CBSTREAM] Got: \" + i);":""}
-	_Q$sen = (_Q$sen + i) % 8;
 }
 
 // shorthand: claim callback
@@ -195,14 +193,14 @@ function _Q$cCb(i) {
 }
 
 function _Q$end() {
-	if (_Q$sen == 0) eval("");
+	${debug?"console.log(\"[CBSTREAM] Done.\");":""}
 }
 
 // shorthand: exception handler
-function _Q$xnH(e) {
+function _Q$xnH(e, d) {
 	_Q$cbH(-2); // virtual callback "fail"
 	_Q$end();
-	process.removeListener("uncaughtException", _Q$xnH);
+	if (!d) process.removeListener("uncaughtException", _Q$xnH);
 	throw e;
 }
 
@@ -221,15 +219,14 @@ function _Q$ent() {
 // to observe errors without redirecting them
 process.on("uncaughtException", _Q$xnH);
 
+process.on("beforeExit", _Q$end);
+
 // note: actual entry point for instrumented code
 try {
 	_Q$cCb(-1); // virtual callback "top"
 	_Q$ent();
-	_Q$end();
 } catch (e) {
-	_Q$cbH(-2); // virtual callback "fail"
-	_Q$end();
-	throw e;
+	_Q$xnH(e, true);
 }
 
 // end main-rescue (static)
