@@ -70,6 +70,7 @@ fs.readFile('something.txt', 'utf8', (err, contents) => {_Q$cCb(0);
 // note: transient, this binding will remove itself
 // to observe errors without redirecting them
 process.on("uncaughtException", _Q$xnH);
+
 process.on("beforeExit", _Q$end);
 
 // note: actual entry point for instrumented code

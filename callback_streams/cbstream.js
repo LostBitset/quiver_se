@@ -40,7 +40,6 @@ function replaceIndexRange(str, start, end, repl) {
 }
 
 function instrument(contents, estree) {
-	console.log(Array.from(estreeSubObjects(estree.body)));
 	let code = contents;
 	let offset = 0;
 	let ims = "// bgn imports-raw (raw)\n\n";
