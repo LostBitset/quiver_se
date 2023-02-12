@@ -72,6 +72,28 @@ const ctUnary = {
 };
 
 function makeArithmeticBinary(opSMT, ccrOp) {
+    if (opSMT === ">") {
+        let sym_inverted = makeArithmeticBinary("<=").sym;
+        return new ConcolicFunction(
+            ccrOp,
+            (x, y) => {
+                let inverted = (sym_inverted)(x, y);
+                if (inverted === undefined || inverted === null) return inverted;
+                return [`(not ${inverted[0]})`, "Bool"];
+            }
+        );
+    }
+    if (opSMT === ">=") {
+        let sym_inverted = makeArithmeticBinary("<").sym;
+        return new ConcolicFunction(
+            ccrOp,
+            (x, y) => {
+                let inverted = (sym_inverted)(x, y);
+                if (inverted === undefined || inverted === null) return inverted;
+                return [`(not ${inverted[0]})`, "Bool"];
+            }
+        );
+    }
     return new ConcolicFunction(
         ccrOp,
         (x, y) => {
@@ -82,20 +104,34 @@ function makeArithmeticBinary(opSMT, ccrOp) {
             if (lhs[1] === "~float.nan" || rhs[1] === "~float.nan") {
                 return [(opSMT[0] === "!") + "", "Bool"];
             }
-            if (ccrOp === "<" || ccrOp === "<=") {
+            if (opSMT === "<" || opSMT === "<=") {
                 if (lhs[1] === "~float.posinf") {
-                    // Posinf is only ever less than posinf
+                    // posinf < X === false
                     if (lhs[2] === "~float.posinf") {
-                        return [(ccrOp === "<=") + "", "Bool"];
+                        return [(opSMT === "<=") + "", "Bool"];
                     }
                     return ["false", "Bool"];
                 }
                 if (lhs[2] === "~float.posinf") {
-                    // All numbers are less than posinf except posinf
+                    // X < posinf === true
                     if (lhs[1] === "~float.posinf") {
-                        return [(ccrOp === "<=") + "", "Bool"];
+                        return [(opSMT === "<=") + "", "Bool"];
                     }
                     return ["true", "Bool"];
+                }
+                if (lhs[1] === "~float.neginf") {
+                    // neginf < X === true
+                    if (lhs[2] === "~float.neginf") {
+                        return [(opSMT === "<=") + "", "Bool"];
+                    }
+                    return ["true", "Bool"];
+                }
+                if (lhs[2] === "~float.neginf") {
+                    // X < neginf === false
+                    if (lhs[1] === "~float.neginf") {
+                        return [(opSMT === "<=") + "", "Bool"];
+                    }
+                    return ["false", "Bool"];
                 }
             }
             return [`(${opSMT} ${lhs[0]} ${rhs[0]})`, "Bool"];
