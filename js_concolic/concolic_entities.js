@@ -30,7 +30,7 @@ class ConcolicValue {
     static fromFreeFun([name, sort]) {
         return new ConcolicValue(
             exampleSortInhabitants[sort],
-            name,
+            [name, sort],
         );
     }
 }
