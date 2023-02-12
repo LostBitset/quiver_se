@@ -36,7 +36,7 @@ function conlog(...args) {
             if (result instanceof ConcolicValue) {
                 actual = result.ccr;
                 if (result.sym !== null) {
-                    pc.push([this.sym, actual]);
+                    pc.push([result.sym[0], actual]);
                 }
             }
             return {
