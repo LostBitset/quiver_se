@@ -19,4 +19,3 @@ function conlog(...args) {
 	lkk.analysis = {};
 
 }(J$));
-
