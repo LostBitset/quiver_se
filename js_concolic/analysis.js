@@ -13,6 +13,10 @@ function conlog(...args) {
 // @extern(jalangi2).analysis_iife
 (function (lkk) {
 
+    // Free funs as an array of [name, arg-sorts, ret-sort] triplets
+    var free_funs = [];
+    
+    // Path condition as an array of strings
     var pc = [];
 
 	// @extern(jalangi2).analysis_object
@@ -44,7 +48,13 @@ function conlog(...args) {
             };
         },
 
-        invokeFunPre: function (iid, f, base, args) {},
+        invokeFunPre: function (_iid, f, base, args) {
+            return { f, base, args, skip: true };
+        },
+
+        invokeFun: function (_iid, f, base, args, result, isConstructor, isMethod) {
+            
+        }
 
     };
 
