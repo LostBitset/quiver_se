@@ -58,14 +58,17 @@ function apConcolic(fn, ...args) {
                 (fn)(...args_concrete)
             );
         } else {
-            return new ConcolicValue(
-                fn.ccrOp(...(
-                    args_concolic.map(x => x.ccr)
-                )),
-                fn.symOp(...(
-                    args_concolic.map(x => x.sym)
-                )),
-            );
+            let ccr_ret = fn.ccrOp(...(
+                args_concolic.map(x => x.ccr)
+            ));
+            let sym_ret = fn.symOp(...(
+                args_concolic.map(x => x.sym)
+            ));
+            if (sym_ret === undefined) {
+                return ConcolicValue.fromConcrete(ccr_ret);
+            } else {
+                return new ConcolicValue(ccr_ret, sym_ret);
+            }
         }
     } else {
         let args_concrete = args.map(x => {
