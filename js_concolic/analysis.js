@@ -13,7 +13,7 @@ function conlog(...args) {
 // @extern(jalangi2).analysis_iife
 (function (lkk) {
 
-    // Free funs as an array of [name, arg-sorts, ret-sort] triplets
+    // Free funs as an array of [name, sort] pair
     var free_funs = [];
     
     // Path condition as an array of strings
@@ -52,9 +52,18 @@ function conlog(...args) {
             return { f, base, args, skip: true };
         },
 
-        invokeFun: function (_iid, f, base, args, result, isConstructor, isMethod) {
-            
-        }
+        invokeFun: function (_iid, f, _base, args, result) {
+            if (f.name === "C$symbol") {
+                let [name, ret_sort] = args;
+                let free_fun = [name, ret_sort];
+                free_funs.push(free_fun);
+                return ConcolicValue.fromFreeFun(free_fun);
+            } else {
+                return {
+                    result: result,
+                };
+            }
+        },
 
     };
 
