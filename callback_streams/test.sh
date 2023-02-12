@@ -28,3 +28,5 @@ rm something.txt something2.txt
 
 rm $INSTRUMENTED_OUTPUT
 
+echo "[cbstream-test] [ok] All tests passed. "
+
