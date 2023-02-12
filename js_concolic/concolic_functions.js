@@ -9,17 +9,35 @@ const { ConcolicFunction } = require("./concolic_entities");
 const cToBool = new ConcolicFunction(
     x => x ? true : false,
     x => {
+        return [
+            {
+                "Bool": x[0],
+                "Real": `(not (= ${x[0]} 0.0))`,
+                "~undefined": "false",
+                "~null": "false",
+                "~float.nan": "false",
+                "~float.posinf": "true",
+                "~float.neginf": "true",
+            }[x[1]],
+            "Bool",
+        ];
+    }
+);
+
+const cToReal = new ConcolicFunction(
+    x => x ? true : false,
+    x => {
         return {
-            "Bool": [x[0], "Bool"],
-            "Real": [`(not (= ${x[0]} 0.0))`, "Bool"],
-            "~undefined": ["false", "Bool"],
-            "~null": ["false", "Bool"],
-            "~float.nan": ["false", "Bool"],
-            "~float.posinf": ["true", "Bool"],
-            "~float.neginf": ["true", "Bool"],
+            "Bool": [`(ite ${x[0]} 1.0 0.0)`, "Real"],
+            "Real": x,
+            "~undefined": ["~", "~float.nan"],
+            "~null": ["0.0", "Real"],
+            "~float.nan": x,
+            "~float.posinf": x,
+            "~float.neginf": x,
         }[x[1]];
     }
-)
+);
 
 const ctUnary = {
     "!": new ConcolicFunction(
@@ -57,20 +75,30 @@ function makeArithmeticBinary(opSMT, ccrOp) {
     return new ConcolicFunction(
         ccrOp,
         (x, y) => {
-            if (
-                true
-                && (x[1] === "Real" || x[1] === "Bool")
-                && (y[1] === "Real" || y[1] === "Bool")
-            ) {
-                let lhs = (x[1] === "Bool")
-                    ? `(ite ${x[0]} 1.0 0.0)`
-                    : x[0];
-                let rhs = (y[1] === "Bool")
-                    ? `(ite ${y[0]} 1.0 0.0)`
-                    : y[0];
-                return [`(${opSMT} ${lhs} ${rhs})`, "Bool"]
+            let lhs = cToReal.symOp(x);
+            let rhs = cToReal.symOp(y);
+            if (lhs === undefined || rhs === undefined) return undefined;
+            if (lhs === null || rhs === null) return null;
+            if (lhs[1] === "~float.nan" || rhs[1] === "~float.nan") {
+                return [(opSMT[0] === "!") + "", "Bool"];
             }
-            return undefined;
+            if (ccrOp === "<" || ccrOp === "<=") {
+                if (lhs[1] === "~float.posinf") {
+                    // Posinf is only ever less than posinf
+                    if (lhs[2] === "~float.posinf") {
+                        return [(ccrOp === "<=") + "", "Bool"];
+                    }
+                    return ["false", "Bool"];
+                }
+                if (lhs[2] === "~float.posinf") {
+                    // All numbers are less than posinf except posinf
+                    if (lhs[1] === "~float.posinf") {
+                        return [(ccrOp === "<=") + "", "Bool"];
+                    }
+                    return ["true", "Bool"];
+                }
+            }
+            return [`(${opSMT} ${lhs[0]} ${rhs[0]})`, "Bool"];
         },
     );
 }
@@ -121,7 +149,7 @@ const ctBinary = {
             let lhs = cToBool.symOp(x);
             if (lhs === undefined) return undefined;
             if (lhs === null) return null;
-            return [`(ite ${lhs} ${y} ${x})`, "Bool"];
+            return [`(ite ${lhs[0]} ${y} ${x})`, "Bool"];
         },
     ),
     "||": new ConcolicFunction(
@@ -133,7 +161,7 @@ const ctBinary = {
             let lhs = cToBool.symOp(x);
             if (lhs === undefined) return undefined;
             if (lhs === null) return null;
-            return [`(ite ${lhs} ${x} ${y})`, "Bool"];
+            return [`(ite ${lhs[0]} ${x} ${y})`, "Bool"];
         },
     ),
     "<": makeArithmeticBinary("<", (x, y) => x < y),

@@ -1,5 +1,7 @@
 // A simple test program to make sure concolic execution is working
 
+function C$Symbol() {}
+
 function main() {
 
     console.log("start");
