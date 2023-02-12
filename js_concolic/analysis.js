@@ -30,7 +30,6 @@ function conlog(...args) {
 	lkk.analysis = {
 
         conditional: function (_iid, result_uncoerced) {
-            logs.push("conditional");
             let result = apConcolic(cToBool, result_uncoerced);
             let actual = result;
             if (result instanceof ConcolicValue) {
@@ -46,10 +45,6 @@ function conlog(...args) {
 
         write: function (_iid, name, val, lhs) {
             let result = val;
-            logs.push(name);
-            logs.push("write --^ --v --v");
-            logs.push(lhs);
-            logs.push(val);
             if (name.startsWith("sym__") && lhs === undefined) {
                 let [fun, sort] = val.ccr.split(":");
                 free_funs.push([fun, sort]);
@@ -67,8 +62,6 @@ function conlog(...args) {
                 };
             }
             let result = ConcolicValue.fromConcrete(val);
-            logs.push("literal --v");
-            logs.push(result);
             return {
                 result,
             };
@@ -80,10 +73,6 @@ function conlog(...args) {
 
         binary: function (_iid, op, left, right) {
             let result = apConcolic(ctBinary[op], left, right);
-            logs.push(left);
-            logs.push(right);
-            logs.push("binary --^ --^ --v");
-            logs.push(result);
             return {
                 result,
             };
