@@ -1,9 +1,15 @@
 // A simple test program to make sure concolic execution is working
 
-function C$symbol() {}
+function main() {
 
-let x = C$symbol("X", "Real");
+    console.log("start");
 
-if (x > 42) {
-    throw 'Crash? ... Yeah, burn? ... Make a wish.';
+    let sym__X = C$Symbol("X", "Real");
+
+    if (sym__X > 42) {
+        throw 'Crash? ... Yeah, burn? ... Make a wish.';
+    }
+
 }
+
+main();

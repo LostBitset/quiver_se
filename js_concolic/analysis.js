@@ -23,10 +23,14 @@ function conlog(...args) {
     // Path condition as an array of [expr, bool] pairs
     var pc = [];
 
+    // Logs
+    var logs = [];
+
 	// @extern(jalangi2).analysis_object
 	lkk.analysis = {
 
-        conditional: function (_iid, result_uncoerced) {
+        /*conditional: function (_iid, result_uncoerced) {
+            logs.push("conditional");
             let result = apConcolic(cToBool, result_uncoerced);
             let actual = result;
             if (result instanceof ConcolicValue) {
@@ -38,9 +42,15 @@ function conlog(...args) {
             return {
                 result: actual,
             };
-        },
+        },*/
 
-        literal: function (_iid, val) {
+        /*literal: function (_iid, val) {
+            logs.push("literal");
+            if (typeof val === "function") {
+                return {
+                    result: val,
+                };
+            }
             return {
                 result: ConcolicValue.fromConcrete(val),
             };
@@ -66,30 +76,16 @@ function conlog(...args) {
             };
         },
 
-        invokeFunPre: function (_iid, f, base, args) {
-            return { f, base, args, skip: true };
-        },
-
-        invokeFun: function (_iid, f, _base, args, result) {
-            if (f.name === "C$symbol") {
-                let [name, sort] = args;
-                let free_fun = [name, sort];
-                free_funs.push(free_fun);
-                return ConcolicValue.fromFreeFun(free_fun);
-            } else {
-                return {
-                    result: result,
-                };
-            }
-        },
-
         endExecution: function () {
+            for (const log of logs) {
+                conlog(log);
+            }
             conlog("Ended. ");
             console.log(JSON.stringify({
                 free_funs,
                 pc,
             }));
-        },
+        },*/
 
     };
 
