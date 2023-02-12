@@ -220,5 +220,5 @@ const ctBinary = {
 };
 
 module.exports = {
-    cToBool, ctUnary, ctUnary,
+    cToBool, ctUnary, ctBinary,
 };
