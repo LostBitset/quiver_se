@@ -22,6 +22,13 @@ class ConcolicValue {
             symbolicConstant(ccr),
         );
     }
+
+    static fromFreeFun([name, sort]) {
+        return new ConcolicValue(
+            exampleSortInhabitants[sort],
+            name,
+        );
+    }
 }
 
 class ConcolicFunction {

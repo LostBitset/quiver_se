@@ -13,7 +13,7 @@ function conlog(...args) {
 // @extern(jalangi2).analysis_iife
 (function (lkk) {
 
-    // Free funs as an array of [name, sort] pair
+    // Free funs as an array of [name, sort] pairs
     var free_funs = [];
     
     // Path condition as an array of strings
@@ -54,8 +54,8 @@ function conlog(...args) {
 
         invokeFun: function (_iid, f, _base, args, result) {
             if (f.name === "C$symbol") {
-                let [name, ret_sort] = args;
-                let free_fun = [name, ret_sort];
+                let [name, sort] = args;
+                let free_fun = [name, sort];
                 free_funs.push(free_fun);
                 return ConcolicValue.fromFreeFun(free_fun);
             } else {
