@@ -16,11 +16,24 @@ function conlog(...args) {
     // Free funs as an array of [name, sort] pairs
     var free_funs = [];
     
-    // Path condition as an array of strings
+    // Path condition as an array of [expr, bool] pairs
     var pc = [];
 
 	// @extern(jalangi2).analysis_object
 	lkk.analysis = {
+
+        conditional: function (_iid, result) {
+            let actual = result;
+            if (result instanceof ConcolicValue) {
+                actual = result.ccr;
+                if (result.sym !== null) {
+                    pc.push([this.sym, actual]);
+                }
+            }
+            return {
+                result: actual,
+            };
+        },
 
         literal: function (_iid, val) {
             return {
@@ -63,6 +76,13 @@ function conlog(...args) {
                     result: result,
                 };
             }
+        },
+
+        endExecution: function () {
+            console.log(JSON.stringify({
+                free_funs,
+                pc,
+            }));
         },
 
     };
