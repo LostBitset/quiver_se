@@ -11,6 +11,10 @@ import { strict as assert } from "node:assert";
 import { readFile, writeFile } from "node:fs";
 
 var debug;
+var s_imports_moved = 0;
+var s_injected = 0;
+var s_wrapped = 0;
+var s_subobjects = 0;
 
 function conlog(...args) {
 	if (debug) console.log("INFO[cbstream@node] ", ...args);
@@ -28,6 +32,9 @@ function main(filename) {
 		conlog(`Parsed via seafox (estree.type == "${estree.type}").`);
 		conlog(`Starting instrumentation...`);
 		let instrumented = instrument(contents, estree, new_filename);
+		conlog(`Walked through ESTree repr and found ${s_subobjects} subobjects.`);
+		conlog(`Moved ${s_imports_moved} import(s), injected into ${s_injected} fn(s), and wrapped ${s_wrapped} value a-fn(s). `);
+		conlog(`Instrumented code generated (${Buffer.byteLength(instrumented, "utf8")} bytes).`);
 		writeFile(new_filename, instrumented, (err) => {
 			if (err) throw err;
 			conlog(`All done. Instrumented version saved as "./${new_filename}".`);
@@ -50,6 +57,7 @@ function instrument(contents, estree) {
 		code = replaceIndexRange(code, start, end, "");
 		offset += lbefore - code.length;
 		ims += `${im}\n`;
+		s_imports_moved++;
 	}
 	ims += "\n// end imports-raw (raw)\n\n";
 	let cb_id = 0;
@@ -64,6 +72,7 @@ function instrument(contents, estree) {
 		);
 		offset += lbefore - code.length;
 		cb_id++;
+		s_injected++;
 	}
 	for (const [rwrap_start, rwrap_end] of estreeValueFunctions(estree)) {
 		let [wrap_start, wrap_end] = [rwrap_start - offset, rwrap_end - offset];
@@ -81,6 +90,7 @@ function instrument(contents, estree) {
 			),
 		);
 		cb_id++;
+		s_wrapped++;
 	}
 	return ims + INSTRUMENTATION_OUTER_TEMPLATE.replace("<%=SCRIPT%>", code);
 }
@@ -120,6 +130,7 @@ function* estreeSubObjects(estree_obj, types) {
 
 function* estreeBlockFunctions(estree) {
 	for (const sub of estreeSubObjects(estree.body)) {
+		s_subobjects++;
 		if (!sub.hasOwnProperty("type")) continue;
 		if (sub.type == "ArrowFunctionExpression") {
 			if (sub.body.type == "BlockStatement") {
