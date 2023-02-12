@@ -12,3 +12,7 @@ const exampleSortInhabitants = {
     "~float.posinf": Infinity,
     "~float.neginf": -Infinity,
 };
+
+module.exports = {
+    exampleSortInhabitants,
+};

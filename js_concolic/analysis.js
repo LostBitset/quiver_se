@@ -4,6 +4,10 @@
 // do not remove the following comment
 // JALANGI DO NOT INSTRUMENT
 
+const { ConcolicValue, apConcolic } = require("./concolic_entities");
+
+const { cToBool, ctUnary, ctBinary } = require("./concolic_functions");
+
 function conlog(...args) {
 	console.log("[jalangi2:analysis]", ...args);
 }
@@ -22,7 +26,8 @@ function conlog(...args) {
 	// @extern(jalangi2).analysis_object
 	lkk.analysis = {
 
-        conditional: function (_iid, result) {
+        conditional: function (_iid, result_uncoerced) {
+            let result = apConcolic(cToBool, result_uncoerced);
             let actual = result;
             if (result instanceof ConcolicValue) {
                 actual = result.ccr;
@@ -79,6 +84,7 @@ function conlog(...args) {
         },
 
         endExecution: function () {
+            conlog("Ended. ");
             console.log(JSON.stringify({
                 free_funs,
                 pc,

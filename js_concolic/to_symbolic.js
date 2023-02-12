@@ -34,3 +34,7 @@ function symbolicConstant(x) {
     }
     return null;
 }
+
+module.exports = {
+    symbolicConstant,
+};

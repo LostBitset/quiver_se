@@ -3,6 +3,10 @@
 // do not remove the following comment
 // JALANGI DO NOT INSTRUMENT
 
+const { symbolicConstant } = require("./to_symbolic");
+
+const { exampleSortInhabitants } = require("./example_sort_inhabitants");
+
 // Symbolic values should be stored as
 // [expr_string, sort_string] pairs. 
 class ConcolicValue {
@@ -90,3 +94,7 @@ function apConcolic(fn, ...args) {
         );
     }
 }
+
+module.exports = {
+    ConcolicValue, ConcolicFunction, apConcolic,
+};

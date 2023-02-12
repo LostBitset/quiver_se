@@ -4,6 +4,8 @@
 // do not remove the following comment
 // JALANGI DO NOT INSTRUMENT
 
+const { ConcolicFunction } = require("./concolic_entities");
+
 const cToBool = new ConcolicFunction(
     x => x ? true : false,
     x => {
@@ -142,13 +144,17 @@ const ctBinary = {
     "-": makeArithmeticBinary("-", (x, y) => x - y),
     "*": makeArithmeticBinary("*", (x, y) => x * y),
     "/": makeArithmeticBinary("/", (x, y) => x / y),
-    "%": new ConcolicFunction((x, y) => x % y, (_, _) => undefined),
-    ">>": new ConcolicFunction((x, y) => x >> y, (_, _) => undefined),
-    "<<": new ConcolicFunction((x, y) => x << y, (_, _) => undefined),
-    ">>>": new ConcolicFunction((x, y) => x >>> y, (_, _) => undefined),
-    "&": new ConcolicFunction((x, y) => x & y, (_, _) => undefined),
-    "|": new ConcolicFunction((x, y) => x | y, (_, _) => undefined),
-    "^": new ConcolicFunction((x, y) => x ^ y, (_, _) => undefined),
-    "instanceof": new ConcolicFunction((x, y) => x instanceof y, (_, _) => undefined),
-    "in": new ConcolicFunction((x, y) => x in y, (_, _) => undefined),
+    "%": new ConcolicFunction((x, y) => x % y, (_x, _y) => undefined),
+    ">>": new ConcolicFunction((x, y) => x >> y, (_x, _y) => undefined),
+    "<<": new ConcolicFunction((x, y) => x << y, (_x, _y) => undefined),
+    ">>>": new ConcolicFunction((x, y) => x >>> y, (_x, _y) => undefined),
+    "&": new ConcolicFunction((x, y) => x & y, (_x, _y) => undefined),
+    "|": new ConcolicFunction((x, y) => x | y, (_x, _y) => undefined),
+    "^": new ConcolicFunction((x, y) => x ^ y, (_x, _y) => undefined),
+    "instanceof": new ConcolicFunction((x, y) => x instanceof y, (_x, _y) => undefined),
+    "in": new ConcolicFunction((x, y) => x in y, (_x, _y) => undefined),
+};
+
+module.exports = {
+    cToBool, ctUnary, ctUnary,
 };
