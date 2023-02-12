@@ -73,7 +73,7 @@ const ctUnary = {
 
 function makeArithmeticBinary(opSMT, ccrOp) {
     if (opSMT === ">") {
-        let sym_inverted = makeArithmeticBinary("<=").sym;
+        let sym_inverted = makeArithmeticBinary("<=").symOp;
         return new ConcolicFunction(
             ccrOp,
             (x, y) => {
@@ -84,7 +84,7 @@ function makeArithmeticBinary(opSMT, ccrOp) {
         );
     }
     if (opSMT === ">=") {
-        let sym_inverted = makeArithmeticBinary("<").sym;
+        let sym_inverted = makeArithmeticBinary("<").symOp;
         return new ConcolicFunction(
             ccrOp,
             (x, y) => {

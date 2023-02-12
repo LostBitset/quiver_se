@@ -57,14 +57,8 @@ function apConcolic(fn, ...args) {
                 return ConcolicValue.fromConcrete(x);
             }
         });
-        if (args.some(x => x.sym === null)) {
-            let args_concrete = args.map(x => {
-                if (x instanceof ConcolicValue) {
-                    return x.ccr;
-                } else {
-                    return x;
-                }
-            });
+        if (args_concolic.some(x => x.sym === null)) {
+            let args_concrete = args_concolic.map(x => x.ccr);
             return new ConcolicValue.fromConcrete(
                 (fn)(...args_concrete)
             );

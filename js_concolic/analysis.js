@@ -29,7 +29,7 @@ function conlog(...args) {
 	// @extern(jalangi2).analysis_object
 	lkk.analysis = {
 
-        /*conditional: function (_iid, result_uncoerced) {
+        conditional: function (_iid, result_uncoerced) {
             logs.push("conditional");
             let result = apConcolic(cToBool, result_uncoerced);
             let actual = result;
@@ -42,17 +42,34 @@ function conlog(...args) {
             return {
                 result: actual,
             };
-        },*/
+        },
 
-        /*literal: function (_iid, val) {
-            logs.push("literal");
+        write: function (_iid, name, val, lhs) {
+            let result = val;
+            logs.push(name);
+            logs.push("write --^ --v");
+            logs.push(val);
+            if (name.startsWith("sym__") && lhs === undefined) {
+                let [fun, sort] = val.split(":");
+                free_funs.push([fun, sort]);
+                result = ConcolicValue.fromFreeFun([fun, sort]);
+            }
+            return {
+                result,
+            };
+        },
+
+        literal: function (_iid, val) {
             if (typeof val === "function") {
                 return {
                     result: val,
                 };
             }
+            let result = ConcolicValue.fromConcrete(val);
+            logs.push("literal --v");
+            logs.push(result);
             return {
-                result: ConcolicValue.fromConcrete(val),
+                result,
             };
         },
 
@@ -61,8 +78,13 @@ function conlog(...args) {
         },
 
         binary: function (_iid, op, left, right) {
+            let result = apConcolic(ctBinary[op], left, right);
+            logs.push(left);
+            logs.push(right);
+            logs.push("binary --^ --^ --v");
+            logs.push(result);
             return {
-                result: apConcolic(ctBinary[op], left, right),
+                result,
             };
         },
 
@@ -71,8 +93,9 @@ function conlog(...args) {
         },
 
         unary: function (_iid, op, left) {
+            let result = apConcolic(ctUnary[op], left);
             return {
-                result: apConcolic(ctUnary[op], left),
+                result,
             };
         },
 
@@ -85,7 +108,7 @@ function conlog(...args) {
                 free_funs,
                 pc,
             }));
-        },*/
+        },
 
     };
 
