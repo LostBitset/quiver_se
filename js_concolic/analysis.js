@@ -26,14 +26,6 @@ function conlog(...args) {
     // or just strings for special stuff
     var pc = [];
 
-    // Last arguments
-    // Used to associate names with inserted ExpressionStatements
-    // of the form:
-    // ":::MAGIC@js_concolic/arg-names:arg0,arg1,...";
-    // The values are given first, in the functionEnter callback.
-    // The names are then given with the magic value above. 
-    var lastArgs = [];
-
     // Logs
     var logs = [];
 
@@ -75,7 +67,6 @@ function conlog(...args) {
                 result = ConcolicValue.fromFreeFun([fun, sort]);
             } else {
                 if (val instanceof ConcolicValue) {
-                    let scopeType = "js_varGlobal";
                     pc.push(`(*/write-var/* jsvar_${name} ${val.sym[0]})`);
                 }
             }
@@ -85,7 +76,6 @@ function conlog(...args) {
         },
 
         functionEnter: function (_iid, _f, _dis, args) {
-            lastArgs = args;
             pc.push("(*/enter-scope/*)")
         },
 
@@ -97,6 +87,9 @@ function conlog(...args) {
             if (val === undefined || val instanceof ConcolicValue) {
                 if (isArgument) {
                     pc.push(`(*/decl-var/* ${name})`);
+                    if (val !== undefined) {
+                        pc.push(`(*/write-var/* ${name} ${val.sym[0]})`);
+                    }
                 } else {
                     pc.push(`(*/decl-var-global/* ${name})`);
                 }
@@ -114,26 +107,6 @@ function conlog(...args) {
                 return {
                     result: val,
                 };
-            }
-            if (typeof val === "string") {
-                let magic_prefix = ":::MAGIC@js_concolic/";
-                if (val.startsWith(magic_prefix)) {
-                    // Magic strings
-                    let noprefix = val.substring(magic_prefix.length)
-                    if (noprefix.startsWith("arg-names|||")) {
-                        let [_property, value] = noprefix.split("|||");
-                        let argNames = value.split(",");
-                        if (argNames.length === lastArgs.length) {
-                            // Make sure to not crash if something goes wrong
-                            for (let i = 0; i < argNames.length; i++) {
-                                if (!(lastArgs[i] instanceof ConcolicValue)) {
-                                    lastArgs[i] = ConcolicValue.fromConcrete(lastArgs[i]);
-                                }
-                                pc.push(`(*/write-var/* jsvar_${argNames[i]} ${lastArgs[i].sym[0]})`);
-                            }
-                        }
-                    }
-                }
             }
             // Make (conc|symb)olic otherwise
             let result = ConcolicValue.fromConcrete(val);

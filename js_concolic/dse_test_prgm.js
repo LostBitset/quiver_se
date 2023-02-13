@@ -1,6 +1,6 @@
 // A simple test program to make sure concolic execution is working
 
-var f = true;
+var f;
 
 function pre() {
     f = false;
