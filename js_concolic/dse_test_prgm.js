@@ -6,7 +6,9 @@ function main() {
 
     var sym__X = "X:Real";
 
-    if (sym__X > 42) {
+    var yo = sym__X < 42;
+
+    if (!yo) {
         throw 'Crash? ... Yeah, burn? ... Make a wish.';
     }
 
