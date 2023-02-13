@@ -65,6 +65,11 @@ function conlog(...args) {
 
         write: function (_iid, name, val, lhs) {
             let result = val;
+            if (name.startsWith("_Q$") || name.startsWith("dseunwrapped__")) {
+                if (result instanceof ConcolicValue) {
+                    result = result.ccr;
+                }
+            }
             if (name.startsWith("sym__") && lhs === undefined) {
                 let [fun, sort] = val.ccr.split(":");
                 free_funs.push([fun, sort]);
