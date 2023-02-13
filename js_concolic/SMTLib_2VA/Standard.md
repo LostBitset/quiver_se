@@ -1,4 +1,4 @@
-# A Format for SMT Queries involving Lexically-scoped Internal Bindings
+# A Format for SMT Queries involving Scoped Internal Bindings
 
 ## 0. Abstract
 
@@ -12,7 +12,7 @@ The following new s-expressions are added to the `SMTLib_2VA` language:
 |---------------------------------|------------|--------------------------------|
 | `(*/write-var-gl/* name value)` | Statement  | Write to a variable globally.  |
 | `(*/write-var-le/* name value)` | Statement  | Write to a variable lexically. |
-| `(*/read-var/* sort)`           | Expression | Read from a variable.          |
+| `(*/read-var/*)`                | Expression | Read from a variable.          |
 | `(*/enter-scope/*)`             | Statement  | Enter a new lexical scope.     |
 | `(*/leave-scope/*)`             | Statement  | Leave a lexical scope.         |
 
