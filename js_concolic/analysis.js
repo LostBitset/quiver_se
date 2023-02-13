@@ -43,7 +43,10 @@ function conlog(...args) {
     // Handle the discovery of a new callback from the cbstream process
     function cbstreamOnCallback(id) {
         logs.push(`[cbstream::CALLBACK_TRANSITION] Transitioned to ${id}.`);
-        pc.push(`(*/X-CALLBACK-TRANSITION/* "${id}")`);
+        let obj = {
+            cgiid: id, // Creation Global Instruction IDentifier
+        };
+        pc.push(`;; @@CALLBACK-TRANSITION[${JSON.stringify(obj)}]`);
     }
 
     // Claim the entry point / top callback
