@@ -32,4 +32,10 @@ func main() {
 	transpiled_bytes := []byte(transpiled)
 	filename_root := args[0][:len(args[0])-len(SMTLIB2VA_EXTENSION)]
 	output_filename := filename_root + ".TRANSPILED-orig_smt2va.smt"
+	f, err := os.Create(output_filename)
+	if err != nil {
+		panic(err)
+	}
+	defer f.Close()
+	f.Write(transpiled_bytes)
 }
