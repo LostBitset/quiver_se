@@ -15,5 +15,17 @@ fi
 
 echo "[js_concolic-test] Testing (of) Jalangi2 completed."
 
-echo "[js_concolic-test] WARNING!!! ACTUAL DSE ENGINE HAS NOT YET BEEN IMPLEMENTED!!!"
+echo "[js_concolic-test] Test PC Generation (Jalangi2 analysis, basis of engine)..."
 
+DSE_TEST_PRGM_OUTPUT=$(mktemp)
+
+./jalangi2_analyse.sh --analysis analysis.js dse_test_prgm.js 2>&1 | tail -n 1 | python -m json.tool >$DSE_TEST_PRGM_OUTPUT
+
+if diff dse_test_prgm_output.json $DSE_TEST_PRGM_OUTPUT; then
+	echo "[js_concolic-test] [ok] PC Generation appears to work properly (analysis passed)."
+else
+	echo "[js_concolic-test] [!!] PC Generation analysis FAILED!"
+	exit 1
+fi
+
+echo "[js_concolic-test] Testing (of) PC Generation (basis of engine) completed."

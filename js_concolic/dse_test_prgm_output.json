@@ -1,0 +1,27 @@
+{
+    "free_funs": [
+        [
+            "X",
+            "Real"
+        ]
+    ],
+    "pc": [
+        ";; @@CALLBACK-TRANSITION<<{\"cgiid\":\"__top__\"}>>",
+        "(*/enter-scope/*)",
+        "(*/decl-var/* **jsvar_f)",
+        "(*/enter-scope/*)",
+        "(*/write-var/* **jsvar_f false)",
+        "(*/leave-scope/*)",
+        "(*/enter-scope/*)",
+        "(*/decl-var/* **jsvar_magic_number)",
+        "(*/write-var/* **jsvar_magic_number 42.0)",
+        "(*/decl-var/* **jsvar_yo)",
+        "(*/write-var/* **jsvar_yo (< X (*/read-var/* **jsvar_magic_number)))",
+        [
+            "(= (*/read-var/* **jsvar_yo) (*/read-var/* **jsvar_f))",
+            false
+        ],
+        "(*/leave-scope/*)",
+        "(*/leave-scope/*)"
+    ]
+}
