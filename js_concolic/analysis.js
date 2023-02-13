@@ -46,7 +46,7 @@ function conlog(...args) {
         let obj = {
             cgiid: id, // Creation Global Instruction IDentifier
         };
-        pc.push(`;; @@CALLBACK-TRANSITION[${JSON.stringify(obj)}]`);
+        pc.push(`;; @@CALLBACK-TRANSITION<<${JSON.stringify(obj)}>>`);
     }
 
     // Claim the entry point / top callback
