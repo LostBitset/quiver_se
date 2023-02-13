@@ -143,6 +143,30 @@ function conlog(...args) {
             return {
                 base: baseCcr,
                 offset: offsetCcr,
+                skip: false,
+            };
+        },
+
+        putFieldPre: function(_iid, base, offset, val) {
+            let baseCcr = base;
+            let offsetCcr = offset;
+            let valCcr = val;
+            if (baseCcr instanceof ConcolicValue) {
+                logs.push("Concretized target of field write.")
+                baseCcr = baseCcr.ccr;
+            }
+            if (offsetCcr instanceof ConcolicValue) {
+                logs.push("Concretized property of field write.")
+                offsetCcr = offsetCcr.ccr;
+            }
+            if (valCcr instanceof ConcolicValue) {
+                logs.push("Concretized value of field write.")
+            }
+            return {
+                base: baseCcr,
+                offset: offsetCcr,
+                val: valCcr,
+                skip: false,
             };
         },
 
