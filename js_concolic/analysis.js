@@ -59,7 +59,7 @@ function conlog(...args) {
             if (val instanceof ConcolicValue && !name.startsWith("sym__")) {
                 result = new ConcolicValue(
                     val.ccr,
-                    [`(*/read-var/* jsvar_${name} ${val.sym[1]})`, val.sym[1]],
+                    [`(*/read-var/* jsvar_${name})`, val.sym[1]],
                 );
             }
             return {
