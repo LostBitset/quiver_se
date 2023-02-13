@@ -8,8 +8,6 @@ const { ConcolicValue, apConcolic } = require("./concolic_entities");
 
 const { cToBool, ctUnary, ctBinary } = require("./concolic_functions");
 
-const { VarIdent } = require("./variable_identities");
-
 function conlog(...args) {
 	console.log("[js_concolic@node] [jalangi2:analysis]", ...args);
 }
