@@ -75,7 +75,7 @@ function conlog(...args) {
             };
         },
 
-        functionEnter: function (_iid, _f, _dis, args) {
+        functionEnter: function (_iid, _f, _dis, _args) {
             pc.push("(*/enter-scope/*)")
         },
 
@@ -84,7 +84,10 @@ function conlog(...args) {
         },
 
         declare: function (_iid, name, val, isArgument) {
-            if (val === undefined || val instanceof ConcolicValue) {
+            if (
+                (val === undefined || val instanceof ConcolicValue)
+                && !name.startsWith("sym__")
+            ) {
                 if (isArgument) {
                     pc.push(`(*/decl-var/* ${name})`);
                     if (val !== undefined) {

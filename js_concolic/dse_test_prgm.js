@@ -7,8 +7,6 @@ function pre() {
 }
 
 function main(magic_number) {
-    ":::MAGIC@js_concolic/arg-names|||magic_number";
-
     console.log("start");
 
     var sym__X = "X:Real";
