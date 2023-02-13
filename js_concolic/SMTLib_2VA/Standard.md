@@ -17,3 +17,15 @@ The following new s-expressions are added to the `SMTLib_2VA` language:
 | `(*/write-var/* name value)`    | Statement  | Write to an already-declared variable.                  |
 | `(*/read-var/*)`                | Expression | Read from a variable.                                   |
 
+## 2. New Symbol Types
+
+The following new symbol types are added to the `SMTLib_2VA` language:
+
+| Syntax             | Type                | Shorthand Name | Description   |
+|--------------------|---------------------|----------------|---------------|
+| `**variable`       | Variable Name (new) | `name`         | A variable.   |
+
+## 3. Semantics
+
+TODO
+
