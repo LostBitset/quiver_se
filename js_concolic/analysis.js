@@ -9,7 +9,7 @@ const { ConcolicValue, apConcolic } = require("./concolic_entities");
 const { cToBool, ctUnary, ctBinary } = require("./concolic_functions");
 
 function conlog(...args) {
-	console.log("[jalangi2:analysis]", ...args);
+	console.log("[js_concolic@node] [jalangi2:analysis]", ...args);
 }
 
 // lkk = lo kelpanka ku = playground = sandbox
@@ -22,6 +22,9 @@ function conlog(...args) {
     
     // Path condition as an array of [expr, bool] pairs
     var pc = [];
+
+    // Functions that have been instrumented as {[fn]: true}
+    var instrumented_fns = {};
 
     // Logs
     var logs = [];
@@ -57,6 +60,8 @@ function conlog(...args) {
 
         literal: function (_iid, val) {
             if (typeof val === "function") {
+                logs.push(`Marked fn "${val.name}" as instrumented.`);
+                val["C$_INSTRUMENTED"] = true;
                 return {
                     result: val,
                 };
@@ -87,6 +92,30 @@ function conlog(...args) {
             return {
                 result,
             };
+        },
+
+        invokeFunPre: function (_iid, f, base, args) {
+            if (!f.hasOwnProperty("C$_INSTRUMENTED")) {
+                // Concretize calls that have not been instrumented
+                logs.push(`Concretized call to external fn "${base}.${f.name}".`);
+                let baseCcr = (base instanceof ConcolicValue) ? base.ccr : base;
+                for (let i = 0; i < args.length; i++) {
+                    if (args[i] instanceof ConcolicValue) {
+                        args[i] = args[i].ccr;
+                    }
+                }
+                let fRetSym = function (...iargs) {
+                    let ret = f.apply(this, iargs);
+                    return ConcolicValue.fromConcrete(ret);
+                };
+                return {
+                    f: fRetSym,
+                    base: baseCcr,
+                    args,
+                    skip: false,
+                };
+            }
+            return { f, base, args, skip: false };
         },
 
         endExecution: function () {
