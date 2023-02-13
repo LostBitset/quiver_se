@@ -26,6 +26,14 @@ function conlog(...args) {
     // or just strings for special stuff
     var pc = [];
 
+    // Last arguments
+    // Used to associate names with inserted ExpressionStatements
+    // of the form:
+    // ":::MAGIC@js_concolic/arg-names:arg0,arg1,...";
+    // The values are given first, in the functionEnter callback.
+    // The names are then given with the magic value above. 
+    var lastArgs = [];
+
     // Logs
     var logs = [];
 
@@ -48,9 +56,13 @@ function conlog(...args) {
 
         read: function (_iid, name, val, isGlobal) {
             let result = val;
-            if (val instanceof ConcolicValue) {
+            if (val instanceof ConcolicValue && !name.startsWith("sym__")) {
                 let scopeType = "js_varGlobal";
                 if (isGlobal) scopeType = "js_fullGlobal";
+                if (argSources.hasOwnProperty(name)) {
+                    let indices = argSources[name];
+                    scopeType = `js_argsc_${indices[indices.length-1]}`;
+                }
                 let varNameSMT = (new VarIdent(name, scopeType)).toString();
                 result = new ConcolicValue(
                     val.ccr,
@@ -72,6 +84,10 @@ function conlog(...args) {
                 if (val instanceof ConcolicValue) {
                     let scopeType = "js_varGlobal";
                     if (isGlobal) scopeType = "js_fullGlobal";
+                    if (argSources.hasOwnProperty(name)) {
+                        let indices = argSources[name];
+                        scopeType = `js_argsc_${indices[indices.length-1]}`;
+                    }
                     let varNameSMT = (new VarIdent(name, scopeType)).toString();
                     pc.push(`(*/write-var/* ${varNameSMT} ${val.sym[0]})`);
                 }
@@ -81,7 +97,17 @@ function conlog(...args) {
             };
         },
 
+        functionEnter: function (_iid, _f, _dis, args) {
+            lastArgs = args;
+            pc.push("(*/enter-scope/*)")
+        },
+
+        functionExit: function (_iid) {
+            pc.push("(*/leave-scope/*)");
+        },
+
         literal: function (_iid, val) {
+            // Special cases
             if (typeof val === "function") {
                 logs.push(`Marked fn "${val.name}" as instrumented.`);
                 val["C$_INSTRUMENTED"] = true;
@@ -89,6 +115,17 @@ function conlog(...args) {
                     result: val,
                 };
             }
+            if (typeof val === "string") {
+                let magic_prefix = ":::MAGIC@js_concolic/";
+                if (val.startsWith(magic_prefix)) {
+                    // Magic strings
+                    if (v)
+                    return {
+                        result: ":::interpreted-magic",
+                    };
+                }
+            }
+            // Make (conc|symb)olic otherwise
             let result = ConcolicValue.fromConcrete(val);
             return {
                 result,
