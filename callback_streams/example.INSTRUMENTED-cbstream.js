@@ -46,15 +46,15 @@ function _Q$xnH(e, d) {
 function _Q$ent() {
 
 
-fs.readFile('something.txt', 'utf8', (err, contents) => {_Q$cCb(0);
+fs.readFile('something.txt', 'utf8', (err, contents) => {":::MAGIC@js_concolic/arg-names|||err, contents";_Q$cCb(0);
 	if (err !== null) {
 		throw new Error(err.toString());
 	} else {
-		fs.readFile('something2.txt', 'utf8', (err, contents2) => {_Q$cCb(1);
+		fs.readFile('something2.txt', 'utf8', (err, contents2) => {":::MAGIC@js_concolic/arg-names|||err, contents2";_Q$cCb(1);
 			if (err !== null) {
 				throw new Error(err.toString());
 			} else {
-				let eq = (x, y) => { _Q$cCb(2); return ((x === y)); };
+				let eq = (x, y) => { ":::MAGIC@js_concolic/arg-names|||x, y";_Q$cCb(2); return ((x === y)); };
 				console.log(eq(contents, contents2));
 			}
 		});

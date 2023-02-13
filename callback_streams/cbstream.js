@@ -178,7 +178,7 @@ function wrapForValueFunction(orig, id, magic) {
 }
 
 function argNamesMagic(estree, substringFn) {
-	return `:::MAGIC@js_concolic/arg-names|||${argNamesMagicInner(estree, substringFn)}`;
+	return `":::MAGIC@js_concolic/arg-names|||${argNamesMagicInner(estree, substringFn)}"`;
 }
 
 function argNamesMagicInner(estree, substringFn) {
