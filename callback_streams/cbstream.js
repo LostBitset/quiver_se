@@ -61,20 +61,20 @@ function instrument(contents, estree) {
 	}
 	ims += "\n// end imports-raw (raw)\n\n";
 	let cb_id = 0;
-	for (const [rinject] of estreeBlockFunctions(estree)) {
+	for (const [rinject, fn_estree] of estreeBlockFunctions(estree)) {
 		let inject = rinject - offset;
 		let lbefore = code.length;
 		code = replaceIndexRange(
 			code,
 			inject + 1,
 			inject + 1,
-			injectionForBlockFunction(cb_id),
+			injectionForBlockFunction(cb_id, argNamesMagic(fn_estree)),
 		);
 		offset += lbefore - code.length;
 		cb_id++;
 		s_injected++;
 	}
-	for (const [rwrap_start, rwrap_end] of estreeValueFunctions(estree)) {
+	for (const [rwrap_start, rwrap_end, fn_estree] of estreeValueFunctions(estree)) {
 		let [wrap_start, wrap_end] = [rwrap_start - offset, rwrap_end - offset];
 		while (code[wrap_start - 1] == "(") {
 			wrap_start--;
@@ -87,6 +87,7 @@ function instrument(contents, estree) {
 			wrapForValueFunction(
 				code.substring(wrap_start, wrap_end),
 				cb_id,
+				argNamesMagic(fn_estree),
 			),
 		);
 		cb_id++;
@@ -135,12 +136,12 @@ function* estreeBlockFunctions(estree) {
 		if (sub.type == "ArrowFunctionExpression") {
 			if (sub.body.type == "BlockStatement") {
 				let inject = sub.body.start;
-				yield [inject];
+				yield [inject, sub];
 			}
 		} else if (sub.type == "FunctionDeclaration") {
 			if (sub.hasOwnProperty("generator") && !sub.generator) {
 				let inject = sub.body.start;
-				yield [inject];
+				yield [inject, sub];
 			}
 		}
 	}
@@ -153,7 +154,7 @@ function* estreeValueFunctions(estree) {
 			if (sub.body.type != "BlockStatement") {
 				let wrap_start = sub.body.start;
 				let wrap_end = sub.body.end;
-				yield [wrap_start, wrap_end];
+				yield [wrap_start, wrap_end, sub];
 			}
 		}
 	}
