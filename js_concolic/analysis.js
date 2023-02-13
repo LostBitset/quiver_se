@@ -107,8 +107,8 @@ function conlog(...args) {
                 if (val.startsWith(magic_prefix)) {
                     // Magic strings
                     let noprefix = val.substring(magic_prefix.length)
-                    if (noprefix.startsWith("arg-names:")) {
-                        let [_property, value] = noprefix.split(":");
+                    if (noprefix.startsWith("arg-names|||")) {
+                        let [_property, value] = noprefix.split("|||");
                         let argNames = value.split(",");
                         if (argNames.length === lastArgs.length) {
                             // Make sure to not crash if something goes wrong

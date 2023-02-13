@@ -1,7 +1,7 @@
 // A simple test program to make sure concolic execution is working
 
 function main(magic_number) {
-    ":::MAGIC@js_concolic/arg-names:magic_number";
+    ":::MAGIC@js_concolic/arg-names|||magic_number";
 
     console.log("start");
 
