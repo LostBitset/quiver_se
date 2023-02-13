@@ -157,7 +157,7 @@ function conlog(...args) {
         // begin CONCRETIZED
 
         invokeFunPre: function (_iid, f, base, args) {
-            if (f.hasOwnProperty("name") && f.name === "_Q$rXn") {
+            if (f.hasOwnProperty("name") && f.name === "_Q$xnH") {
                 let exn = args[0];
                 let varName = exn.message.split(" ")[0];
                 pc.push([`(*/is-defined?/* ${varName})`, false]);

@@ -1,7 +1,7 @@
 // A simple test program to make sure concolic execution is working
 
 // bgn SHOULD BE ADDED
-function _Q$rXn(e) { throw e; }
+function _Q$xnH(e) { throw e; }
 function _Q$ent() {
 // end SHOULD BE ADDED
 
@@ -33,7 +33,7 @@ try {
     _Q$ent();
 } catch (e) {
     if (e instanceof ReferenceError) {
-        _Q$rXn(e);
+        _Q$xnH(e);
     }
 }
 // end SHOULD BE ADDED
