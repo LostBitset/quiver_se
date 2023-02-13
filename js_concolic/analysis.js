@@ -8,6 +8,8 @@ const { ConcolicValue, apConcolic } = require("./concolic_entities");
 
 const { cToBool, ctUnary, ctBinary } = require("./concolic_functions");
 
+const { VarIdent } = require("./variable_identities");
+
 function conlog(...args) {
 	console.log("[js_concolic@node] [jalangi2:analysis]", ...args);
 }
@@ -52,14 +54,15 @@ function conlog(...args) {
                 result = ConcolicValue.fromFreeFun([fun, sort]);
             } else {
                 if (val instanceof ConcolicValue) {
+                    let originalSort = val.sym[1];
                     let valVar = new ConcolicValue(
                         val.ccr,
                         val.sym,
                         new VarIdent(),
                     );
                     let varNameSMT = `jsvar_${valVar.var_ident.toString()}`;
-                    pc.push(`(~*write-var*~ ${varNameSMT} ${valVar.sym})`);
-                    valVar.sym = `(~*read-var*~ ${varNameSMT})`;
+                    pc.push(`(~*write-var*~ ${varNameSMT} ${valVar.sym[0]})`);
+                    valVar.sym = [`(~*read-var*~ ${varNameSMT})`, originalSort];
                     result = valVar;
                 }
             }
