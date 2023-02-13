@@ -18,7 +18,7 @@ function main(magic_number) {
 
     var yo = sym__X < magic_number;
 
-    if (yo === fbaka) {
+    if (yo === f) {
         throw 'Crash? ... Yeah, burn? ... Make a wish.';
     }
 
