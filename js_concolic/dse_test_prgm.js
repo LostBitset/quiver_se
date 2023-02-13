@@ -1,8 +1,8 @@
 // A simple test program to make sure concolic execution is working
 
 // bgn SHOULD BE ADDED
-function __assert_not_defined(e) { throw e; }
-try {
+function _Q$rXn(e) { throw e; }
+function _Q$ent() {
 // end SHOULD BE ADDED
 
 var f;
@@ -28,9 +28,12 @@ pre();
 main(42);
 
 // bgn SHOULD BE ADDED
+}
+try {
+    _Q$ent();
 } catch (e) {
     if (e instanceof ReferenceError) {
-        __assert_not_defined(e);
+        _Q$rXn(e);
     }
 }
 // end SHOULD BE ADDED

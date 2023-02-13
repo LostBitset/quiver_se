@@ -37,8 +37,8 @@ function conlog(...args) {
             let actual = result;
             if (result instanceof ConcolicValue) {
                 actual = result.ccr;
-                if (result.sym[0] !== actual.toString()) {
-                    // Don't bother adding (assert true) or (assert (not false))
+                if (result.sym !== actual.toString()) {
+                    // Don't bother adding blatantly obvious tautologies
                     // to the path condition
                     if (result.sym !== null) {
                         pc.push([result.sym[0], actual]);
@@ -92,6 +92,11 @@ function conlog(...args) {
                 (val === undefined || val instanceof ConcolicValue)
                 && !name.startsWith("sym__")
             ) {
+                if (val !== undefined && val.ccr === undefined) {
+                    return {
+                        result: val,
+                    };
+                }
                 if (isArgument) {
                     pc.push(`(*/decl-var/* ${name})`);
                     if (val !== undefined) {
@@ -147,7 +152,7 @@ function conlog(...args) {
         // begin CONCRETIZED
 
         invokeFunPre: function (_iid, f, base, args) {
-            if (f.hasOwnProperty("name") && f.name === "__assert_not_defined") {
+            if (f.hasOwnProperty("name") && f.name === "_Q$rXn") {
                 let exn = args[0];
                 let varName = exn.message.split(" ")[0];
                 pc.push([`(*/is-defined?/* ${varName})`, false]);
