@@ -68,7 +68,13 @@ function instrument(contents, estree) {
 			code,
 			inject + 1,
 			inject + 1,
-			injectionForBlockFunction(cb_id, argNamesMagic(fn_estree)),
+			injectionForBlockFunction(
+				cb_id,
+				argNamesMagic(
+					fn_estree,
+					(start, end) => code.substring(start - offset, end - offset),
+				),
+			),
 		);
 		offset += lbefore - code.length;
 		cb_id++;
@@ -87,7 +93,10 @@ function instrument(contents, estree) {
 			wrapForValueFunction(
 				code.substring(wrap_start, wrap_end),
 				cb_id,
-				argNamesMagic(fn_estree),
+				argNamesMagic(
+					fn_estree,
+					(start, end) => code.substring(start - offset, end - offset),
+				),
 			),
 		);
 		cb_id++;
@@ -114,7 +123,7 @@ function isEstreeSubObject(estree_value) {
 	return estree_value.hasOwnProperty("start") && estree_value.hasOwnProperty("end");
 }
 
-function* estreeSubObjects(estree_obj, types) {
+function* estreeSubObjects(estree_obj) {
 	yield estree_obj;
 	for (const [_, v] of Object.entries(estree_obj)) {
 		if (isEstreeSubObject(v)) {
@@ -161,11 +170,33 @@ function* estreeValueFunctions(estree) {
 }
 
 function injectionForBlockFunction(id, magic) {
-	return `${magic};_Q$cCb(${id});`;
+	return `${magic || ""}${magic ? ";" : ""}_Q$cCb(${id});`;
 }
 
 function wrapForValueFunction(orig, id, magic) {
-	return `{ ${magic};${injectionForBlockFunction(id)} return (${orig}); }`;
+	return `{ ${magic || ""}${magic ? ";" : ""}${injectionForBlockFunction(id)} return (${orig}); }`;
+}
+
+function argNamesMagic(estree, substringFn) {
+	return `:::MAGIC@js_concolic/arg-names|||${argNamesMagicInner(estree, substringFn)}`;
+}
+
+function argNamesMagicInner(estree, substringFn) {
+	switch (estree.type) {
+		case "ArrowFunctionExpression":
+			if (estree.params.length <= 0) {
+				return "";
+			} else {
+				let params_start = estree.params[0].start;
+				let params_end = estree.params[estree.params.length-1].end;
+				return (substringFn)(params_start, params_end);
+			}
+		case "FunctionDeclaration":
+			//...
+			break;
+		default:
+			return null;
+	}
 }
 
 // @UnitTest
