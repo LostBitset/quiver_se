@@ -32,8 +32,6 @@ main(42);
 try {
     _Q$ent();
 } catch (e) {
-    if (e instanceof ReferenceError) {
-        _Q$xnH(e);
-    }
+    _Q$xnH(e);
 }
 // end SHOULD BE ADDED

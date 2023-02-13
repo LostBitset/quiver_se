@@ -157,9 +157,11 @@ function conlog(...args) {
         invokeFunPre: function (_iid, f, base, args) {
             if (f.hasOwnProperty("name") && f.name === "_Q$xnH") {
                 let exn = args[0];
-                let varName = exn.message.split(" ")[0];
-                pc.push([`(*/is-defined?/* ${varName})`, false]);
-                return { f, base, args, skip: false };
+                if (exn instanceof ReferenceError) {
+                    let varName = exn.message.split(" ")[0];
+                    pc.push([`(*/is-defined?/* ${varName})`, false]);
+                    return { f, base, args, skip: false };
+                }
             }
             if (!f.hasOwnProperty("C$_INSTRUMENTED")) {
                 // Concretize calls that have not been instrumented
