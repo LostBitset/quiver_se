@@ -120,9 +120,6 @@ function conlog(...args) {
                             }
                         }
                     }
-                    return {
-                        result: ":::interpreted-magic",
-                    };
                 }
             }
             // Make (conc|symb)olic otherwise
