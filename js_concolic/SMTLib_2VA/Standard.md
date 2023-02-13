@@ -8,11 +8,12 @@ This document defines the `SMTLib_2VA` format, which is a superset of `SMTLibv2`
 
 The following new s-expressions are added to the `SMTLib_2VA` language:
 
-| Syntax                          | Type       | Description                    |
-|---------------------------------|------------|--------------------------------|
-| `(*/write-var-gl/* name value)` | Statement  | Write to a variable globally.  |
-| `(*/write-var-le/* name value)` | Statement  | Write to a variable lexically. |
-| `(*/read-var/*)`                | Expression | Read from a variable.          |
-| `(*/enter-scope/*)`             | Statement  | Enter a new lexical scope.     |
-| `(*/leave-scope/*)`             | Statement  | Leave a lexical scope.         |
+| Syntax                          | Type       | Description                                             |
+|---------------------------------|------------|---------------------------------------------------------|
+| `(*/enter-scope/*)`             | Statement  | Enter a new lexical scope.                              |
+| `(*/leave-scope/*)`             | Statement  | Leave a lexical scope.                                  |
+| `(*/decl-var/* name)`           | Statement  | Declares a variable to be defined in the current scope. |
+| `(*/decl-var-global/* name)`    | Statement  | Declares a variable to be defined in the global scope.  |
+| `(*/write-var/* name value)`    | Statement  | Write to an already-declared variable.                  |
+| `(*/read-var/*)`                | Expression | Read from a variable.                                   |
 

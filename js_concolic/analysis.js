@@ -93,6 +93,19 @@ function conlog(...args) {
             pc.push("(*/leave-scope/*)");
         },
 
+        declare: function (_iid, name, val, isArgument) {
+            if (val === undefined || val instanceof ConcolicValue) {
+                if (isArgument) {
+                    pc.push(`(*/decl-var/* ${name})`);
+                } else {
+                    pc.push(`(*/decl-var-global/* ${name})`);
+                }
+            }
+            return {
+                result: val,
+            };
+        },
+
         literal: function (_iid, val) {
             // Special cases
             if (typeof val === "function") {

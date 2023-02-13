@@ -1,5 +1,11 @@
 // A simple test program to make sure concolic execution is working
 
+var f = true;
+
+function pre() {
+    f = false;
+}
+
 function main(magic_number) {
     ":::MAGIC@js_concolic/arg-names|||magic_number";
 
@@ -9,10 +15,11 @@ function main(magic_number) {
 
     var yo = sym__X < magic_number;
 
-    if (!yo) {
+    if (yo === f) {
         throw 'Crash? ... Yeah, burn? ... Make a wish.';
     }
 
 }
 
+pre();
 main(42);
