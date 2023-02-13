@@ -1,5 +1,10 @@
 // A simple test program to make sure concolic execution is working
 
+// bgn SHOULD BE ADDED
+function __assert_not_defined(e) { throw e; }
+try {
+// end SHOULD BE ADDED
+
 var f;
 
 function pre() {
@@ -13,7 +18,7 @@ function main(magic_number) {
 
     var yo = sym__X < magic_number;
 
-    if (yo === f) {
+    if (yo === fbaka) {
         throw 'Crash? ... Yeah, burn? ... Make a wish.';
     }
 
@@ -21,3 +26,11 @@ function main(magic_number) {
 
 pre();
 main(42);
+
+// bgn SHOULD BE ADDED
+} catch (e) {
+    if (e instanceof ReferenceError) {
+        __assert_not_defined(e);
+    }
+}
+// end SHOULD BE ADDED

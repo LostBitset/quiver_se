@@ -61,8 +61,8 @@ function apConcolic(fn, ...args) {
         });
         if (args_concolic.some(x => x.sym === null)) {
             let args_concrete = args_concolic.map(x => x.ccr);
-            return new ConcolicValue.fromConcrete(
-                (fn)(...args_concrete)
+            return ConcolicValue.fromConcrete(
+                (fn.ccrOp)(...args_concrete)
             );
         } else {
             let ccr_ret = fn.ccrOp(...(

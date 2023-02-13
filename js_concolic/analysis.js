@@ -37,8 +37,12 @@ function conlog(...args) {
             let actual = result;
             if (result instanceof ConcolicValue) {
                 actual = result.ccr;
-                if (result.sym !== null) {
-                    pc.push([result.sym[0], actual]);
+                if (result.sym[0] !== actual.toString()) {
+                    // Don't bother adding (assert true) or (assert (not false))
+                    // to the path condition
+                    if (result.sym !== null) {
+                        pc.push([result.sym[0], actual]);
+                    }
                 }
             }
             return {
@@ -143,6 +147,12 @@ function conlog(...args) {
         // begin CONCRETIZED
 
         invokeFunPre: function (_iid, f, base, args) {
+            if (f.hasOwnProperty("name") && f.name === "__assert_not_defined") {
+                let exn = args[0];
+                let varName = exn.message.split(" ")[0];
+                pc.push([`(*/is-defined?/* ${varName})`, false]);
+                return { f, base, args, skip: false };
+            }
             if (!f.hasOwnProperty("C$_INSTRUMENTED")) {
                 // Concretize calls that have not been instrumented
                 logs.push(`Concretized call to external fn "${base}.${f.name}".`);
