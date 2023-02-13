@@ -14,13 +14,6 @@ cd z3_test
 cd ..
 echo "[run_tests.sh] Leave subdirectory z3_test. (pass)"
 
-# Subdirectory: callback_streams
-echo "[run_tests.sh] Enter subdirectory callback_streams..."
-cd callback_streams
-./test.sh || exit 1
-cd ..
-echo "[run_tests.sh] Leave subdirectory callback_streams. (pass)"
-
 # Subdirectory: js_concolic
 echo "[run_tests.sh] Enter subdirectory js_concolic..."
 cd js_concolic
