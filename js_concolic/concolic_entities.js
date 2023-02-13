@@ -20,7 +20,6 @@ class ConcolicValue {
     constructor(ccr, sym, var_ident) {
         this.ccr = ccr;
         this.sym = sym;
-        this.var_ident = var_ident;
     }
 
     static fromConcrete(ccr) {

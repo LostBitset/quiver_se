@@ -46,6 +46,22 @@ function conlog(...args) {
             };
         },
 
+        read: function (_iid, name, val, isGlobal) {
+            let result = val;
+            if (val instanceof ConcolicValue) {
+                let scopeType = "js_varGlobal";
+                if (isGlobal) scopeType = "js_fullGlobal";
+                let varNameSMT = (new VarIdent(name, scopeType)).toString();
+                result = new ConcolicValue(
+                    val.ccr,
+                    [`(*/read-var/* ${varNameSMT})`, val.sym[1]],
+                );
+            }
+            return {
+                result,
+            };
+        },
+
         write: function (_iid, name, val, lhs, isGlobal) {
             let result = val;
             if (name.startsWith("sym__") && lhs === undefined) {
@@ -56,16 +72,8 @@ function conlog(...args) {
                 if (val instanceof ConcolicValue) {
                     let scopeType = "js_varGlobal";
                     if (isGlobal) scopeType = "js_fullGlobal";
-                    let originalSort = val.sym[1];
-                    let valVar = new ConcolicValue(
-                        val.ccr,
-                        val.sym,
-                        new VarIdent(name, scopeType),
-                    );
-                    let varNameSMT = valVar.var_ident.toString();
-                    pc.push(`(~*write-var*~ ${varNameSMT} ${valVar.sym[0]})`);
-                    valVar.sym = [`(~*read-var*~ ${varNameSMT})`, originalSort];
-                    result = valVar;
+                    let varNameSMT = (new VarIdent(name, scopeType)).toString();
+                    pc.push(`(*/write-var/* ${varNameSMT} ${val.sym[0]})`);
                 }
             }
             return {
