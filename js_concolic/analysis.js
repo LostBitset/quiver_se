@@ -27,6 +27,27 @@ function conlog(...args) {
     // Logs
     var logs = [];
 
+    // Whether or not we have identified the current callback
+    let cbstreamHasCallback = false;
+
+    // Claim a particular, currently executing function as the current callback
+    function cbstreamClaimCallback(id) {
+        let had = cbstreamHasCallback;
+        cbstreamHasCallback = true;
+        if (!had) cbstreamOnCallback(id);
+        process.nextTick(() => {
+            cbstreamHasCallback = false;
+        });
+    }
+
+    // Handle the discovery of a new callback from the cbstream process
+    function cbstreamOnCallback(id) {
+        logs.push(`[cbstream::CALLBACK_TRANSITION] Transitioned to ${id}.`);
+    }
+
+    // Claim the entry point / top callback
+    cbstreamClaimCallback("__top__");
+
 	// @extern(jalangi2).analysis_object
 	lkk.analysis = {
 
@@ -35,7 +56,7 @@ function conlog(...args) {
             let actual = result;
             if (result instanceof ConcolicValue) {
                 actual = result.ccr;
-                if (result.sym !== actual.toString()) {
+                if (result.sym[0] !== actual.toString()) {
                     // Don't bother adding blatantly obvious tautologies
                     // to the path condition
                     if (result.sym !== null) {
@@ -115,7 +136,7 @@ function conlog(...args) {
         literal: function (_iid, val) {
             // Special cases
             if (typeof val === "function") {
-                logs.push(`Marked fn "${val.name}" as instrumented.`);
+                logs.push(`Marked fn ${val.name?`"${val.name}"`:"<anon>"} as instrumented.`);
                 val["C$_INSTRUMENTED"] = true;
                 return {
                     result: val,
@@ -152,7 +173,7 @@ function conlog(...args) {
 
         // begin CONCRETIZED
 
-        invokeFunPre: function (_iid, f, base, args) {
+        invokeFunPre: function (iid, f, base, args) {
             if (f.hasOwnProperty("name") && f.name === "_Q$xnH") {
                 let exn = args[0];
                 if (exn instanceof ReferenceError) {
@@ -161,6 +182,8 @@ function conlog(...args) {
                     return { f, base, args, skip: false };
                 }
             }
+            logs.push(`Claiming callback ${f.name} as ${lkk.getGlobalIID(iid)}.`);
+            cbstreamClaimCallback(lkk.getGlobalIID(iid));
             if (!f.hasOwnProperty("C$_INSTRUMENTED")) {
                 // Concretize calls that have not been instrumented
                 logs.push(`Concretized call to external fn "${base}.${f.name}".`);
