@@ -2,7 +2,6 @@ package main
 
 import (
 	smtlib2va "LostBitset/quiver_se/SMTLib_2VA/lib"
-	"fmt"
 	"os"
 	"strings"
 
@@ -30,8 +29,7 @@ func main() {
 		panic(err)
 	}
 	transpiled := smtlib2va.TranspileV2From2VA(b)
+	transpiled_bytes := []byte(transpiled)
 	filename_root := args[0][:len(args[0])-len(SMTLIB2VA_EXTENSION)]
 	output_filename := filename_root + ".TRANSPILED-orig_smt2va.smt"
-	fmt.Println(transpiled)
-	fmt.Println(output_filename)
 }
