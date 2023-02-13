@@ -133,13 +133,16 @@ function conlog(...args) {
             };
         },
 
-        literal: function (_iid, val) {
+        literal: function (iid, val) {
             // Special cases
             if (typeof val === "function") {
                 logs.push(`Marked fn ${val.name?`"${val.name}"`:"<anon>"} as instrumented.`);
                 val["C$_INSTRUMENTED"] = true;
                 return {
-                    result: val,
+                    result: function (...args) {
+                        cbstreamClaimCallback(lkk.getGlobalIID(iid));
+                        return (val)(...args);
+                    },
                 };
             }
             // Make (conc|symb)olic otherwise
@@ -173,7 +176,7 @@ function conlog(...args) {
 
         // begin CONCRETIZED
 
-        invokeFunPre: function (iid, f, base, args) {
+        invokeFunPre: function (_iid, f, base, args) {
             if (f.hasOwnProperty("name") && f.name === "_Q$xnH") {
                 let exn = args[0];
                 if (exn instanceof ReferenceError) {
@@ -182,8 +185,6 @@ function conlog(...args) {
                     return { f, base, args, skip: false };
                 }
             }
-            logs.push(`Claiming callback ${f.name} as ${lkk.getGlobalIID(iid)}.`);
-            cbstreamClaimCallback(lkk.getGlobalIID(iid));
             if (!f.hasOwnProperty("C$_INSTRUMENTED")) {
                 // Concretize calls that have not been instrumented
                 logs.push(`Concretized call to external fn "${base}.${f.name}".`);
