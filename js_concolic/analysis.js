@@ -54,19 +54,12 @@ function conlog(...args) {
             };
         },
 
-        read: function (_iid, name, val, isGlobal) {
+        read: function (_iid, name, val) {
             let result = val;
             if (val instanceof ConcolicValue && !name.startsWith("sym__")) {
-                let scopeType = "js_varGlobal";
-                if (isGlobal) scopeType = "js_fullGlobal";
-                if (argSources.hasOwnProperty(name)) {
-                    let indices = argSources[name];
-                    scopeType = `js_argsc_${indices[indices.length-1]}`;
-                }
-                let varNameSMT = (new VarIdent(name, scopeType)).toString();
                 result = new ConcolicValue(
                     val.ccr,
-                    [`(*/read-var/* ${varNameSMT})`, val.sym[1]],
+                    [`(*/read-var/* jsvar_${name} ${val.sym[1]})`, val.sym[1]],
                 );
             }
             return {
@@ -74,7 +67,7 @@ function conlog(...args) {
             };
         },
 
-        write: function (_iid, name, val, lhs, isGlobal) {
+        write: function (_iid, name, val, lhs) {
             let result = val;
             if (name.startsWith("sym__") && lhs === undefined) {
                 let [fun, sort] = val.ccr.split(":");
@@ -83,13 +76,7 @@ function conlog(...args) {
             } else {
                 if (val instanceof ConcolicValue) {
                     let scopeType = "js_varGlobal";
-                    if (isGlobal) scopeType = "js_fullGlobal";
-                    if (argSources.hasOwnProperty(name)) {
-                        let indices = argSources[name];
-                        scopeType = `js_argsc_${indices[indices.length-1]}`;
-                    }
-                    let varNameSMT = (new VarIdent(name, scopeType)).toString();
-                    pc.push(`(*/write-var/* ${varNameSMT} ${val.sym[0]})`);
+                    pc.push(`(*/write-var/* jsvar_${name} ${val.sym[0]})`);
                 }
             }
             return {
@@ -119,7 +106,7 @@ function conlog(...args) {
                 let magic_prefix = ":::MAGIC@js_concolic/";
                 if (val.startsWith(magic_prefix)) {
                     // Magic strings
-                    let noprefix = v.substring(magic_prefix.length)
+                    let noprefix = val.substring(magic_prefix.length)
                     if (noprefix.startsWith("arg-names:")) {
                         let [_property, value] = noprefix.split(":");
                         let argNames = value.split(",");
@@ -129,7 +116,7 @@ function conlog(...args) {
                                 if (!(lastArgs[i] instanceof ConcolicValue)) {
                                     lastArgs[i] = ConcolicValue.fromConcrete(lastArgs[i]);
                                 }
-                                pc.push(`(*/write-var/* ${argNames[i]} ${lastArgs[i].sym})`);
+                                pc.push(`(*/write-var/* jsvar_${argNames[i]} ${lastArgs[i].sym[0]})`);
                             }
                         }
                     }
