@@ -120,9 +120,9 @@ function conlog(...args) {
             return { f, base, args, skip: false };
         },
 
-        forInObject: function (iid, val) {
+        forInObject: function (_iid, val) {
             if (val instanceof ConcolicValue) {
-                logs.push("Concretized target of for-in loop. ")
+                logs.push("Concretized target of for-in loop.")
                 return {
                     result: val.ccr,
                 };
@@ -131,6 +131,29 @@ function conlog(...args) {
                     result: val,
                 };
             }
+        },
+
+        getFieldPre: function (_iid, base, offset) {
+            let baseCcr = {};
+            let offsetCcr = offset;
+            if (baseCcr instanceof ConcolicValue) {
+                logs.push("Concretized target of field access.")
+                Object.assign(baseCcr, base.ccr);
+            } else {
+                Object.assign(baseCcr, base);
+            }
+            if (offsetCcr instanceof ConcolicValue) {
+                logs.push("Concretized property of field access.")
+                offsetCcr = offsetCcr.ccr;
+            }
+            let orig = baseCcr[offsetCcr];
+            if (orig instanceof ConcolicValue) {
+                baseCcr[offsetCcr] = ConcolicValue.fromConcrete(orig);
+            }
+            return {
+                base: baseCcr,
+                offset: offsetCcr,
+            };
         },
 
         // end CONCRETIZED
