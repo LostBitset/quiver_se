@@ -43,6 +43,7 @@ function conlog(...args) {
     // Handle the discovery of a new callback from the cbstream process
     function cbstreamOnCallback(id) {
         logs.push(`[cbstream::CALLBACK_TRANSITION] Transitioned to ${id}.`);
+        pc.push(`(*/X-CALLBACK-TRANSITION/* "${id}")`);
     }
 
     // Claim the entry point / top callback
