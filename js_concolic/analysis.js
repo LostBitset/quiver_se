@@ -141,12 +141,13 @@ function conlog(...args) {
             // Special cases
             if (typeof val === "function") {
                 logs.push(`Marked fn ${val.name?`"${val.name}"`:"<anon>"} as instrumented.`);
-                val["C$_INSTRUMENTED"] = true;
+                let newVal = function (...args) {
+                    cbstreamClaimCallback(lkk.getGlobalIID(iid));
+                    return (val)(...args);
+                };
+                newVal["C$_INSTRUMENTED"] = true;
                 return {
-                    result: function (...args) {
-                        cbstreamClaimCallback(lkk.getGlobalIID(iid));
-                        return (val)(...args);
-                    },
+                    result: newVal,
                 };
             }
             // Make (conc|symb)olic otherwise
