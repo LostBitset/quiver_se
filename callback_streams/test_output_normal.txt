@@ -1,4 +1,0 @@
-[CBSTREAM] Got: -1
-[CBSTREAM] Got: 0
-[CBSTREAM] Got: 1
-[CBSTREAM] Done.
