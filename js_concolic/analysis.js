@@ -119,7 +119,20 @@ function conlog(...args) {
                 let magic_prefix = ":::MAGIC@js_concolic/";
                 if (val.startsWith(magic_prefix)) {
                     // Magic strings
-                    if (v)
+                    let noprefix = v.substring(magic_prefix.length)
+                    if (noprefix.startsWith("arg-names:")) {
+                        let [_property, value] = noprefix.split(":");
+                        let argNames = value.split(",");
+                        if (argNames.length === lastArgs.length) {
+                            // Make sure to not crash if something goes wrong
+                            for (let i = 0; i < argNames.length; i++) {
+                                if (!(lastArgs[i] instanceof ConcolicValue)) {
+                                    lastArgs[i] = ConcolicValue.fromConcrete(lastArgs[i]);
+                                }
+                                pc.push(`(*/write-var/* ${argNames[i]} ${lastArgs[i].sym})`);
+                            }
+                        }
+                    }
                     return {
                         result: ":::interpreted-magic",
                     };
