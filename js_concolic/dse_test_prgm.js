@@ -16,4 +16,3 @@ function main(magic_number) {
 }
 
 main(42);
-main(44);
