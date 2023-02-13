@@ -185,7 +185,7 @@ const INSTRUMENTATION_OUTER_TEMPLATE = `
 
 // bgn decl-prefix (static)
 
-let _Q$hCb = false; // shorthand: has callback
+var _Q$hCb = false; // shorthand: has callback
 
 // shorthand: callback handler
 function _Q$cbH(i) {
@@ -194,7 +194,7 @@ function _Q$cbH(i) {
 
 // shorthand: claim callback
 function _Q$cCb(i) {
-	let h = _Q$hCb;
+	var h = _Q$hCb;
 	_Q$hCb = true;
 	if (!h) _Q$cbH(i);
 	process.nextTick(() => {
