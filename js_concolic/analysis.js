@@ -51,7 +51,7 @@ function conlog(...args) {
             if (val instanceof ConcolicValue && !name.startsWith("sym__")) {
                 result = new ConcolicValue(
                     val.ccr,
-                    [`(*/read-var/* jsvar_${name})`, val.sym[1]],
+                    [`(*/read-var/* **jsvar_${name})`, val.sym[1]],
                 );
             }
             return {
@@ -67,7 +67,7 @@ function conlog(...args) {
                 result = ConcolicValue.fromFreeFun([fun, sort]);
             } else {
                 if (val instanceof ConcolicValue) {
-                    pc.push(`(*/write-var/* jsvar_${name} ${val.sym[0]})`);
+                    pc.push(`(*/write-var/* **jsvar_${name} ${val.sym[0]})`);
                 }
             }
             return {
