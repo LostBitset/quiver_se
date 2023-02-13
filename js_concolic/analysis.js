@@ -46,7 +46,7 @@ function conlog(...args) {
             };
         },
 
-        write: function (_iid, name, val, lhs) {
+        write: function (_iid, name, val, lhs, isGlobal) {
             let result = val;
             if (name.startsWith("sym__") && lhs === undefined) {
                 let [fun, sort] = val.ccr.split(":");
@@ -54,13 +54,15 @@ function conlog(...args) {
                 result = ConcolicValue.fromFreeFun([fun, sort]);
             } else {
                 if (val instanceof ConcolicValue) {
+                    let scopeType = "js_varGlobal";
+                    if (isGlobal) scopeType = "js_fullGlobal";
                     let originalSort = val.sym[1];
                     let valVar = new ConcolicValue(
                         val.ccr,
                         val.sym,
-                        new VarIdent(),
+                        new VarIdent(name, scopeType),
                     );
-                    let varNameSMT = `jsvar_${valVar.var_ident.toString()}`;
+                    let varNameSMT = valVar.var_ident.toString();
                     pc.push(`(~*write-var*~ ${varNameSMT} ${valVar.sym[0]})`);
                     valVar.sym = [`(~*read-var*~ ${varNameSMT})`, originalSort];
                     result = valVar;

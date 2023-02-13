@@ -5,15 +5,13 @@
 // JALANGI DO NOT INSTRUMENT
 
 class VarIdent {
-    static next_id = 0;
-
-    constructor() {
-        this.id = VarIdent.next_id;
-        VarIdent.next_id++;
+    constructor(name, scopeType) {
+        this.name = name;
+        this.scopeType = scopeType;
     }
 
     toString() {
-        return `IDENT${this.id}`;
+        return `**${this.scopeType}/jsvar_${this.name}`;
     }
 }
 
