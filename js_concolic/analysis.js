@@ -94,6 +94,8 @@ function conlog(...args) {
             };
         },
 
+        // begin CONCRETIZED
+
         invokeFunPre: function (_iid, f, base, args) {
             if (!f.hasOwnProperty("C$_INSTRUMENTED")) {
                 // Concretize calls that have not been instrumented
@@ -117,6 +119,21 @@ function conlog(...args) {
             }
             return { f, base, args, skip: false };
         },
+
+        forInObject: function (iid, val) {
+            if (val instanceof ConcolicValue) {
+                logs.push("Concretized target of for-in loop. ")
+                return {
+                    result: val.ccr,
+                };
+            } else {
+                return {
+                    result: val,
+                };
+            }
+        },
+
+        // end CONCRETIZED
 
         endExecution: function () {
             for (const log of logs) {
