@@ -15,9 +15,12 @@ class ConcolicValue {
     // the concrete value is available. 
     // This is *not* concretization, that's when
     // the concrete value used as the symbolic value. 
-    constructor(ccr, sym) {
+    // A "variable identity" can also be given for tracking
+    // variables
+    constructor(ccr, sym, var_ident) {
         this.ccr = ccr;
         this.sym = sym;
+        this.var_ident = var_ident;
     }
 
     static fromConcrete(ccr) {

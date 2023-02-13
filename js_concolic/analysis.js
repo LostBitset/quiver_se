@@ -21,10 +21,8 @@ function conlog(...args) {
     var free_funs = [];
     
     // Path condition as an array of [expr, bool] pairs
+    // or just strings for special stuff
     var pc = [];
-
-    // Functions that have been instrumented as {[fn]: true}
-    var instrumented_fns = {};
 
     // Logs
     var logs = [];
@@ -52,6 +50,18 @@ function conlog(...args) {
                 let [fun, sort] = val.ccr.split(":");
                 free_funs.push([fun, sort]);
                 result = ConcolicValue.fromFreeFun([fun, sort]);
+            } else {
+                if (val instanceof ConcolicValue) {
+                    let valVar = new ConcolicValue(
+                        val.ccr,
+                        val.sym,
+                        new VarIdent(),
+                    );
+                    let varNameSMT = `jsvar_${valVar.var_ident.toString()}`;
+                    pc.push(`(~*write-var*~ ${varNameSMT} ${valVar.sym})`);
+                    valVar.sym = `(~*read-var*~ ${varNameSMT})`;
+                    result = valVar;
+                }
             }
             return {
                 result,
