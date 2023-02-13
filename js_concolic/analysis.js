@@ -100,13 +100,11 @@ function conlog(...args) {
                         result: val,
                     };
                 }
+                pc.push(`(*/decl-var/* **jsvar_${name})`);
                 if (isArgument) {
-                    pc.push(`(*/decl-var/* ${name})`);
                     if (val !== undefined) {
-                        pc.push(`(*/write-var/* ${name} ${val.sym[0]})`);
+                        pc.push(`(*/write-var/* **jsvar_${name} ${val.sym[0]})`);
                     }
-                } else {
-                    pc.push(`(*/decl-var-global/* ${name})`);
                 }
             }
             return {
