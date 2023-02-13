@@ -159,12 +159,12 @@ function* estreeValueFunctions(estree) {
 	}
 }
 
-function injectionForBlockFunction(id) {
-	return `_Q$cCb(${id});`;
+function injectionForBlockFunction(id, magic) {
+	return `${magic};_Q$cCb(${id});`;
 }
 
-function wrapForValueFunction(orig, id) {
-	return `{ ${injectionForBlockFunction(id)} return (${orig}); }`;
+function wrapForValueFunction(orig, id, magic) {
+	return `{ ${magic};${injectionForBlockFunction(id)} return (${orig}); }`;
 }
 
 // @UnitTest
