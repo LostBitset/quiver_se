@@ -152,15 +152,15 @@ function conlog(...args) {
             let offsetCcr = offset;
             let valCcr = val;
             if (baseCcr instanceof ConcolicValue) {
-                logs.push("Concretized target of field write.")
+                logs.push("Concretized target of field write.");
                 baseCcr = baseCcr.ccr;
             }
             if (offsetCcr instanceof ConcolicValue) {
-                logs.push("Concretized property of field write.")
+                logs.push("Concretized property of field write.");
                 offsetCcr = offsetCcr.ccr;
             }
             if (valCcr instanceof ConcolicValue) {
-                logs.push("Concretized value of field write.")
+                logs.push("Concretized value of field write.");
             }
             return {
                 base: baseCcr,
@@ -168,6 +168,32 @@ function conlog(...args) {
                 val: valCcr,
                 skip: false,
             };
+        },
+
+        _throw: function (_iid, val) {
+            if (val instanceof ConcolicValue) {
+                logs.push("Concretized value thrown.");
+                return {
+                    result: val.ccr,
+                };
+            } else {
+                return {
+                    result: val,
+                };
+            }
+        },
+
+        _with: function (_iid, val) {
+            if (val instanceof ConcolicValue) {
+                logs.push("Concretized target of with statement.");
+                return {
+                    result: val.ccr,
+                };
+            } else {
+                return {
+                    result: val,
+                };
+            }
         },
 
         // end CONCRETIZED
