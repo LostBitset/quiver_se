@@ -1,10 +1,11 @@
 package smtlib2va
 
 import (
-	"fmt"
 	"regexp"
 	"strconv"
 	"strings"
+
+	"github.com/sirupsen/logrus"
 )
 
 // lvbls = lo vanbi be lo snicne = the environment of the variables
@@ -46,7 +47,10 @@ func TranspileV2From2VANoStrings(src_2va string) (src_v2 string) {
 		func(orig string) (repl string) {
 			head_section_raw, _, _ := strings.Cut(orig, "/*")
 			head := head_section_raw[3:]
-			fmt.Println(head)
+			logrus.Infof(
+				"Replacing SMTLib_2VA sexpr (head \"*/%s/*\").",
+				head,
+			)
 			switch head {
 			case "enter-scope":
 				lvbls.EnterScope()

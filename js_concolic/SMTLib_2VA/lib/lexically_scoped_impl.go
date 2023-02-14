@@ -1,6 +1,10 @@
 package smtlib2va
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/sirupsen/logrus"
+)
 
 // lvbls = lo vanbi be lo snicne = the environment of the variables
 
@@ -62,10 +66,18 @@ func (lvbls *LexicallyScoped) SetVar(name string, val *string) {
 
 func (lvbls *LexicallyScoped) DeclVar(name string) {
 	lvbls.SetVar(name, nil)
+	logrus.Infof(
+		"[LexicallyScoped] Declared variable \"%s\".",
+		name,
+	)
 }
 
 func (lvbls *LexicallyScoped) WriteVar(name string, val string) {
 	lvbls.SetVar(name, &val)
+	logrus.Infof(
+		"[LexicallyScoped] Wrote variable \"%s\".",
+		name,
+	)
 }
 
 func (lvbls LexicallyScoped) IsDefined(name string) (defined bool) {
