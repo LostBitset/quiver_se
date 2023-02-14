@@ -1,6 +1,7 @@
 package smtlib2va
 
 import (
+	"fmt"
 	"regexp"
 	"strconv"
 	"strings"
@@ -36,6 +37,19 @@ func TranspileV2From2VA(src_2va string) (src_v2 string) {
 }
 
 func TranspileV2From2VANoStrings(src_2va string) (src_v2 string) {
-	src_v2 = src_2va // just testing
+	//lvbls := NewLexicallyScoped()
+	sexpr_2va_re := regexp.MustCompile(
+		`\(\*\/[a-z\-]+\/\*(\s\*\*[\w\-]+(\s\*{{.*}}\*)?)?\)`,
+	)
+	src_v2 = sexpr_2va_re.ReplaceAllStringFunc(
+		src_2va,
+		func(orig string) (repl string) {
+			head_section_raw, _, _ := strings.Cut(orig, "/*")
+			head := head_section_raw[3:]
+			fmt.Println(head)
+			repl = "???"
+			return
+		},
+	)
 	return
 }
