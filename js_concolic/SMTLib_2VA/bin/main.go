@@ -31,7 +31,7 @@ func main() {
 	transpiled := smtlib2va.TranspileV2From2VA(string(b))
 	transpiled_bytes := []byte(transpiled)
 	filename_root := args[0][:len(args[0])-len(SMTLIB2VA_EXTENSION)]
-	output_filename := filename_root + ".TRANSPILED-orig_smt2va.smt"
+	output_filename := filename_root + ".TRANSPILED-orig_smt2va.smt2"
 	f, err := os.Create(output_filename)
 	if err != nil {
 		panic(err)
