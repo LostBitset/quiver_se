@@ -12,7 +12,15 @@ import (
 
 func TranspileV2From2VA(src_2va string) (src_v2 string) {
 	comments_re := regexp.MustCompile(`;.*`)
-	wo_comments := comments_re.ReplaceAllString(src_2va, "")
+	comments := make([]string, 0)
+	wo_comments := comments_re.ReplaceAllStringFunc(
+		src_2va,
+		func(orig string) (repl string) {
+			repl = "<<tmp:cmnt>>@" + strconv.Itoa(len(comments))
+			comments = append(comments, orig)
+			return
+		},
+	)
 	strs_re := regexp.MustCompile(`\"(?:[^\\\"]|\\.)*\"`)
 	string_lits := make([]string, 0)
 	wo_strings := strs_re.ReplaceAllStringFunc(
@@ -25,7 +33,7 @@ func TranspileV2From2VA(src_2va string) (src_v2 string) {
 	)
 	wo_strings_transpiled := TranspileV2From2VANoStrings(wo_strings)
 	cut_strs_re := regexp.MustCompile(`<<tmp\:string>>@\d+`)
-	src_v2 = cut_strs_re.ReplaceAllStringFunc(
+	with_strs := cut_strs_re.ReplaceAllStringFunc(
 		wo_strings_transpiled,
 		func(orig string) (repl string) {
 			_, index_str, _ := strings.Cut(orig, "@")
@@ -34,6 +42,17 @@ func TranspileV2From2VA(src_2va string) (src_v2 string) {
 			return
 		},
 	)
+	cut_cmnts_re := regexp.MustCompile(`<<tmp\:cmnt>>@\d+`)
+	with_strs_and_cmnts := cut_cmnts_re.ReplaceAllStringFunc(
+		with_strs,
+		func(orig string) (repl string) {
+			_, index_str, _ := strings.Cut(orig, "@")
+			index, _ := strconv.Atoi(index_str)
+			repl = comments[index]
+			return
+		},
+	)
+	src_v2 = with_strs_and_cmnts
 	return
 }
 
