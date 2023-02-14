@@ -5,6 +5,7 @@
 (*/decl-var/* **x)
 (*/enter-scope/*)
 (*/enter-scope/*)
+(*/write-var/* **x "just \"s and (*/enter-scope/*)")
 (*/write-var/* **x true)
 (*/leave-scope/*)
 (assert (*/read-var/* **x))
