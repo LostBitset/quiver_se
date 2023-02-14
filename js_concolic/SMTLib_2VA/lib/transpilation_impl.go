@@ -1,13 +1,15 @@
 package smtlib2va
 
-import "strings"
+import (
+	"strings"
+)
 
 // lvbls = lo vanbi be lo snicne = the environment of the variables
 
 func TranspileV2From2VA(src_2va []byte) (src_v2 string) {
 	sb := strings.Builder{}
 	lvbls := NewLexicallyScoped()
-	RewriteSexps(src_2va, sb, map[string](func() string){
+	RewriteSexprs(src_2va, sb, map[string](func() string){
 		"*/enter-scope/*": func() (rewritten string) {
 			lvbls.EnterScope()
 			rewritten = ""
@@ -18,6 +20,7 @@ func TranspileV2From2VA(src_2va []byte) (src_v2 string) {
 			rewritten = ""
 			return
 		},
+		// TODO (more)
 	})
 	src_v2 = sb.String()
 	return
