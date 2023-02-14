@@ -1,5 +1,7 @@
 package smtlib2va
 
+import "fmt"
+
 // lvbls = lo vanbi be lo snicne = the environment of the variables
 
 func NewLexicallyScoped() (lvbls LexicallyScoped) {
@@ -75,5 +77,14 @@ func (lvbls LexicallyScoped) ReadVarSafe(name string) (val string, ok bool) {
 func (lvbls LexicallyScoped) IndexReadTrusting(index LexicallyScopedIndex) (val string) {
 	v := (*lvbls.stack.Index(index.stack_index))[index.frame_index]
 	val = v.slot.Read()
+	return
+}
+
+func (lvbls LexicallyScoped) ReadVar(name string) (val string) {
+	val_maybe, ok := lvbls.ReadVarSafe(name)
+	if !ok {
+		panic(fmt.Errorf("Failed to read variable %s, as it was not defined", name))
+	}
+	val = val_maybe
 	return
 }
