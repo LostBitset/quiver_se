@@ -6,7 +6,11 @@ func NewVarSlot() (slot VarSlot) {
 }
 
 func (slot *VarSlot) Write(val string) {
-	*slot.value = val
+	if slot.value == nil {
+		slot.value = &val
+	} else {
+		*slot.value = val
+	}
 }
 
 func (slot VarSlot) Read() (val string) {
