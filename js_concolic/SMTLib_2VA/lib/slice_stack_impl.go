@@ -20,3 +20,13 @@ func (stack SliceStack[A]) Peek() (val A) {
 	val = stack.backing[len(stack.backing)-1]
 	return
 }
+
+func (stack SliceStack[A]) Length() (length int) {
+	length = len(stack.backing)
+	return
+}
+
+func (stack SliceStack[A]) Index(index int) (val A) {
+	val = stack.backing[index]
+	return
+}
