@@ -35,11 +35,16 @@ func (sys SMTLibv2StringSystem) CheckSat(
 	;; This allows MUC generation to produce an MUS @@ ...
 	`)
 	for i, lit := range conjunction {
-		clause := sys.ExpandStringLiteral(lit)
-		clause_marked := sys.MarkClauseIndex(clause, uint(i))
-		assertion := SMTLibv2WrapAssertion(clause_marked)
-		sb.WriteString(assertion)
-		sb.WriteRune('\n')
+		if strings.HasPrefix(lit.value.value, "@__RAW__") {
+			stmt, _ := strings.CutPrefix(lit.value.value, "@__RAW__")
+			sb.WriteString(stmt)
+		} else {
+			clause := sys.ExpandStringLiteral(lit)
+			clause_marked := sys.MarkClauseIndex(clause, uint(i))
+			assertion := SMTLibv2WrapAssertion(clause_marked)
+			sb.WriteString(assertion)
+			sb.WriteRune('\n')
+		}
 	}
 	sb.WriteString(sys.Epilogue())
 	resp := NewZ3SMTLibv2Query(sb.String()).Run()
