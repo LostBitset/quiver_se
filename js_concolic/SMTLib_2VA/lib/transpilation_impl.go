@@ -2,6 +2,7 @@ package smtlib2va
 
 import (
 	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -10,8 +11,16 @@ import (
 func TranspileV2From2VA(src_2va string) (src_v2 string) {
 	sb := strings.Builder{}
 	strs_re := regexp.MustCompile(`\"(?:[^\\\"]|\\.)*\"`)
-	strs_re.FindAllStringIndex(src_2va, -1)
-	lvbls := NewLexicallyScoped()
-	src_v2 = sb.String()
+	string_lits := make([]string, 0)
+	wo_strings := strs_re.ReplaceAllStringFunc(
+		src_2va, func(orig string) (repl string) {
+			repl = "<<tmp:string>>@" + strconv.Itoa(len(string_lits))
+			string_lits = append(string_lits, orig)
+			return
+		},
+	)
+	wo_strings_transpiled := TranspileV2From2VANoStrings(wo_strings)
+	cut_strs_re := regexp.MustCompile(`<<tmp\:string>>@\d+`)
+	src_v2 = cut_strs_re.ReplaceAllStringFunc()
 	return
 }
