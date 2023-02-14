@@ -19,8 +19,6 @@ func (lvbls *LexicallyScoped) EnterScope() {
 
 func (lvbls *LexicallyScoped) LeaveScope() {
 	vars := lvbls.stack.Peek()
-	fmt.Printf("vars: %v\n", vars)
-	fmt.Printf("lvbls.names: %v\n", lvbls.names)
 	for _, v := range *vars {
 		if lvbls.names[v.name].Length() < 2 {
 			delete(lvbls.names, v.name)
