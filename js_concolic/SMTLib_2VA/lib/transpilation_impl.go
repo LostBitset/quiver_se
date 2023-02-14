@@ -37,7 +37,7 @@ func TranspileV2From2VA(src_2va string) (src_v2 string) {
 }
 
 func TranspileV2From2VANoStrings(src_2va string) (src_v2 string) {
-	//lvbls := NewLexicallyScoped()
+	lvbls := NewLexicallyScoped()
 	sexpr_2va_re := regexp.MustCompile(
 		`\(\*\/[a-z\-]+\/\*(\s\*\*[\w\-]+(\s\*{{.*}}\*)?)?\)`,
 	)
@@ -47,7 +47,43 @@ func TranspileV2From2VANoStrings(src_2va string) (src_v2 string) {
 			head_section_raw, _, _ := strings.Cut(orig, "/*")
 			head := head_section_raw[3:]
 			fmt.Println(head)
-			repl = "???"
+			switch head {
+			case "enter-scope":
+				lvbls.EnterScope()
+				repl = ""
+			case "leave-scope":
+				lvbls.LeaveScope()
+				repl = ""
+			case "decl-var":
+				_, name_section_raw, _ := strings.Cut(orig, "**")
+				name := name_section_raw[:len(name_section_raw)-1]
+				lvbls.DeclVar(name)
+				repl = ""
+			case "write-var":
+				_, after_section_raw, _ := strings.Cut(orig, "**")
+				name_section_raw, _, _ := strings.Cut(after_section_raw, "*{{")
+				name := strings.TrimSpace(name_section_raw)
+				capture_start := strings.Index(orig, "*{{") + 3
+				capture_end := strings.Index(orig, "}}*")
+				inner := orig[capture_start:capture_end]
+				lvbls.WriteVar(name, inner)
+				repl = ""
+			case "read-var":
+				_, name_section_raw, _ := strings.Cut(orig, "**")
+				name := name_section_raw[:len(name_section_raw)-1]
+				repl = lvbls.ReadVar(name)
+			case "is-defined?":
+				_, name_section_raw, _ := strings.Cut(orig, "**")
+				name := name_section_raw[:len(name_section_raw)-1]
+				defined := lvbls.IsDefined(name)
+				if defined {
+					repl = "true"
+				} else {
+					repl = "false"
+				}
+			default:
+				panic("Unrecognized SMTLib_2VA head (one enclosed by slanted earmuffs)")
+			}
 			return
 		},
 	)
