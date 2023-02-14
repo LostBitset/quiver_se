@@ -36,21 +36,13 @@ func (lvbls *LexicallyScoped) WriteIndexTrusting(index LexicallyScopedIndex, val
 	slot_ref.Write(val)
 }
 
-func (lvbls *LexicallyScoped) DeclIndexTrusting(index LexicallyScopedIndex) {
-
-}
-
 func (lvbls *LexicallyScoped) SetVar(name string, val *string) {
 	scope_ref := lvbls.stack.Peek()
 	stack_index := lvbls.stack.Length() - 1
 	frame_index := len(*scope_ref)
-	if stack_ref, ok := lvbls.names[name]; ok {
+	if stack_ref, ok := lvbls.names[name]; ok && val != nil {
 		index := stack_ref.Peek()
-		if val == nil {
-			lvbls.DeclIndexTrusting(index)
-		} else {
-			lvbls.WriteIndexTrusting(index, *val)
-		}
+		lvbls.WriteIndexTrusting(index, *val)
 	} else {
 		if val == nil {
 			*scope_ref = append(*scope_ref, Var{name, NewVarSlot()})
