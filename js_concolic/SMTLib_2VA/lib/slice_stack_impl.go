@@ -15,7 +15,7 @@ func (stack *SliceStack[A]) SilentPop() {
 		panic("Stack underflow")
 	}
 	var zero A
-	stack.backing[len(stack.backing)] = zero // Reclaim memory
+	stack.backing[len(stack.backing)-1] = zero // Reclaim memory
 	stack.backing = stack.backing[:len(stack.backing)-1]
 }
 
