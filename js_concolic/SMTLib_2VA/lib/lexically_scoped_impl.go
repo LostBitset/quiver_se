@@ -31,25 +31,34 @@ func (lvbls *LexicallyScoped) LeaveScope() {
 	lvbls.stack.SilentPop()
 }
 
+func (lvbls *LexicallyScoped) WriteIndexTrusting(index LexicallyScopedIndex, val string) {
+	slot_ref := &(*lvbls.stack.Index(index.stack_index))[index.frame_index].slot
+	slot_ref.Write(val)
+}
+
+func (lvbls *LexicallyScoped) DeclIndexTrusting(index LexicallyScopedIndex) {
+
+}
+
 func (lvbls *LexicallyScoped) SetVar(name string, val *string) {
 	scope_ref := lvbls.stack.Peek()
 	stack_index := lvbls.stack.Length() - 1
 	frame_index := len(*scope_ref)
-	if val == nil {
-		*scope_ref = append(*scope_ref, Var{name, NewVarSlot()})
-	} else {
-		slot := NewVarSlot()
-		slot.Write(*val)
-		*scope_ref = append(*scope_ref, Var{name, slot})
-	}
 	if stack_ref, ok := lvbls.names[name]; ok {
-		stack_ref.Push(
-			LexicallyScopedIndex{
-				stack_index,
-				frame_index,
-			},
-		)
+		index := stack_ref.Peek()
+		if val == nil {
+			lvbls.DeclIndexTrusting(index)
+		} else {
+			lvbls.WriteIndexTrusting(index, *val)
+		}
 	} else {
+		if val == nil {
+			*scope_ref = append(*scope_ref, Var{name, NewVarSlot()})
+		} else {
+			slot := NewVarSlot()
+			slot.Write(*val)
+			*scope_ref = append(*scope_ref, Var{name, slot})
+		}
 		backing := NewSliceStack[LexicallyScopedIndex]()
 		backing.Push(
 			LexicallyScopedIndex{
