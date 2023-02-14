@@ -27,9 +27,9 @@ func (lvbls *LexicallyScoped) LeaveScope() {
 	lvbls.stack.SilentPop()
 }
 
-func (lvlbs *LexicallyScoped) SetVar(name string, val *string) {
-	scope_ref := lvlbs.stack.Peek()
-	stack_index := lvlbs.stack.Length() - 1
+func (lvbls *LexicallyScoped) SetVar(name string, val *string) {
+	scope_ref := lvbls.stack.Peek()
+	stack_index := lvbls.stack.Length() - 1
 	frame_index := len(*scope_ref)
 	if val == nil {
 		*scope_ref = append(*scope_ref, Var{name, NewVarSlot()})
@@ -38,7 +38,7 @@ func (lvlbs *LexicallyScoped) SetVar(name string, val *string) {
 		slot.Write(*val)
 		*scope_ref = append(*scope_ref, Var{name, slot})
 	}
-	if stack_ref, ok := lvlbs.names[name]; ok {
+	if stack_ref, ok := lvbls.names[name]; ok {
 		stack_ref.Push(
 			LexicallyScopedIndex{
 				stack_index,
@@ -46,4 +46,12 @@ func (lvlbs *LexicallyScoped) SetVar(name string, val *string) {
 			},
 		)
 	}
+}
+
+func (lvbls *LexicallyScoped) DeclVar(name string) {
+	lvbls.SetVar(name, nil)
+}
+
+func (lvbls *LexicallyScoped) WriteVar(name string, val string) {
+	lvbls.SetVar(name, &val)
 }
