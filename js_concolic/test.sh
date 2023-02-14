@@ -29,3 +29,5 @@ else
 fi
 
 echo "[js_concolic-test] Testing (of) PC Generation (basis of engine) completed."
+
+rm $EXAMPLE_JALANGI2_OUTPUT $DSE_TEST_PRGM_OUTPUT
