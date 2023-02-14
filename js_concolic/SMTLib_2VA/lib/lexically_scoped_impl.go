@@ -55,3 +55,25 @@ func (lvbls *LexicallyScoped) DeclVar(name string) {
 func (lvbls *LexicallyScoped) WriteVar(name string, val string) {
 	lvbls.SetVar(name, &val)
 }
+
+func (lvbls LexicallyScoped) IsDefined(name string) (defined bool) {
+	_, ok_name := lvbls.names[name]
+	defined = ok_name
+	return
+}
+
+func (lvbls LexicallyScoped) ReadVarSafe(name string) (val string, ok bool) {
+	ok = lvbls.IsDefined(name)
+	if !ok {
+		return
+	}
+	index := lvbls.names[name].Peek()
+	val = lvbls.IndexReadTrusting(index)
+	return
+}
+
+func (lvbls LexicallyScoped) IndexReadTrusting(index LexicallyScopedIndex) (val string) {
+	v := (*lvbls.stack.Index(index.stack_index))[index.frame_index]
+	val = v.slot.Read()
+	return
+}
