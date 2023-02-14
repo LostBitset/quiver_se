@@ -19,6 +19,8 @@ func (lvbls *LexicallyScoped) EnterScope() {
 
 func (lvbls *LexicallyScoped) LeaveScope() {
 	vars := lvbls.stack.Peek()
+	fmt.Printf("vars: %v\n", vars)
+	fmt.Printf("lvbls.names: %v\n", lvbls.names)
 	for _, v := range *vars {
 		if lvbls.names[v.name].Length() < 2 {
 			delete(lvbls.names, v.name)
@@ -47,6 +49,15 @@ func (lvbls *LexicallyScoped) SetVar(name string, val *string) {
 				frame_index,
 			},
 		)
+	} else {
+		backing := NewSliceStack[LexicallyScopedIndex]()
+		backing.Push(
+			LexicallyScopedIndex{
+				stack_index,
+				frame_index,
+			},
+		)
+		lvbls.names[name] = &backing
 	}
 }
 
