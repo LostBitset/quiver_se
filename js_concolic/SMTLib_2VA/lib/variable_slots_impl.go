@@ -5,7 +5,7 @@ func NewVarSlot() (slot VarSlot) {
 	return
 }
 
-func (slot VarSlot) Write(val string) {
+func (slot *VarSlot) Write(val string) {
 	*slot.value = val
 }
 
