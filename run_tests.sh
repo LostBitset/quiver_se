@@ -21,5 +21,12 @@ cd js_concolic
 cd ..
 echo "[run_tests.sh] Leave subdirectory js_concolic. (pass)"
 
+# Subdirectory: js_concolic/SMTLib_2VA/lib
+echo "[run_tests.sh] Enter subdirectory js_concolic/SMTLib_2VA/lib..."
+cd js_concolic/SMTLib_2VA/lib
+go test -v || exit 1
+cd ../../..
+echo "[run_tests.sh] Leave subdirectory js_concolic/SMTLib_2VA/lib. (pass)"
+
 echo "[run_tests.sh] All tests in repo passed. #[PASSED_ALL]"
 
