@@ -1,7 +1,7 @@
 package smtlib2va
 
 type LexicallyScoped struct {
-	stack SliceStack[[]Var]
+	stack SliceStack[*[]Var]
 	names map[string]*SliceStack[LexicallyScopedIndex]
 }
 
