@@ -5,7 +5,7 @@ package smtlib2va
 func NewLexicallyScoped() (lvbls LexicallyScoped) {
 	lvbls = LexicallyScoped{
 		NewSliceStack[[]Var](),
-		make(map[string][]LexicallyScopedIndex),
+		make(map[string]SliceStack[LexicallyScopedIndex]),
 	}
 	return
 }
