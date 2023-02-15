@@ -38,7 +38,24 @@ message SessionInit {
 // Analyze the target program on any input (random or predefined).
 // Direction: Orchestration Process -> Analyzer Process
 message AnalyzeAny {
+
+    // Whether or not sending this message multiple times is allowed to just yield a
+    // cached result.
+    // Note that if this value is true, sending this message (AnalyzeAny) more than once
+    // breaks the spec.
+    bool allow_caching = 1;
+
 }
 
 // Analyze the target program in accordance with a particular model.
 // Direction: Orchestration Process -> Analyzer Process
+message AnalyzeModel {
+
+    // Whether or not sending this message multiple times is allowed to just yield a
+    // cached result.
+    bool allow_caching = 1;
+
+    // The model, in accordance with the constraint format specified in SessionInit
+    string model = 2;
+
+}
