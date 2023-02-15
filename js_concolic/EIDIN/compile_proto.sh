@@ -34,7 +34,7 @@ mkdir proto_js
 
 echo "[compilation] [.../EIDIN/compile_proto.sh] Invoking pbjs protobuf compiler..."
 
-npx pbjs -t static proto/eidin.proto >proto_js/eidin_pbjs.js
+npx pbjs -t static-module proto/eidin.proto >proto_js/eidin_pbjs.js
 
 echo "[compilation] [.../EIDIN/compile_proto.sh] JS code generation finished."
 

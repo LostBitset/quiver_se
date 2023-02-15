@@ -3,7 +3,7 @@
 // do not remove the following comment
 // JALANGI DO NOT INSTRUMENT
 
-const eidin = require("./eidin_pbjs")
+const eidin = require("./EIDIN/proto_js/eidin_pbjs")
 
 function sendEIDINPathCondition(free_funs, pc) {
     let msg = eidin.PathCondition.fromObject({

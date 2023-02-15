@@ -24,7 +24,10 @@ function conlog(...args) {
     
     // Path condition as an array of [expr, bool] pairs
     // or just strings for special stuff
-    var pc = [];
+    var spc = {};
+
+    // The current SPC key.
+    var spcKey = null;
 
     // Logs
     var logs = [];
@@ -45,8 +48,8 @@ function conlog(...args) {
     // Handle the discovery of a new callback from the cbstream process
     function cbstreamOnCallback(id) {
         logs.push(`[cbstream::CALLBACK_TRANSITION] Transitioned to ${id}.`);
-        // CGIID = Creation Global Instruction IDentifier
-        pc.push(`;; @@CALLBACK-TRANSITION{cgiid:${id}}`);
+        spc[id] = [];
+        spcKey = id;
     }
 
     // Claim the entry point / top callback
@@ -64,7 +67,7 @@ function conlog(...args) {
                     // Don't bother adding blatantly obvious tautologies
                     // to the path condition
                     if (result.sym !== null) {
-                        pc.push([result.sym[0], actual]);
+                        spc[spcKey].push([result.sym[0], actual]);
                     }
                 }
             }
