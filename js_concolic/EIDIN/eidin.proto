@@ -61,7 +61,7 @@ message AnalyzeModel {
     // cached result.
     bool forbid_caching = 2;
 
-    // The model, in accordance with the constraint format specified in SessionInit
+    // The model, in accordance with the constraint format specified in SessionInit.
     string model = 3;
 
 }
@@ -73,10 +73,24 @@ message PathCondition {
     // An ID associated with this particular request.
     string request_id = 1;
 
-    // Free functions that make up the SMT query
+    // Free functions that make up the SMT query.
     repeated SMTFreeFun free_funs = 2;
 
-    // The segmented path condition
+    // The segmented path condition.
     repeated PathConditionSegment pc = 3;
+
+}
+
+// NOT AN ACTUAL MESSAGE, just a component of one
+message SMTFreeFun {
+
+    // The name of the fun
+    string name = 1;
+    
+    // The sorts of the arguments, which should be empty if it's just a normal value.
+    repeated string arg_sorts = 2;
+    
+    // The sort of the (return) value.
+    string ret_sort = 3;
 
 }
