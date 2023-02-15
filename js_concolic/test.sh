@@ -30,4 +30,19 @@ fi
 
 echo "[js_concolic-test] Testing (of) PC Generation (basis of engine) completed."
 
+echo "[js_concolic-test] Test PC Generation (with callbacks)..."
+
+>$DSE_TEST_PRGM_OUTPUT
+
+./jalangi2_analyse.sh --analysis analysis.js cbstream_test_prgm.js 2>&1 | tail -n 1 | python -m json.tool >$DSE_TEST_PRGM_OUTPUT
+
+if diff cbstream_test_prgm_output.json $DSE_TEST_PRGM_OUTPUT; then
+	echo "[js_concolic-test] [ok] PC Generation (with callbacks) appears to work properly (analysis passed)."
+else
+	echo "[js_concolic-test] [!!] PC Generation (with callbacks) FAILED!"
+	exit 1
+fi
+
+echo "[js_concolic-test] Testing (of) PC Generation (with callbacks) completed."
+
 rm $EXAMPLE_JALANGI2_OUTPUT $DSE_TEST_PRGM_OUTPUT

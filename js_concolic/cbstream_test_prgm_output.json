@@ -1,0 +1,17 @@
+{
+    "free_funs": [],
+    "pc": [
+        ";; @@CALLBACK-TRANSITION{cgiid:__top__}",
+        "(*/enter-scope/*)",
+        "(*/decl-var/* **jsvar_fs)",
+        "(*/leave-scope/*)",
+        ";; @@CALLBACK-TRANSITION{cgiid:undefined:297}",
+        "(*/enter-scope/*)",
+        "(*/decl-var/* **jsvar__data)",
+        "(*/leave-scope/*)",
+        ";; @@CALLBACK-TRANSITION{cgiid:undefined:241}",
+        "(*/enter-scope/*)",
+        "(*/decl-var/* **jsvar__data)",
+        "(*/leave-scope/*)"
+    ]
+}
