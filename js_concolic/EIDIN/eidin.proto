@@ -39,11 +39,14 @@ message SessionInit {
 // Direction: Orchestration Process -> Analyzer Process
 message AnalyzeAny {
 
+    // An ID associated with this particular request.
+    string request_id = 1;
+
     // Whether or not sending this message multiple times is not allowed to just yield a
     // cached result.
     // Note that if this value is false, sending this message (AnalyzeAny) more than once
     // breaks the spec.
-    bool forbid_caching = 1;
+    bool forbid_caching = 2;
 
 }
 
@@ -51,12 +54,15 @@ message AnalyzeAny {
 // Direction: Orchestration Process -> Analyzer Process
 message AnalyzeModel {
 
+    // An ID associated with this particular request.
+    string request_id = 1;
+
     // Whether or not sending this message multiple times is not allowed to just yield a
     // cached result.
-    bool forbid_caching = 1;
+    bool forbid_caching = 2;
 
     // The model, in accordance with the constraint format specified in SessionInit
-    string model = 2;
+    string model = 3;
 
 }
 
