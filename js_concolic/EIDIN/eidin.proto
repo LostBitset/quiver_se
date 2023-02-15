@@ -77,7 +77,7 @@ message PathCondition {
     repeated SMTFreeFun free_funs = 2;
 
     // The segmented path condition.
-    repeated PathConditionSegment pc = 3;
+    repeated PathConditionSegment segmented_pc = 3;
 
 }
 
