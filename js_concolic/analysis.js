@@ -8,6 +8,8 @@ const { ConcolicValue, apConcolic } = require("./concolic_entities");
 
 const { cToBool, ctUnary, ctBinary } = require("./concolic_functions");
 
+const { sendEIDINPathCondition } = require("./eidin_send");
+
 function conlog(...args) {
 	console.log("[js_concolic@node] [jalangi2:analysis]", ...args);
 }
