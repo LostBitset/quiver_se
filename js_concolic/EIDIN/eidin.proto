@@ -1,7 +1,7 @@
 syntax = "proto3";
 package eidin;
 
-option go_package = "LostBitset/quiver_se/EIDIN/lib";
+option go_package = "LostBitset/quiver_se/EIDIN/proto_lib";
 
 // Start a new session, describes important operation parameters and target.
 // Direction: Orchestration Process -> Analyzer Process
