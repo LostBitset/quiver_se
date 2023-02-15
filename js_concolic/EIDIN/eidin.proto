@@ -81,10 +81,11 @@ message PathCondition {
 
 }
 
-// NOT AN ACTUAL MESSAGE, just a component of one
+// NOT AN ACTUAL MESSAGE, just a component of one.
+// Represents a "free fun" in an SMT constraint set.
 message SMTFreeFun {
 
-    // The name of the fun
+    // The name of the fun.
     string name = 1;
     
     // The sorts of the arguments, which should be empty if it's just a normal value.
@@ -92,5 +93,33 @@ message SMTFreeFun {
     
     // The sort of the (return) value.
     string ret_sort = 3;
+
+}
+
+// NOT AN ACTUAL MESSAGE, just a component of one.
+// Represents a segment of a path condition, divided in accordance with callback transitions.
+message PathConditionSegment {
+
+    // A unique identifier for the callback this segment refers to.
+    string this_callback_id = 1;
+    
+    // A unique identifier for the callback this segment continues on to.
+    string next_callback_id = 2;
+    
+    // The actual constraint set that makes up this part of the query
+    repeated SMTConstraint = 3;
+
+}
+
+// NOT AN ACTUAL MESSAGE, just a component of one.
+// Represents a constraint that forms a part of the query given to an SMT solver.
+message SMTConstraint {
+
+    // The constraint as a string.
+    string constraint = 1;
+    
+    // If this is an assertion, whether it should be true or false.
+    // Otherwise, don't set this field.
+    optional bool assertion_value = 2;
 
 }
