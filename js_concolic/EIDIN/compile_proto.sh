@@ -23,4 +23,19 @@ go mod init LostBitset/quiver_se/EIDIN/proto_lib 2>/dev/null
 go mod tidy
 cd ..
 
-echo "[compilation] [.../EIDIN/compile_proto.sh] Module generation finished. All Done."
+echo "[compilation] [.../EIDIN/compile_proto.sh] Golang code generation finished."
+
+echo "[compilation] [.../EIDIN/compile_proto.sh] Compiling (JS) Protobuf definition of EIDIN..."
+
+echo "[compilation] [.../EIDIN/compile_proto.sh] Setting up module directory..."
+
+rm -r proto_js
+mkdir proto_js
+
+echo "[compilation] [.../EIDIN/compile_proto.sh] Invoking pbjs protobuf compiler..."
+
+npx pbjs -t static proto/eidin.proto >proto_js/eidin_pbjs.js
+
+echo "[compilation] [.../EIDIN/compile_proto.sh] JS code generation finished."
+
+echo "[compilation] [.../EIDIN/compile_proto.sh] All done."
