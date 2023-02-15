@@ -72,30 +72,6 @@ message PathCondition {
 
 }
 
-// Requests the source of a particular callback that analysis discovered.
-// Direction: Orchestration Process -> Analyzer Process
-message RequestCallbackSource {
-
-    // The unique identifier associated with the callback in question.
-    string callback_id = 1;
-
-}
-
-// The requested source of a particular callback that analysis discovered.
-// Direction: Analyzer Process -> Orchestration Process
-message CallbackSource {
-
-    // The unique identifier associated with the callback in question.
-    string callback_id = 1;
-
-    // The start byte of the callback source in the original program.
-    uint64 source_index_start = 2;
-
-    // The end byte of the callback source in the original program.
-    uint64 source_index_end = 3;
-
-}
-
 // NOT AN ACTUAL MESSAGE, just a component of one.
 // Represents a "free fun" in an SMT constraint set.
 message SMTFreeFun {
@@ -116,10 +92,10 @@ message SMTFreeFun {
 message PathConditionSegment {
 
     // A unique identifier for the callback this segment refers to.
-    string this_callback_id = 1;
+    CallbackId this_callback_id = 1;
     
     // A unique identifier for the callback this segment continues on to.
-    string next_callback_id = 2;
+    CallbackId next_callback_id = 2;
     
     // The actual constraint set that makes up this part of the query
     repeated SMTConstraint partial_pc = 3;
@@ -136,5 +112,17 @@ message SMTConstraint {
     // If this is an assertion, whether it should be true or false.
     // Otherwise, don't set this field.
     optional bool assertion_value = 2;
+
+}
+
+// NOT AN ACTUAL MESSAGE, just a component of one.
+// Represents a unique identifier for a particular callback
+message CallbackId {
+    
+    // The (byte) offset in the original file of the start of the callback source.
+    uint64 bytes_start = 1;
+
+    // The (byte) offset in the original file of the end of the callback source.
+    uint64 bytes_end = 2;
 
 }

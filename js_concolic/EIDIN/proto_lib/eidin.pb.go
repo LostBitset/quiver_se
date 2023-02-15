@@ -320,124 +320,6 @@ func (x *PathCondition) GetSegmentedPc() []*PathConditionSegment {
 	return nil
 }
 
-// Requests the source of a particular callback that analysis discovered.
-// Direction: Orchestration Process -> Analyzer Process
-type RequestCallbackSource struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	// The unique identifier associated with the callback in question.
-	CallbackId string `protobuf:"bytes,1,opt,name=callback_id,json=callbackId,proto3" json:"callback_id,omitempty"`
-}
-
-func (x *RequestCallbackSource) Reset() {
-	*x = RequestCallbackSource{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_eidin_proto_msgTypes[4]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *RequestCallbackSource) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*RequestCallbackSource) ProtoMessage() {}
-
-func (x *RequestCallbackSource) ProtoReflect() protoreflect.Message {
-	mi := &file_eidin_proto_msgTypes[4]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use RequestCallbackSource.ProtoReflect.Descriptor instead.
-func (*RequestCallbackSource) Descriptor() ([]byte, []int) {
-	return file_eidin_proto_rawDescGZIP(), []int{4}
-}
-
-func (x *RequestCallbackSource) GetCallbackId() string {
-	if x != nil {
-		return x.CallbackId
-	}
-	return ""
-}
-
-// The requested source of a particular callback that analysis discovered.
-// Direction: Analyzer Process -> Orchestration Process
-type CallbackSource struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	// The unique identifier associated with the callback in question.
-	CallbackId string `protobuf:"bytes,1,opt,name=callback_id,json=callbackId,proto3" json:"callback_id,omitempty"`
-	// The start byte of the callback source in the original program.
-	SourceIndexStart uint64 `protobuf:"varint,2,opt,name=source_index_start,json=sourceIndexStart,proto3" json:"source_index_start,omitempty"`
-	// The end byte of the callback source in the original program.
-	SourceIndexEnd uint64 `protobuf:"varint,3,opt,name=source_index_end,json=sourceIndexEnd,proto3" json:"source_index_end,omitempty"`
-}
-
-func (x *CallbackSource) Reset() {
-	*x = CallbackSource{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_eidin_proto_msgTypes[5]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *CallbackSource) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*CallbackSource) ProtoMessage() {}
-
-func (x *CallbackSource) ProtoReflect() protoreflect.Message {
-	mi := &file_eidin_proto_msgTypes[5]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use CallbackSource.ProtoReflect.Descriptor instead.
-func (*CallbackSource) Descriptor() ([]byte, []int) {
-	return file_eidin_proto_rawDescGZIP(), []int{5}
-}
-
-func (x *CallbackSource) GetCallbackId() string {
-	if x != nil {
-		return x.CallbackId
-	}
-	return ""
-}
-
-func (x *CallbackSource) GetSourceIndexStart() uint64 {
-	if x != nil {
-		return x.SourceIndexStart
-	}
-	return 0
-}
-
-func (x *CallbackSource) GetSourceIndexEnd() uint64 {
-	if x != nil {
-		return x.SourceIndexEnd
-	}
-	return 0
-}
-
 // NOT AN ACTUAL MESSAGE, just a component of one.
 // Represents a "free fun" in an SMT constraint set.
 type SMTFreeFun struct {
@@ -456,7 +338,7 @@ type SMTFreeFun struct {
 func (x *SMTFreeFun) Reset() {
 	*x = SMTFreeFun{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_eidin_proto_msgTypes[6]
+		mi := &file_eidin_proto_msgTypes[4]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -469,7 +351,7 @@ func (x *SMTFreeFun) String() string {
 func (*SMTFreeFun) ProtoMessage() {}
 
 func (x *SMTFreeFun) ProtoReflect() protoreflect.Message {
-	mi := &file_eidin_proto_msgTypes[6]
+	mi := &file_eidin_proto_msgTypes[4]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -482,7 +364,7 @@ func (x *SMTFreeFun) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SMTFreeFun.ProtoReflect.Descriptor instead.
 func (*SMTFreeFun) Descriptor() ([]byte, []int) {
-	return file_eidin_proto_rawDescGZIP(), []int{6}
+	return file_eidin_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *SMTFreeFun) GetName() string {
@@ -514,9 +396,9 @@ type PathConditionSegment struct {
 	unknownFields protoimpl.UnknownFields
 
 	// A unique identifier for the callback this segment refers to.
-	ThisCallbackId string `protobuf:"bytes,1,opt,name=this_callback_id,json=thisCallbackId,proto3" json:"this_callback_id,omitempty"`
+	ThisCallbackId *CallbackId `protobuf:"bytes,1,opt,name=this_callback_id,json=thisCallbackId,proto3" json:"this_callback_id,omitempty"`
 	// A unique identifier for the callback this segment continues on to.
-	NextCallbackId string `protobuf:"bytes,2,opt,name=next_callback_id,json=nextCallbackId,proto3" json:"next_callback_id,omitempty"`
+	NextCallbackId *CallbackId `protobuf:"bytes,2,opt,name=next_callback_id,json=nextCallbackId,proto3" json:"next_callback_id,omitempty"`
 	// The actual constraint set that makes up this part of the query
 	PartialPc []*SMTConstraint `protobuf:"bytes,3,rep,name=partial_pc,json=partialPc,proto3" json:"partial_pc,omitempty"`
 }
@@ -524,7 +406,7 @@ type PathConditionSegment struct {
 func (x *PathConditionSegment) Reset() {
 	*x = PathConditionSegment{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_eidin_proto_msgTypes[7]
+		mi := &file_eidin_proto_msgTypes[5]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -537,7 +419,7 @@ func (x *PathConditionSegment) String() string {
 func (*PathConditionSegment) ProtoMessage() {}
 
 func (x *PathConditionSegment) ProtoReflect() protoreflect.Message {
-	mi := &file_eidin_proto_msgTypes[7]
+	mi := &file_eidin_proto_msgTypes[5]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -550,21 +432,21 @@ func (x *PathConditionSegment) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PathConditionSegment.ProtoReflect.Descriptor instead.
 func (*PathConditionSegment) Descriptor() ([]byte, []int) {
-	return file_eidin_proto_rawDescGZIP(), []int{7}
+	return file_eidin_proto_rawDescGZIP(), []int{5}
 }
 
-func (x *PathConditionSegment) GetThisCallbackId() string {
+func (x *PathConditionSegment) GetThisCallbackId() *CallbackId {
 	if x != nil {
 		return x.ThisCallbackId
 	}
-	return ""
+	return nil
 }
 
-func (x *PathConditionSegment) GetNextCallbackId() string {
+func (x *PathConditionSegment) GetNextCallbackId() *CallbackId {
 	if x != nil {
 		return x.NextCallbackId
 	}
-	return ""
+	return nil
 }
 
 func (x *PathConditionSegment) GetPartialPc() []*SMTConstraint {
@@ -591,7 +473,7 @@ type SMTConstraint struct {
 func (x *SMTConstraint) Reset() {
 	*x = SMTConstraint{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_eidin_proto_msgTypes[8]
+		mi := &file_eidin_proto_msgTypes[6]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -604,7 +486,7 @@ func (x *SMTConstraint) String() string {
 func (*SMTConstraint) ProtoMessage() {}
 
 func (x *SMTConstraint) ProtoReflect() protoreflect.Message {
-	mi := &file_eidin_proto_msgTypes[8]
+	mi := &file_eidin_proto_msgTypes[6]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -617,7 +499,7 @@ func (x *SMTConstraint) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SMTConstraint.ProtoReflect.Descriptor instead.
 func (*SMTConstraint) Descriptor() ([]byte, []int) {
-	return file_eidin_proto_rawDescGZIP(), []int{8}
+	return file_eidin_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *SMTConstraint) GetConstraint() string {
@@ -632,6 +514,65 @@ func (x *SMTConstraint) GetAssertionValue() bool {
 		return *x.AssertionValue
 	}
 	return false
+}
+
+// NOT AN ACTUAL MESSAGE, just a component of one.
+// Represents a unique identifier for a particular callback
+type CallbackId struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// The (byte) offset in the original file of the start of the callback source.
+	BytesStart uint64 `protobuf:"varint,1,opt,name=bytes_start,json=bytesStart,proto3" json:"bytes_start,omitempty"`
+	// The (byte) offset in the original file of the end of the callback source.
+	BytesEnd uint64 `protobuf:"varint,2,opt,name=bytes_end,json=bytesEnd,proto3" json:"bytes_end,omitempty"`
+}
+
+func (x *CallbackId) Reset() {
+	*x = CallbackId{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_eidin_proto_msgTypes[7]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *CallbackId) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CallbackId) ProtoMessage() {}
+
+func (x *CallbackId) ProtoReflect() protoreflect.Message {
+	mi := &file_eidin_proto_msgTypes[7]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CallbackId.ProtoReflect.Descriptor instead.
+func (*CallbackId) Descriptor() ([]byte, []int) {
+	return file_eidin_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *CallbackId) GetBytesStart() uint64 {
+	if x != nil {
+		return x.BytesStart
+	}
+	return 0
+}
+
+func (x *CallbackId) GetBytesEnd() uint64 {
+	if x != nil {
+		return x.BytesEnd
+	}
+	return 0
 }
 
 var File_eidin_proto protoreflect.FileDescriptor
@@ -669,30 +610,20 @@ var file_eidin_proto_rawDesc = []byte{
 	0x70, 0x63, 0x18, 0x02, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x1b, 0x2e, 0x65, 0x69, 0x64, 0x69, 0x6e,
 	0x2e, 0x50, 0x61, 0x74, 0x68, 0x43, 0x6f, 0x6e, 0x64, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x53, 0x65,
 	0x67, 0x6d, 0x65, 0x6e, 0x74, 0x52, 0x0b, 0x73, 0x65, 0x67, 0x6d, 0x65, 0x6e, 0x74, 0x65, 0x64,
-	0x50, 0x63, 0x22, 0x38, 0x0a, 0x15, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x43, 0x61, 0x6c,
-	0x6c, 0x62, 0x61, 0x63, 0x6b, 0x53, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x12, 0x1f, 0x0a, 0x0b, 0x63,
-	0x61, 0x6c, 0x6c, 0x62, 0x61, 0x63, 0x6b, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09,
-	0x52, 0x0a, 0x63, 0x61, 0x6c, 0x6c, 0x62, 0x61, 0x63, 0x6b, 0x49, 0x64, 0x22, 0x89, 0x01, 0x0a,
-	0x0e, 0x43, 0x61, 0x6c, 0x6c, 0x62, 0x61, 0x63, 0x6b, 0x53, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x12,
-	0x1f, 0x0a, 0x0b, 0x63, 0x61, 0x6c, 0x6c, 0x62, 0x61, 0x63, 0x6b, 0x5f, 0x69, 0x64, 0x18, 0x01,
-	0x20, 0x01, 0x28, 0x09, 0x52, 0x0a, 0x63, 0x61, 0x6c, 0x6c, 0x62, 0x61, 0x63, 0x6b, 0x49, 0x64,
-	0x12, 0x2c, 0x0a, 0x12, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x5f, 0x69, 0x6e, 0x64, 0x65, 0x78,
-	0x5f, 0x73, 0x74, 0x61, 0x72, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x10, 0x73, 0x6f,
-	0x75, 0x72, 0x63, 0x65, 0x49, 0x6e, 0x64, 0x65, 0x78, 0x53, 0x74, 0x61, 0x72, 0x74, 0x12, 0x28,
-	0x0a, 0x10, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x5f, 0x69, 0x6e, 0x64, 0x65, 0x78, 0x5f, 0x65,
-	0x6e, 0x64, 0x18, 0x03, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0e, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65,
-	0x49, 0x6e, 0x64, 0x65, 0x78, 0x45, 0x6e, 0x64, 0x22, 0x58, 0x0a, 0x0a, 0x53, 0x4d, 0x54, 0x46,
-	0x72, 0x65, 0x65, 0x46, 0x75, 0x6e, 0x12, 0x12, 0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01,
-	0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x12, 0x1b, 0x0a, 0x09, 0x61, 0x72,
-	0x67, 0x5f, 0x73, 0x6f, 0x72, 0x74, 0x73, 0x18, 0x02, 0x20, 0x03, 0x28, 0x09, 0x52, 0x08, 0x61,
-	0x72, 0x67, 0x53, 0x6f, 0x72, 0x74, 0x73, 0x12, 0x19, 0x0a, 0x08, 0x72, 0x65, 0x74, 0x5f, 0x73,
-	0x6f, 0x72, 0x74, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x72, 0x65, 0x74, 0x53, 0x6f,
-	0x72, 0x74, 0x22, 0x9f, 0x01, 0x0a, 0x14, 0x50, 0x61, 0x74, 0x68, 0x43, 0x6f, 0x6e, 0x64, 0x69,
-	0x74, 0x69, 0x6f, 0x6e, 0x53, 0x65, 0x67, 0x6d, 0x65, 0x6e, 0x74, 0x12, 0x28, 0x0a, 0x10, 0x74,
-	0x68, 0x69, 0x73, 0x5f, 0x63, 0x61, 0x6c, 0x6c, 0x62, 0x61, 0x63, 0x6b, 0x5f, 0x69, 0x64, 0x18,
-	0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0e, 0x74, 0x68, 0x69, 0x73, 0x43, 0x61, 0x6c, 0x6c, 0x62,
-	0x61, 0x63, 0x6b, 0x49, 0x64, 0x12, 0x28, 0x0a, 0x10, 0x6e, 0x65, 0x78, 0x74, 0x5f, 0x63, 0x61,
-	0x6c, 0x6c, 0x62, 0x61, 0x63, 0x6b, 0x5f, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52,
+	0x50, 0x63, 0x22, 0x58, 0x0a, 0x0a, 0x53, 0x4d, 0x54, 0x46, 0x72, 0x65, 0x65, 0x46, 0x75, 0x6e,
+	0x12, 0x12, 0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04,
+	0x6e, 0x61, 0x6d, 0x65, 0x12, 0x1b, 0x0a, 0x09, 0x61, 0x72, 0x67, 0x5f, 0x73, 0x6f, 0x72, 0x74,
+	0x73, 0x18, 0x02, 0x20, 0x03, 0x28, 0x09, 0x52, 0x08, 0x61, 0x72, 0x67, 0x53, 0x6f, 0x72, 0x74,
+	0x73, 0x12, 0x19, 0x0a, 0x08, 0x72, 0x65, 0x74, 0x5f, 0x73, 0x6f, 0x72, 0x74, 0x18, 0x03, 0x20,
+	0x01, 0x28, 0x09, 0x52, 0x07, 0x72, 0x65, 0x74, 0x53, 0x6f, 0x72, 0x74, 0x22, 0xc5, 0x01, 0x0a,
+	0x14, 0x50, 0x61, 0x74, 0x68, 0x43, 0x6f, 0x6e, 0x64, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x53, 0x65,
+	0x67, 0x6d, 0x65, 0x6e, 0x74, 0x12, 0x3b, 0x0a, 0x10, 0x74, 0x68, 0x69, 0x73, 0x5f, 0x63, 0x61,
+	0x6c, 0x6c, 0x62, 0x61, 0x63, 0x6b, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32,
+	0x11, 0x2e, 0x65, 0x69, 0x64, 0x69, 0x6e, 0x2e, 0x43, 0x61, 0x6c, 0x6c, 0x62, 0x61, 0x63, 0x6b,
+	0x49, 0x64, 0x52, 0x0e, 0x74, 0x68, 0x69, 0x73, 0x43, 0x61, 0x6c, 0x6c, 0x62, 0x61, 0x63, 0x6b,
+	0x49, 0x64, 0x12, 0x3b, 0x0a, 0x10, 0x6e, 0x65, 0x78, 0x74, 0x5f, 0x63, 0x61, 0x6c, 0x6c, 0x62,
+	0x61, 0x63, 0x6b, 0x5f, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x11, 0x2e, 0x65,
+	0x69, 0x64, 0x69, 0x6e, 0x2e, 0x43, 0x61, 0x6c, 0x6c, 0x62, 0x61, 0x63, 0x6b, 0x49, 0x64, 0x52,
 	0x0e, 0x6e, 0x65, 0x78, 0x74, 0x43, 0x61, 0x6c, 0x6c, 0x62, 0x61, 0x63, 0x6b, 0x49, 0x64, 0x12,
 	0x33, 0x0a, 0x0a, 0x70, 0x61, 0x72, 0x74, 0x69, 0x61, 0x6c, 0x5f, 0x70, 0x63, 0x18, 0x03, 0x20,
 	0x03, 0x28, 0x0b, 0x32, 0x14, 0x2e, 0x65, 0x69, 0x64, 0x69, 0x6e, 0x2e, 0x53, 0x4d, 0x54, 0x43,
@@ -704,10 +635,15 @@ var file_eidin_proto_rawDesc = []byte{
 	0x6f, 0x6e, 0x5f, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x08, 0x48, 0x00,
 	0x52, 0x0e, 0x61, 0x73, 0x73, 0x65, 0x72, 0x74, 0x69, 0x6f, 0x6e, 0x56, 0x61, 0x6c, 0x75, 0x65,
 	0x88, 0x01, 0x01, 0x42, 0x12, 0x0a, 0x10, 0x5f, 0x61, 0x73, 0x73, 0x65, 0x72, 0x74, 0x69, 0x6f,
-	0x6e, 0x5f, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x42, 0x26, 0x5a, 0x24, 0x4c, 0x6f, 0x73, 0x74, 0x42,
-	0x69, 0x74, 0x73, 0x65, 0x74, 0x2f, 0x71, 0x75, 0x69, 0x76, 0x65, 0x72, 0x5f, 0x73, 0x65, 0x2f,
-	0x45, 0x49, 0x44, 0x49, 0x4e, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x5f, 0x6c, 0x69, 0x62, 0x62,
-	0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x6e, 0x5f, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x22, 0x4a, 0x0a, 0x0a, 0x43, 0x61, 0x6c, 0x6c, 0x62,
+	0x61, 0x63, 0x6b, 0x49, 0x64, 0x12, 0x1f, 0x0a, 0x0b, 0x62, 0x79, 0x74, 0x65, 0x73, 0x5f, 0x73,
+	0x74, 0x61, 0x72, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0a, 0x62, 0x79, 0x74, 0x65,
+	0x73, 0x53, 0x74, 0x61, 0x72, 0x74, 0x12, 0x1b, 0x0a, 0x09, 0x62, 0x79, 0x74, 0x65, 0x73, 0x5f,
+	0x65, 0x6e, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x08, 0x62, 0x79, 0x74, 0x65, 0x73,
+	0x45, 0x6e, 0x64, 0x42, 0x26, 0x5a, 0x24, 0x4c, 0x6f, 0x73, 0x74, 0x42, 0x69, 0x74, 0x73, 0x65,
+	0x74, 0x2f, 0x71, 0x75, 0x69, 0x76, 0x65, 0x72, 0x5f, 0x73, 0x65, 0x2f, 0x45, 0x49, 0x44, 0x49,
+	0x4e, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x5f, 0x6c, 0x69, 0x62, 0x62, 0x06, 0x70, 0x72, 0x6f,
+	0x74, 0x6f, 0x33,
 }
 
 var (
@@ -723,28 +659,29 @@ func file_eidin_proto_rawDescGZIP() []byte {
 }
 
 var file_eidin_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_eidin_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
+var file_eidin_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
 var file_eidin_proto_goTypes = []interface{}{
 	(SessionInit_ConstraintFormat)(0), // 0: eidin.SessionInit.ConstraintFormat
 	(*SessionInit)(nil),               // 1: eidin.SessionInit
 	(*AnalyzeAny)(nil),                // 2: eidin.AnalyzeAny
 	(*AnalyzeModel)(nil),              // 3: eidin.AnalyzeModel
 	(*PathCondition)(nil),             // 4: eidin.PathCondition
-	(*RequestCallbackSource)(nil),     // 5: eidin.RequestCallbackSource
-	(*CallbackSource)(nil),            // 6: eidin.CallbackSource
-	(*SMTFreeFun)(nil),                // 7: eidin.SMTFreeFun
-	(*PathConditionSegment)(nil),      // 8: eidin.PathConditionSegment
-	(*SMTConstraint)(nil),             // 9: eidin.SMTConstraint
+	(*SMTFreeFun)(nil),                // 5: eidin.SMTFreeFun
+	(*PathConditionSegment)(nil),      // 6: eidin.PathConditionSegment
+	(*SMTConstraint)(nil),             // 7: eidin.SMTConstraint
+	(*CallbackId)(nil),                // 8: eidin.CallbackId
 }
 var file_eidin_proto_depIdxs = []int32{
-	7, // 0: eidin.PathCondition.free_funs:type_name -> eidin.SMTFreeFun
-	8, // 1: eidin.PathCondition.segmented_pc:type_name -> eidin.PathConditionSegment
-	9, // 2: eidin.PathConditionSegment.partial_pc:type_name -> eidin.SMTConstraint
-	3, // [3:3] is the sub-list for method output_type
-	3, // [3:3] is the sub-list for method input_type
-	3, // [3:3] is the sub-list for extension type_name
-	3, // [3:3] is the sub-list for extension extendee
-	0, // [0:3] is the sub-list for field type_name
+	5, // 0: eidin.PathCondition.free_funs:type_name -> eidin.SMTFreeFun
+	6, // 1: eidin.PathCondition.segmented_pc:type_name -> eidin.PathConditionSegment
+	8, // 2: eidin.PathConditionSegment.this_callback_id:type_name -> eidin.CallbackId
+	8, // 3: eidin.PathConditionSegment.next_callback_id:type_name -> eidin.CallbackId
+	7, // 4: eidin.PathConditionSegment.partial_pc:type_name -> eidin.SMTConstraint
+	5, // [5:5] is the sub-list for method output_type
+	5, // [5:5] is the sub-list for method input_type
+	5, // [5:5] is the sub-list for extension type_name
+	5, // [5:5] is the sub-list for extension extendee
+	0, // [0:5] is the sub-list for field type_name
 }
 
 func init() { file_eidin_proto_init() }
@@ -802,30 +739,6 @@ func file_eidin_proto_init() {
 			}
 		}
 		file_eidin_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*RequestCallbackSource); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_eidin_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*CallbackSource); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_eidin_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*SMTFreeFun); i {
 			case 0:
 				return &v.state
@@ -837,7 +750,7 @@ func file_eidin_proto_init() {
 				return nil
 			}
 		}
-		file_eidin_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
+		file_eidin_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*PathConditionSegment); i {
 			case 0:
 				return &v.state
@@ -849,8 +762,20 @@ func file_eidin_proto_init() {
 				return nil
 			}
 		}
-		file_eidin_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
+		file_eidin_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*SMTConstraint); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_eidin_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*CallbackId); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -863,14 +788,14 @@ func file_eidin_proto_init() {
 		}
 	}
 	file_eidin_proto_msgTypes[0].OneofWrappers = []interface{}{}
-	file_eidin_proto_msgTypes[8].OneofWrappers = []interface{}{}
+	file_eidin_proto_msgTypes[6].OneofWrappers = []interface{}{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_eidin_proto_rawDesc,
 			NumEnums:      1,
-			NumMessages:   9,
+			NumMessages:   8,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
