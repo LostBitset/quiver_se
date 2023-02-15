@@ -99,7 +99,7 @@ function conlog(...args) {
                 result = ConcolicValue.fromFreeFun([fun, sort]);
             } else {
                 if (val instanceof ConcolicValue) {
-                    pc.push(`(*/write-var/* **jsvar_${name} ${val.sym[0]})`);
+                    pc.push(`(*/write-var/* **jsvar_${name} *{{${val.sym[0]}}}*)`);
                 }
             }
             return {
@@ -128,7 +128,7 @@ function conlog(...args) {
                 pc.push(`(*/decl-var/* **jsvar_${name})`);
                 if (isArgument) {
                     if (val !== undefined) {
-                        pc.push(`(*/write-var/* **jsvar_${name} ${val.sym[0]})`);
+                        pc.push(`(*/write-var/* **jsvar_${name} *{{${val.sym[0]}}}*)`);
                     }
                 }
             }
