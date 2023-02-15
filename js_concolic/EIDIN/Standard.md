@@ -6,11 +6,13 @@ This document defines the **EIDIN (Event-aware Interactive DSE INterface)** prot
 
 ## 1. Messages
 
-There are four messages that make up the protocol:
+There are six messages that make up the protocol:
 
-| Dir.       | Message Name    | Description                                                               |
-|------------|-----------------|---------------------------------------------------------------------------|
-| `OR -> AN` | `SessionInit`   | Start a new session, describes important operation parameters and target. |
-| `OR -> AN` | `AnalyzeAny`    | Analyze the target program on any input (random or predefined).           |
-| `OR -> AN` | `AnalyzeModel`  | Analyze the target program in accordance with a particular model.         |
-| `OR <- AN` | `PathCondition` | Provides the returned path condition (analysis results).                  |
+| Dir.       | Message Name            | Description                                                               |
+|------------|-------------------------|---------------------------------------------------------------------------|
+| `OR -> AN` | `SessionInit`           | Start a new session, describes important operation parameters and target. |
+| `OR -> AN` | `AnalyzeAny`            | Analyze the target program on any input (random or predefined).           |
+| `OR -> AN` | `AnalyzeModel`          | Analyze the target program in accordance with a particular model.         |
+| `OR <- AN` | `PathCondition`         | Provides the returned path condition (analysis results).                  |
+| `OR -> AN` | `RequestCallbackSource` | Requests the source of a particular callback that analysis discovered.    |
+| `OR <- AN` | `CallbackSource`        | The requested source of a particular callback that analysis discovered.   |
