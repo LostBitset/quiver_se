@@ -4,6 +4,7 @@ package eidin;
 option go_package = "LostBitset/quiver_se/EIDIN/lib";
 
 // Start a new session, describes important operation parameters and target.
+// Direction: Analyzer Process -> Orchestration Process
 message SessionInit {
 
     // The EIDIN version number, the first and only of which is "1".
