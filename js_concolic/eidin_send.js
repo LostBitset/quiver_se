@@ -6,5 +6,14 @@
 const eidin = require("./eidin_pbjs")
 
 function sendEIDINPathCondition(free_funs, pc) {
-    // TODO
+    let msg = eidin.PathCondition.fromObject({
+        freeFuns: free_funs.map(([fun_name, sort]) => {
+            return eidin.SMTFreeFun.fromObject({
+                name: fun_name,
+                arg_sorts: [],
+                ret_sort: sort,
+            });
+        }),
+        pc: "TODO",
+    });
 }
