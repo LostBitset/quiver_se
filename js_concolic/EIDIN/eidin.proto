@@ -81,6 +81,30 @@ message PathCondition {
 
 }
 
+// Requests the source of a particular callback that analysis discovered.
+// Direction: Orchestration Process -> Analyzer Process
+message RequestCallbackSource {
+
+    // The unique identifier associated with the callback in question.
+    string callback_id = 1;
+
+}
+
+// The requested source of a particular callback that analysis discovered.
+// Direction: Analyzer Process -> Orchestration Process
+message CallbackSource {
+
+    // The unique identifier associated with the callback in question.
+    string callback_id = 1;
+
+    // The start byte of the callback source in the original program.
+    uint64 source_index_start = 2;
+
+    // The end byte of the callback source in the original program.
+    uint64 source_index_end = 3;
+
+}
+
 // NOT AN ACTUAL MESSAGE, just a component of one.
 // Represents a "free fun" in an SMT constraint set.
 message SMTFreeFun {
