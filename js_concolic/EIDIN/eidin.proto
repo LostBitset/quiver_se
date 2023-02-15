@@ -34,3 +34,8 @@ message SessionInit {
     optional string constraint_format_other = 3;
 
 }
+
+// Analyze the target program on any input (random or predefined).
+// Direction: Analyzer Process -> Orchestration Process
+message AnalyzeAny {
+}
