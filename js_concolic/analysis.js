@@ -294,10 +294,14 @@ function conlog(...args) {
                 conlog(log);
             }
             conlog("Ended. ");
-            console.log(JSON.stringify({
-                free_funs,
-                pc,
-            }));
+            if (process.argv.length > 1 && process.argv[1].endsWith("_test_prgm.js")) {
+                console.log(JSON.stringify({
+                    free_funs,
+                    pc,
+                }));
+            } else {
+                sendEIDINPathCondition(free_funs, pc)
+            }
         },
 
     };
