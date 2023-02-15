@@ -7,8 +7,8 @@ option go_package = "LostBitset/quiver_se/EIDIN/proto_lib";
 // Direction: Orchestration Process -> Analyzer Process
 message SessionInit {
 
-    // The EIDIN version number, the first and only of which is "1".
-    int eidin_version = 1;
+    // The EIDIN version number, the first of which is "0.1"
+    string eidin_version = 1;
 
     // The format used for constraints / SMT queries.
     // Keep in mind that complete queries are never sent as a part of this protocol. 
@@ -131,7 +131,7 @@ message PathConditionSegment {
     string next_callback_id = 2;
     
     // The actual constraint set that makes up this part of the query
-    repeated SMTConstraint = 3;
+    repeated SMTConstraint partial_pc = 3;
 
 }
 
