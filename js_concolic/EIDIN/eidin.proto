@@ -68,3 +68,12 @@ message AnalyzeModel {
 
 // Provides the returned path condition (analysis results).
 // Direction: Analyzer Process -> Orchestration Process
+message PathCondition {
+
+    // An ID associated with this particular request.
+    string request_id = 1;
+
+    // Free functions that make up the SMT query
+    repeated SMTFreeFun free_funs = 2;
+
+}
