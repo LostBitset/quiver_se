@@ -1,20 +1,24 @@
 {
+    "cgiid_map": {
+        "273": "34:35",
+        "329": "1:2"
+    },
     "free_funs": [],
     "pc": [
         {
-            "cs": "__top__"
+            "cgiid": "__top__"
         },
         "(*/enter-scope/*)",
         "(*/decl-var/* **jsvar_fs)",
         "(*/leave-scope/*)",
         {
-            "cs": "297"
+            "cgiid": "329"
         },
         "(*/enter-scope/*)",
         "(*/decl-var/* **jsvar__data)",
         "(*/leave-scope/*)",
         {
-            "cs": "241"
+            "cgiid": "273"
         },
         "(*/enter-scope/*)",
         "(*/decl-var/* **jsvar__data)",

@@ -159,7 +159,9 @@ function conlog(...args) {
                 let pfx = "!!MAGIC@js_concolic/src-range=";
                 if (val.startsWith(pfx)) {
                     let value_part = val.substring(pfx.length);
-                    cgiid_map[last_cgiid] = value_part;
+                    if (last_cgiid !== "__top__" && !cgiid_map.hasOwnProperty(last_cgiid)) {
+                        cgiid_map[last_cgiid] = value_part;
+                    }
                 }
             }
             // Make (conc|symb)olic otherwise
@@ -310,8 +312,6 @@ function conlog(...args) {
             conlog("Ended. ");
             console.log(JSON.stringify({
                 cgiid_map,
-            }));
-            console.log(JSON.stringify({
                 free_funs,
                 pc,
             }));

@@ -12,6 +12,7 @@ function pre() {
 }
 
 function main(magic_number) {
+    "!!MAGIC@js_concolic/src-range=1:5";
     console.log("start");
 
     var sym__X = "X:Real";

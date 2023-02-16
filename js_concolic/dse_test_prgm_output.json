@@ -1,4 +1,5 @@
 {
+    "cgiid_map": {},
     "free_funs": [
         [
             "X",
@@ -7,7 +8,7 @@
     ],
     "pc": [
         {
-            "cs": "__top__"
+            "cgiid": "__top__"
         },
         "(*/enter-scope/*)",
         "(*/decl-var/* **jsvar_f)",
