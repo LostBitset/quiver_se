@@ -8,8 +8,6 @@ const { ConcolicValue, apConcolic } = require("./concolic_entities");
 
 const { cToBool, ctUnary, ctBinary } = require("./concolic_functions");
 
-const { sendEIDINPathCondition } = require("./eidin_send");
-
 function conlog(...args) {
 	console.log("[js_concolic@node] [jalangi2:analysis]", ...args);
 }
@@ -24,10 +22,7 @@ function conlog(...args) {
     
     // Path condition as an array of [expr, bool] pairs
     // or just strings for special stuff
-    var spc = {};
-
-    // The current SPC key.
-    var spcKey = null;
+    var pc = [];
 
     // Logs
     var logs = [];
@@ -48,8 +43,7 @@ function conlog(...args) {
     // Handle the discovery of a new callback from the cbstream process
     function cbstreamOnCallback(id) {
         logs.push(`[cbstream::CALLBACK_TRANSITION] Transitioned to ${id}.`);
-        spc[id] = [];
-        spcKey = id;
+        pc.push(CallbackStreamSeperator(id));
     }
 
     // Claim the entry point / top callback
@@ -67,7 +61,7 @@ function conlog(...args) {
                     // Don't bother adding blatantly obvious tautologies
                     // to the path condition
                     if (result.sym !== null) {
-                        spc[spcKey].push([result.sym[0], actual]);
+                        pc.push([result.sym[0], actual]);
                     }
                 }
             }
@@ -299,14 +293,10 @@ function conlog(...args) {
                 conlog(log);
             }
             conlog("Ended. ");
-            if (process.argv.length > 1 && process.argv[1].endsWith("_test_prgm.js")) {
-                console.log(JSON.stringify({
-                    free_funs,
-                    pc,
-                }));
-            } else {
-                sendEIDINPathCondition(free_funs, pc)
-            }
+            console.log(JSON.stringify({
+                free_funs,
+                pc,
+            }));
         },
 
     };
