@@ -29,6 +29,12 @@ function conlog(...args) {
     // Logs
     var logs = [];
 
+    // The CGIID for the last seen function
+    var last_cgiid = null;
+
+    // The mapping between CGIIDs and source indexes
+    var cgiid_map = {};
+
     // Whether or not we have identified the current callback
     let cbstreamHasCallback = false;
 
@@ -45,6 +51,7 @@ function conlog(...args) {
     // Handle the discovery of a new callback from the cbstream process
     function cbstreamOnCallback(id) {
         logs.push(`[cbstream::CALLBACK_TRANSITION] Transitioned to ${id}.`);
+        last_cgiid = id;
         pc.push(new CallbackStreamSeperator(id));
     }
 
@@ -141,13 +148,19 @@ function conlog(...args) {
             if (typeof val === "function") {
                 logs.push(`Marked fn ${val.name?`"${val.name}"`:"<anon>"} as instrumented.`);
                 let newVal = function (...args) {
-                    cbstreamClaimCallback(val.name);
+                    cbstreamClaimCallback(lkk.iidToLocation(iid));
                     return (val)(...args);
                 };
                 newVal["C$_INSTRUMENTED"] = true;
                 return {
                     result: newVal,
                 };
+            } else if (typeof val === "string") {
+                let pfx = "!!MAGIC@js_concolic/src-range=";
+                if (val.startsWith(pfx)) {
+                    let value_part = val.substring(pfx.length);
+                    cgiid_map[last_cgiid] = value_part;
+                }
             }
             // Make (conc|symb)olic otherwise
             let result = ConcolicValue.fromConcrete(val);
@@ -295,6 +308,9 @@ function conlog(...args) {
                 conlog(log);
             }
             conlog("Ended. ");
+            console.log(JSON.stringify({
+                cgiid_map,
+            }));
             console.log(JSON.stringify({
                 free_funs,
                 pc,

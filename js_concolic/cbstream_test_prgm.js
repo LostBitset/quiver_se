@@ -7,9 +7,11 @@ function _Q$ent() {
 
 var fs = require("node:fs");
 
-fs.readFile("something.txt", "utf-8", function __gn_0(err, _data) {
+fs.readFile("something.txt", "utf-8", function (err, _data) {
+    "!!MAGIC@js_concolic/src-range=1:2";
     if (err !== null) {
-        fs.readFile("something2.txt", "utf-8", function __gn_1(err, _data) {
+        fs.readFile("something2.txt", "utf-8", function (err, _data) {
+            "!!MAGIC@js_concolic/src-range=34:35"
             if (err !== null) {
                 console.log("Both files do not exist.");
             }

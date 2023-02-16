@@ -4,9 +4,8 @@
 // JALANGI DO NOT INSTRUMENT
 
 class CallbackStreamSeperator {
-    // cs = creation start
-    constructor(cs) {
-        this.cs = cs;
+    constructor(cgiid) {
+        this.cgiid = cgiid;
     }
 }
 
