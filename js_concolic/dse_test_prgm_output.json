@@ -6,7 +6,9 @@
         ]
     ],
     "pc": [
-        ";; @@CALLBACK-TRANSITION{cgiid:__top__}",
+        {
+            "cs": "__top__"
+        },
         "(*/enter-scope/*)",
         "(*/decl-var/* **jsvar_f)",
         "(*/enter-scope/*)",

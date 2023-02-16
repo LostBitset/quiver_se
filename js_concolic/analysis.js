@@ -8,6 +8,8 @@ const { ConcolicValue, apConcolic } = require("./concolic_entities");
 
 const { cToBool, ctUnary, ctBinary } = require("./concolic_functions");
 
+const { CallbackStreamSeperator } = require("./callback_stream_sep");
+
 function conlog(...args) {
 	console.log("[js_concolic@node] [jalangi2:analysis]", ...args);
 }
@@ -43,7 +45,7 @@ function conlog(...args) {
     // Handle the discovery of a new callback from the cbstream process
     function cbstreamOnCallback(id) {
         logs.push(`[cbstream::CALLBACK_TRANSITION] Transitioned to ${id}.`);
-        pc.push(CallbackStreamSeperator(id));
+        pc.push(new CallbackStreamSeperator(id));
     }
 
     // Claim the entry point / top callback
@@ -139,7 +141,7 @@ function conlog(...args) {
             if (typeof val === "function") {
                 logs.push(`Marked fn ${val.name?`"${val.name}"`:"<anon>"} as instrumented.`);
                 let newVal = function (...args) {
-                    cbstreamClaimCallback(lkk.getGlobalIID(iid));
+                    cbstreamClaimCallback(lkk.iidToLocation(iid));
                     return (val)(...args);
                 };
                 newVal["C$_INSTRUMENTED"] = true;
