@@ -141,7 +141,7 @@ function conlog(...args) {
             if (typeof val === "function") {
                 logs.push(`Marked fn ${val.name?`"${val.name}"`:"<anon>"} as instrumented.`);
                 let newVal = function (...args) {
-                    cbstreamClaimCallback(lkk.iidToLocation(iid));
+                    cbstreamClaimCallback(val.name);
                     return (val)(...args);
                 };
                 newVal["C$_INSTRUMENTED"] = true;
