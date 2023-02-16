@@ -5,7 +5,7 @@
 
 const eidin = require("./EIDIN/proto_js/eidin_pbjs")
 
-function sendEIDINPathCondition(free_funs, pc) {
+function sendEIDINPathCondition(cgiid_map, free_funs, pc) {
     let msg = eidin.PathCondition.fromObject({
         freeFuns: free_funs.map(([fun_name, sort]) => {
             return eidin.SMTFreeFun.fromObject({
@@ -17,3 +17,7 @@ function sendEIDINPathCondition(free_funs, pc) {
         pc: "TODO",
     });
 }
+
+module.exports = {
+    sendEIDINPathCondition,
+};
