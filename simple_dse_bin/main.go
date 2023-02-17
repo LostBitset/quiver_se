@@ -84,3 +84,7 @@ func main() {
 		<-timer
 	}
 }
+
+func SendAnalyzeMessage(amsg []byte, msg_prefix string) {
+	// TODO
+}

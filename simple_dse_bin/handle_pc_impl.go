@@ -6,4 +6,5 @@ import (
 
 func PathConditionToAnalyzeMessages(msg eidin.PathCondition) (msgs [][]byte) {
 	// TODO
+	return
 }
