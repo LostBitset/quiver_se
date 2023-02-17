@@ -13,8 +13,6 @@ import (
 
 func PathConditionToAnalyzeMessages(msg eidin.PathCondition) (msgs [][]byte) {
 	pc, free_funs := PathConditionMessageToConjunction(msg)
-	fmt.Println(pc)
-	fmt.Println(free_funs)
 	var idsrc qse.IdSource
 	sys := qse.SMTLibv2StringSystem{Idsrc: idsrc}
 pcAlternativesLoop:
@@ -57,10 +55,8 @@ func PathConditionMessageToConjunction(msg eidin.PathCondition) (
 	conjunction []qse.IdLiteral[string],
 	free_funs []qse.SMTFreeFun[string, string],
 ) {
-	fmt.Println(msg)
 	free_funs = make([]qse.SMTFreeFun[string, string], 0)
 	for _, free_fun_ref := range msg.GetFreeFuns() {
-		fmt.Println("FREE FUN")
 		free_fun := *free_fun_ref
 		free_funs = append(
 			free_funs,
@@ -73,7 +69,6 @@ func PathConditionMessageToConjunction(msg eidin.PathCondition) (
 	}
 	conjunction = make([]qse.IdLiteral[string], 0)
 	for _, segment_ref := range msg.GetSegmentedPc() {
-		fmt.Println("PC SEGMENT")
 		segment := *segment_ref
 		for _, constraint_ref := range segment.GetPartialPc() {
 			constraint := *constraint_ref
