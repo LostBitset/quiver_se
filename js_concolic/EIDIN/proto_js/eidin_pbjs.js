@@ -1327,6 +1327,20 @@
              */
             PathConditionSegment.prototype.partialPc = $util.emptyArray;
     
+            // OneOf field names bound to virtual getters and setters
+            var $oneOfFields;
+    
+            /**
+             * PathConditionSegment _nextCallbackId.
+             * @member {"nextCallbackId"|undefined} _nextCallbackId
+             * @memberof eidin.PathConditionSegment
+             * @instance
+             */
+            Object.defineProperty(PathConditionSegment.prototype, "_nextCallbackId", {
+                get: $util.oneOfGetter($oneOfFields = ["nextCallbackId"]),
+                set: $util.oneOfSetter($oneOfFields)
+            });
+    
             /**
              * Creates a new PathConditionSegment instance using the specified properties.
              * @function create
@@ -1441,15 +1455,19 @@
             PathConditionSegment.verify = function verify(message) {
                 if (typeof message !== "object" || message === null)
                     return "object expected";
+                var properties = {};
                 if (message.thisCallbackId != null && message.hasOwnProperty("thisCallbackId")) {
                     var error = $root.eidin.CallbackId.verify(message.thisCallbackId);
                     if (error)
                         return "thisCallbackId." + error;
                 }
                 if (message.nextCallbackId != null && message.hasOwnProperty("nextCallbackId")) {
-                    var error = $root.eidin.CallbackId.verify(message.nextCallbackId);
-                    if (error)
-                        return "nextCallbackId." + error;
+                    properties._nextCallbackId = 1;
+                    {
+                        var error = $root.eidin.CallbackId.verify(message.nextCallbackId);
+                        if (error)
+                            return "nextCallbackId." + error;
+                    }
                 }
                 if (message.partialPc != null && message.hasOwnProperty("partialPc")) {
                     if (!Array.isArray(message.partialPc))
@@ -1513,14 +1531,15 @@
                 var object = {};
                 if (options.arrays || options.defaults)
                     object.partialPc = [];
-                if (options.defaults) {
+                if (options.defaults)
                     object.thisCallbackId = null;
-                    object.nextCallbackId = null;
-                }
                 if (message.thisCallbackId != null && message.hasOwnProperty("thisCallbackId"))
                     object.thisCallbackId = $root.eidin.CallbackId.toObject(message.thisCallbackId, options);
-                if (message.nextCallbackId != null && message.hasOwnProperty("nextCallbackId"))
+                if (message.nextCallbackId != null && message.hasOwnProperty("nextCallbackId")) {
                     object.nextCallbackId = $root.eidin.CallbackId.toObject(message.nextCallbackId, options);
+                    if (options.oneofs)
+                        object._nextCallbackId = "nextCallbackId";
+                }
                 if (message.partialPc && message.partialPc.length) {
                     object.partialPc = [];
                     for (var j = 0; j < message.partialPc.length; ++j)
