@@ -51,6 +51,22 @@ function sendEIDINPathCondition(cgiid_map, free_funs, pc) {
     });
 }
 
+function makeCallbackId(src_range) {
+    if (src_range === "__top__") {
+        return eidin.CallbackId.fromObject({
+            bytes_start: 0,
+            bytes_end: 0,
+        });
+    }
+    let [str_start, str_end] = src_range.split(":");
+    let start = Number.parseInt(str_start);
+    let end = Number.parseInt(str_end);
+    return eidin.CallbackId.fromObject({
+        bytes_start: start,
+        bytes_end: end,
+    });
+}
+
 module.exports = {
     sendEIDINPathCondition,
 };
