@@ -33,7 +33,7 @@ func HandleAnalyze(msg eidin.Analyze, target string) {
 				if !(strings.HasPrefix(name, "ga_") || strings.HasPrefix(name, "mhide_")) {
 					curr_key = name
 					fields_after := strings.Fields(line_after)
-					curr_sort = fields_after[len(fields_after)]
+					curr_sort = fields_after[len(fields_after)-1]
 					looking_for_value = true
 				} else {
 					looking_for_value = false
@@ -54,7 +54,7 @@ func HandleAnalyze(msg eidin.Analyze, target string) {
 			if !first {
 				json.WriteRune(',')
 			}
-			first = true
+			first = false
 			json.WriteString(
 				fmt.Sprintf(
 					`"%s": %s`,
