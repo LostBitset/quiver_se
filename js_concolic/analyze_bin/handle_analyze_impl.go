@@ -2,7 +2,9 @@ package main
 
 import (
 	eidin "LostBitset/quiver_se/EIDIN/proto_lib"
+	"bufio"
 	"fmt"
+	"os/exec"
 	"strings"
 )
 
@@ -47,6 +49,7 @@ func HandleAnalyze(msg eidin.Analyze, target string) {
 		if curr_value != "" {
 			mapping_raw[curr_key] = curr_value
 		}
+		fmt.Println("[js_concolic:AnalyzerProcess] Generated assignments, serializing...")
 		var json strings.Builder
 		first := true
 		json.WriteRune('{')
@@ -70,7 +73,23 @@ func HandleAnalyze(msg eidin.Analyze, target string) {
 	} else {
 		addl_args = make([]string, 0)
 	}
-	fmt.Println(addl_args)
+	std_args := []string{
+		"../run_analysis_code" + ".sh",
+		target,
+	}
+	std_args = append(std_args, addl_args...)
+	fmt.Println("[js_concolic:AnalyzerProcess] Starting (jalangi2-based) PC analysis...")
+	cmd := exec.Command("/bin/sh", std_args...)
+	stdout, err_stdout := cmd.StdoutPipe()
+	cmd.Start()
+	if err_stdout == nil {
+		scanner := bufio.NewScanner(stdout)
+		for scanner.Scan() {
+			fmt.Println(scanner.Text())
+		}
+	} else {
+		panic(err_stdout)
+	}
 }
 
 func parseModelValueLine(line string, sort string) (repr string) {
