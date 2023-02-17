@@ -40,11 +40,13 @@ function conlog(...args) {
     // The mapping between symbolic variables and assigned values
     var symbolic_map = {};
 
+    console.log(process.argv);
     if (process.argv.length > 1) {
-        if (process.argv.length[process.argv.length - 1] === "json-model") {
+        if (process.argv[process.argv.length - 2] === "json-model") {
             symbolic_map = JSON.parse(
-                process.argv[process.argv.length],
+                process.argv[process.argv.length - 1],
             );
+            logs.push("Received symbolic map (derived from model). ");
         }
     }
 
