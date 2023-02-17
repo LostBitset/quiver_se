@@ -25,26 +25,25 @@
          */
         var eidin = {};
     
-        eidin.SessionInit = (function() {
+        eidin.Analyze = (function() {
     
             /**
-             * Properties of a SessionInit.
+             * Properties of an Analyze.
              * @memberof eidin
-             * @interface ISessionInit
-             * @property {string|null} [eidinVersion] SessionInit eidinVersion
-             * @property {string|null} [targetUri] SessionInit targetUri
-             * @property {string|null} [constraintFormatOther] SessionInit constraintFormatOther
+             * @interface IAnalyze
+             * @property {boolean|null} [forbidCaching] Analyze forbidCaching
+             * @property {string|null} [model] Analyze model
              */
     
             /**
-             * Constructs a new SessionInit.
+             * Constructs a new Analyze.
              * @memberof eidin
-             * @classdesc Represents a SessionInit.
-             * @implements ISessionInit
+             * @classdesc Represents an Analyze.
+             * @implements IAnalyze
              * @constructor
-             * @param {eidin.ISessionInit=} [properties] Properties to set
+             * @param {eidin.IAnalyze=} [properties] Properties to set
              */
-            function SessionInit(properties) {
+            function Analyze(properties) {
                 if (properties)
                     for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
                         if (properties[keys[i]] != null)
@@ -52,530 +51,57 @@
             }
     
             /**
-             * SessionInit eidinVersion.
-             * @member {string} eidinVersion
-             * @memberof eidin.SessionInit
+             * Analyze forbidCaching.
+             * @member {boolean} forbidCaching
+             * @memberof eidin.Analyze
              * @instance
              */
-            SessionInit.prototype.eidinVersion = "";
+            Analyze.prototype.forbidCaching = false;
     
             /**
-             * SessionInit targetUri.
-             * @member {string} targetUri
-             * @memberof eidin.SessionInit
+             * Analyze model.
+             * @member {string|null|undefined} model
+             * @memberof eidin.Analyze
              * @instance
              */
-            SessionInit.prototype.targetUri = "";
-    
-            /**
-             * SessionInit constraintFormatOther.
-             * @member {string|null|undefined} constraintFormatOther
-             * @memberof eidin.SessionInit
-             * @instance
-             */
-            SessionInit.prototype.constraintFormatOther = null;
+            Analyze.prototype.model = null;
     
             // OneOf field names bound to virtual getters and setters
             var $oneOfFields;
     
             /**
-             * SessionInit _constraintFormatOther.
-             * @member {"constraintFormatOther"|undefined} _constraintFormatOther
-             * @memberof eidin.SessionInit
+             * Analyze _model.
+             * @member {"model"|undefined} _model
+             * @memberof eidin.Analyze
              * @instance
              */
-            Object.defineProperty(SessionInit.prototype, "_constraintFormatOther", {
-                get: $util.oneOfGetter($oneOfFields = ["constraintFormatOther"]),
+            Object.defineProperty(Analyze.prototype, "_model", {
+                get: $util.oneOfGetter($oneOfFields = ["model"]),
                 set: $util.oneOfSetter($oneOfFields)
             });
     
             /**
-             * Creates a new SessionInit instance using the specified properties.
+             * Creates a new Analyze instance using the specified properties.
              * @function create
-             * @memberof eidin.SessionInit
+             * @memberof eidin.Analyze
              * @static
-             * @param {eidin.ISessionInit=} [properties] Properties to set
-             * @returns {eidin.SessionInit} SessionInit instance
+             * @param {eidin.IAnalyze=} [properties] Properties to set
+             * @returns {eidin.Analyze} Analyze instance
              */
-            SessionInit.create = function create(properties) {
-                return new SessionInit(properties);
+            Analyze.create = function create(properties) {
+                return new Analyze(properties);
             };
     
             /**
-             * Encodes the specified SessionInit message. Does not implicitly {@link eidin.SessionInit.verify|verify} messages.
+             * Encodes the specified Analyze message. Does not implicitly {@link eidin.Analyze.verify|verify} messages.
              * @function encode
-             * @memberof eidin.SessionInit
+             * @memberof eidin.Analyze
              * @static
-             * @param {eidin.ISessionInit} message SessionInit message or plain object to encode
+             * @param {eidin.IAnalyze} message Analyze message or plain object to encode
              * @param {$protobuf.Writer} [writer] Writer to encode to
              * @returns {$protobuf.Writer} Writer
              */
-            SessionInit.encode = function encode(message, writer) {
-                if (!writer)
-                    writer = $Writer.create();
-                if (message.eidinVersion != null && Object.hasOwnProperty.call(message, "eidinVersion"))
-                    writer.uint32(/* id 1, wireType 2 =*/10).string(message.eidinVersion);
-                if (message.targetUri != null && Object.hasOwnProperty.call(message, "targetUri"))
-                    writer.uint32(/* id 2, wireType 2 =*/18).string(message.targetUri);
-                if (message.constraintFormatOther != null && Object.hasOwnProperty.call(message, "constraintFormatOther"))
-                    writer.uint32(/* id 3, wireType 2 =*/26).string(message.constraintFormatOther);
-                return writer;
-            };
-    
-            /**
-             * Encodes the specified SessionInit message, length delimited. Does not implicitly {@link eidin.SessionInit.verify|verify} messages.
-             * @function encodeDelimited
-             * @memberof eidin.SessionInit
-             * @static
-             * @param {eidin.ISessionInit} message SessionInit message or plain object to encode
-             * @param {$protobuf.Writer} [writer] Writer to encode to
-             * @returns {$protobuf.Writer} Writer
-             */
-            SessionInit.encodeDelimited = function encodeDelimited(message, writer) {
-                return this.encode(message, writer).ldelim();
-            };
-    
-            /**
-             * Decodes a SessionInit message from the specified reader or buffer.
-             * @function decode
-             * @memberof eidin.SessionInit
-             * @static
-             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-             * @param {number} [length] Message length if known beforehand
-             * @returns {eidin.SessionInit} SessionInit
-             * @throws {Error} If the payload is not a reader or valid buffer
-             * @throws {$protobuf.util.ProtocolError} If required fields are missing
-             */
-            SessionInit.decode = function decode(reader, length) {
-                if (!(reader instanceof $Reader))
-                    reader = $Reader.create(reader);
-                var end = length === undefined ? reader.len : reader.pos + length, message = new $root.eidin.SessionInit();
-                while (reader.pos < end) {
-                    var tag = reader.uint32();
-                    switch (tag >>> 3) {
-                    case 1: {
-                            message.eidinVersion = reader.string();
-                            break;
-                        }
-                    case 2: {
-                            message.targetUri = reader.string();
-                            break;
-                        }
-                    case 3: {
-                            message.constraintFormatOther = reader.string();
-                            break;
-                        }
-                    default:
-                        reader.skipType(tag & 7);
-                        break;
-                    }
-                }
-                return message;
-            };
-    
-            /**
-             * Decodes a SessionInit message from the specified reader or buffer, length delimited.
-             * @function decodeDelimited
-             * @memberof eidin.SessionInit
-             * @static
-             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-             * @returns {eidin.SessionInit} SessionInit
-             * @throws {Error} If the payload is not a reader or valid buffer
-             * @throws {$protobuf.util.ProtocolError} If required fields are missing
-             */
-            SessionInit.decodeDelimited = function decodeDelimited(reader) {
-                if (!(reader instanceof $Reader))
-                    reader = new $Reader(reader);
-                return this.decode(reader, reader.uint32());
-            };
-    
-            /**
-             * Verifies a SessionInit message.
-             * @function verify
-             * @memberof eidin.SessionInit
-             * @static
-             * @param {Object.<string,*>} message Plain object to verify
-             * @returns {string|null} `null` if valid, otherwise the reason why it is not
-             */
-            SessionInit.verify = function verify(message) {
-                if (typeof message !== "object" || message === null)
-                    return "object expected";
-                var properties = {};
-                if (message.eidinVersion != null && message.hasOwnProperty("eidinVersion"))
-                    if (!$util.isString(message.eidinVersion))
-                        return "eidinVersion: string expected";
-                if (message.targetUri != null && message.hasOwnProperty("targetUri"))
-                    if (!$util.isString(message.targetUri))
-                        return "targetUri: string expected";
-                if (message.constraintFormatOther != null && message.hasOwnProperty("constraintFormatOther")) {
-                    properties._constraintFormatOther = 1;
-                    if (!$util.isString(message.constraintFormatOther))
-                        return "constraintFormatOther: string expected";
-                }
-                return null;
-            };
-    
-            /**
-             * Creates a SessionInit message from a plain object. Also converts values to their respective internal types.
-             * @function fromObject
-             * @memberof eidin.SessionInit
-             * @static
-             * @param {Object.<string,*>} object Plain object
-             * @returns {eidin.SessionInit} SessionInit
-             */
-            SessionInit.fromObject = function fromObject(object) {
-                if (object instanceof $root.eidin.SessionInit)
-                    return object;
-                var message = new $root.eidin.SessionInit();
-                if (object.eidinVersion != null)
-                    message.eidinVersion = String(object.eidinVersion);
-                if (object.targetUri != null)
-                    message.targetUri = String(object.targetUri);
-                if (object.constraintFormatOther != null)
-                    message.constraintFormatOther = String(object.constraintFormatOther);
-                return message;
-            };
-    
-            /**
-             * Creates a plain object from a SessionInit message. Also converts values to other types if specified.
-             * @function toObject
-             * @memberof eidin.SessionInit
-             * @static
-             * @param {eidin.SessionInit} message SessionInit
-             * @param {$protobuf.IConversionOptions} [options] Conversion options
-             * @returns {Object.<string,*>} Plain object
-             */
-            SessionInit.toObject = function toObject(message, options) {
-                if (!options)
-                    options = {};
-                var object = {};
-                if (options.defaults) {
-                    object.eidinVersion = "";
-                    object.targetUri = "";
-                }
-                if (message.eidinVersion != null && message.hasOwnProperty("eidinVersion"))
-                    object.eidinVersion = message.eidinVersion;
-                if (message.targetUri != null && message.hasOwnProperty("targetUri"))
-                    object.targetUri = message.targetUri;
-                if (message.constraintFormatOther != null && message.hasOwnProperty("constraintFormatOther")) {
-                    object.constraintFormatOther = message.constraintFormatOther;
-                    if (options.oneofs)
-                        object._constraintFormatOther = "constraintFormatOther";
-                }
-                return object;
-            };
-    
-            /**
-             * Converts this SessionInit to JSON.
-             * @function toJSON
-             * @memberof eidin.SessionInit
-             * @instance
-             * @returns {Object.<string,*>} JSON object
-             */
-            SessionInit.prototype.toJSON = function toJSON() {
-                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-            };
-    
-            /**
-             * Gets the default type url for SessionInit
-             * @function getTypeUrl
-             * @memberof eidin.SessionInit
-             * @static
-             * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
-             * @returns {string} The default type url
-             */
-            SessionInit.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
-                if (typeUrlPrefix === undefined) {
-                    typeUrlPrefix = "type.googleapis.com";
-                }
-                return typeUrlPrefix + "/eidin.SessionInit";
-            };
-    
-            /**
-             * ConstraintFormat enum.
-             * @name eidin.SessionInit.ConstraintFormat
-             * @enum {number}
-             * @property {number} SMTLIB_V2=0 SMTLIB_V2 value
-             * @property {number} SMTLIB_2VA=1 SMTLIB_2VA value
-             * @property {number} OTHER=2 OTHER value
-             */
-            SessionInit.ConstraintFormat = (function() {
-                var valuesById = {}, values = Object.create(valuesById);
-                values[valuesById[0] = "SMTLIB_V2"] = 0;
-                values[valuesById[1] = "SMTLIB_2VA"] = 1;
-                values[valuesById[2] = "OTHER"] = 2;
-                return values;
-            })();
-    
-            return SessionInit;
-        })();
-    
-        eidin.AnalyzeAny = (function() {
-    
-            /**
-             * Properties of an AnalyzeAny.
-             * @memberof eidin
-             * @interface IAnalyzeAny
-             * @property {boolean|null} [forbidCaching] AnalyzeAny forbidCaching
-             */
-    
-            /**
-             * Constructs a new AnalyzeAny.
-             * @memberof eidin
-             * @classdesc Represents an AnalyzeAny.
-             * @implements IAnalyzeAny
-             * @constructor
-             * @param {eidin.IAnalyzeAny=} [properties] Properties to set
-             */
-            function AnalyzeAny(properties) {
-                if (properties)
-                    for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                        if (properties[keys[i]] != null)
-                            this[keys[i]] = properties[keys[i]];
-            }
-    
-            /**
-             * AnalyzeAny forbidCaching.
-             * @member {boolean} forbidCaching
-             * @memberof eidin.AnalyzeAny
-             * @instance
-             */
-            AnalyzeAny.prototype.forbidCaching = false;
-    
-            /**
-             * Creates a new AnalyzeAny instance using the specified properties.
-             * @function create
-             * @memberof eidin.AnalyzeAny
-             * @static
-             * @param {eidin.IAnalyzeAny=} [properties] Properties to set
-             * @returns {eidin.AnalyzeAny} AnalyzeAny instance
-             */
-            AnalyzeAny.create = function create(properties) {
-                return new AnalyzeAny(properties);
-            };
-    
-            /**
-             * Encodes the specified AnalyzeAny message. Does not implicitly {@link eidin.AnalyzeAny.verify|verify} messages.
-             * @function encode
-             * @memberof eidin.AnalyzeAny
-             * @static
-             * @param {eidin.IAnalyzeAny} message AnalyzeAny message or plain object to encode
-             * @param {$protobuf.Writer} [writer] Writer to encode to
-             * @returns {$protobuf.Writer} Writer
-             */
-            AnalyzeAny.encode = function encode(message, writer) {
-                if (!writer)
-                    writer = $Writer.create();
-                if (message.forbidCaching != null && Object.hasOwnProperty.call(message, "forbidCaching"))
-                    writer.uint32(/* id 1, wireType 0 =*/8).bool(message.forbidCaching);
-                return writer;
-            };
-    
-            /**
-             * Encodes the specified AnalyzeAny message, length delimited. Does not implicitly {@link eidin.AnalyzeAny.verify|verify} messages.
-             * @function encodeDelimited
-             * @memberof eidin.AnalyzeAny
-             * @static
-             * @param {eidin.IAnalyzeAny} message AnalyzeAny message or plain object to encode
-             * @param {$protobuf.Writer} [writer] Writer to encode to
-             * @returns {$protobuf.Writer} Writer
-             */
-            AnalyzeAny.encodeDelimited = function encodeDelimited(message, writer) {
-                return this.encode(message, writer).ldelim();
-            };
-    
-            /**
-             * Decodes an AnalyzeAny message from the specified reader or buffer.
-             * @function decode
-             * @memberof eidin.AnalyzeAny
-             * @static
-             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-             * @param {number} [length] Message length if known beforehand
-             * @returns {eidin.AnalyzeAny} AnalyzeAny
-             * @throws {Error} If the payload is not a reader or valid buffer
-             * @throws {$protobuf.util.ProtocolError} If required fields are missing
-             */
-            AnalyzeAny.decode = function decode(reader, length) {
-                if (!(reader instanceof $Reader))
-                    reader = $Reader.create(reader);
-                var end = length === undefined ? reader.len : reader.pos + length, message = new $root.eidin.AnalyzeAny();
-                while (reader.pos < end) {
-                    var tag = reader.uint32();
-                    switch (tag >>> 3) {
-                    case 1: {
-                            message.forbidCaching = reader.bool();
-                            break;
-                        }
-                    default:
-                        reader.skipType(tag & 7);
-                        break;
-                    }
-                }
-                return message;
-            };
-    
-            /**
-             * Decodes an AnalyzeAny message from the specified reader or buffer, length delimited.
-             * @function decodeDelimited
-             * @memberof eidin.AnalyzeAny
-             * @static
-             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-             * @returns {eidin.AnalyzeAny} AnalyzeAny
-             * @throws {Error} If the payload is not a reader or valid buffer
-             * @throws {$protobuf.util.ProtocolError} If required fields are missing
-             */
-            AnalyzeAny.decodeDelimited = function decodeDelimited(reader) {
-                if (!(reader instanceof $Reader))
-                    reader = new $Reader(reader);
-                return this.decode(reader, reader.uint32());
-            };
-    
-            /**
-             * Verifies an AnalyzeAny message.
-             * @function verify
-             * @memberof eidin.AnalyzeAny
-             * @static
-             * @param {Object.<string,*>} message Plain object to verify
-             * @returns {string|null} `null` if valid, otherwise the reason why it is not
-             */
-            AnalyzeAny.verify = function verify(message) {
-                if (typeof message !== "object" || message === null)
-                    return "object expected";
-                if (message.forbidCaching != null && message.hasOwnProperty("forbidCaching"))
-                    if (typeof message.forbidCaching !== "boolean")
-                        return "forbidCaching: boolean expected";
-                return null;
-            };
-    
-            /**
-             * Creates an AnalyzeAny message from a plain object. Also converts values to their respective internal types.
-             * @function fromObject
-             * @memberof eidin.AnalyzeAny
-             * @static
-             * @param {Object.<string,*>} object Plain object
-             * @returns {eidin.AnalyzeAny} AnalyzeAny
-             */
-            AnalyzeAny.fromObject = function fromObject(object) {
-                if (object instanceof $root.eidin.AnalyzeAny)
-                    return object;
-                var message = new $root.eidin.AnalyzeAny();
-                if (object.forbidCaching != null)
-                    message.forbidCaching = Boolean(object.forbidCaching);
-                return message;
-            };
-    
-            /**
-             * Creates a plain object from an AnalyzeAny message. Also converts values to other types if specified.
-             * @function toObject
-             * @memberof eidin.AnalyzeAny
-             * @static
-             * @param {eidin.AnalyzeAny} message AnalyzeAny
-             * @param {$protobuf.IConversionOptions} [options] Conversion options
-             * @returns {Object.<string,*>} Plain object
-             */
-            AnalyzeAny.toObject = function toObject(message, options) {
-                if (!options)
-                    options = {};
-                var object = {};
-                if (options.defaults)
-                    object.forbidCaching = false;
-                if (message.forbidCaching != null && message.hasOwnProperty("forbidCaching"))
-                    object.forbidCaching = message.forbidCaching;
-                return object;
-            };
-    
-            /**
-             * Converts this AnalyzeAny to JSON.
-             * @function toJSON
-             * @memberof eidin.AnalyzeAny
-             * @instance
-             * @returns {Object.<string,*>} JSON object
-             */
-            AnalyzeAny.prototype.toJSON = function toJSON() {
-                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-            };
-    
-            /**
-             * Gets the default type url for AnalyzeAny
-             * @function getTypeUrl
-             * @memberof eidin.AnalyzeAny
-             * @static
-             * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
-             * @returns {string} The default type url
-             */
-            AnalyzeAny.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
-                if (typeUrlPrefix === undefined) {
-                    typeUrlPrefix = "type.googleapis.com";
-                }
-                return typeUrlPrefix + "/eidin.AnalyzeAny";
-            };
-    
-            return AnalyzeAny;
-        })();
-    
-        eidin.AnalyzeModel = (function() {
-    
-            /**
-             * Properties of an AnalyzeModel.
-             * @memberof eidin
-             * @interface IAnalyzeModel
-             * @property {boolean|null} [forbidCaching] AnalyzeModel forbidCaching
-             * @property {string|null} [model] AnalyzeModel model
-             */
-    
-            /**
-             * Constructs a new AnalyzeModel.
-             * @memberof eidin
-             * @classdesc Represents an AnalyzeModel.
-             * @implements IAnalyzeModel
-             * @constructor
-             * @param {eidin.IAnalyzeModel=} [properties] Properties to set
-             */
-            function AnalyzeModel(properties) {
-                if (properties)
-                    for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                        if (properties[keys[i]] != null)
-                            this[keys[i]] = properties[keys[i]];
-            }
-    
-            /**
-             * AnalyzeModel forbidCaching.
-             * @member {boolean} forbidCaching
-             * @memberof eidin.AnalyzeModel
-             * @instance
-             */
-            AnalyzeModel.prototype.forbidCaching = false;
-    
-            /**
-             * AnalyzeModel model.
-             * @member {string} model
-             * @memberof eidin.AnalyzeModel
-             * @instance
-             */
-            AnalyzeModel.prototype.model = "";
-    
-            /**
-             * Creates a new AnalyzeModel instance using the specified properties.
-             * @function create
-             * @memberof eidin.AnalyzeModel
-             * @static
-             * @param {eidin.IAnalyzeModel=} [properties] Properties to set
-             * @returns {eidin.AnalyzeModel} AnalyzeModel instance
-             */
-            AnalyzeModel.create = function create(properties) {
-                return new AnalyzeModel(properties);
-            };
-    
-            /**
-             * Encodes the specified AnalyzeModel message. Does not implicitly {@link eidin.AnalyzeModel.verify|verify} messages.
-             * @function encode
-             * @memberof eidin.AnalyzeModel
-             * @static
-             * @param {eidin.IAnalyzeModel} message AnalyzeModel message or plain object to encode
-             * @param {$protobuf.Writer} [writer] Writer to encode to
-             * @returns {$protobuf.Writer} Writer
-             */
-            AnalyzeModel.encode = function encode(message, writer) {
+            Analyze.encode = function encode(message, writer) {
                 if (!writer)
                     writer = $Writer.create();
                 if (message.forbidCaching != null && Object.hasOwnProperty.call(message, "forbidCaching"))
@@ -586,33 +112,33 @@
             };
     
             /**
-             * Encodes the specified AnalyzeModel message, length delimited. Does not implicitly {@link eidin.AnalyzeModel.verify|verify} messages.
+             * Encodes the specified Analyze message, length delimited. Does not implicitly {@link eidin.Analyze.verify|verify} messages.
              * @function encodeDelimited
-             * @memberof eidin.AnalyzeModel
+             * @memberof eidin.Analyze
              * @static
-             * @param {eidin.IAnalyzeModel} message AnalyzeModel message or plain object to encode
+             * @param {eidin.IAnalyze} message Analyze message or plain object to encode
              * @param {$protobuf.Writer} [writer] Writer to encode to
              * @returns {$protobuf.Writer} Writer
              */
-            AnalyzeModel.encodeDelimited = function encodeDelimited(message, writer) {
+            Analyze.encodeDelimited = function encodeDelimited(message, writer) {
                 return this.encode(message, writer).ldelim();
             };
     
             /**
-             * Decodes an AnalyzeModel message from the specified reader or buffer.
+             * Decodes an Analyze message from the specified reader or buffer.
              * @function decode
-             * @memberof eidin.AnalyzeModel
+             * @memberof eidin.Analyze
              * @static
              * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
              * @param {number} [length] Message length if known beforehand
-             * @returns {eidin.AnalyzeModel} AnalyzeModel
+             * @returns {eidin.Analyze} Analyze
              * @throws {Error} If the payload is not a reader or valid buffer
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
-            AnalyzeModel.decode = function decode(reader, length) {
+            Analyze.decode = function decode(reader, length) {
                 if (!(reader instanceof $Reader))
                     reader = $Reader.create(reader);
-                var end = length === undefined ? reader.len : reader.pos + length, message = new $root.eidin.AnalyzeModel();
+                var end = length === undefined ? reader.len : reader.pos + length, message = new $root.eidin.Analyze();
                 while (reader.pos < end) {
                     var tag = reader.uint32();
                     switch (tag >>> 3) {
@@ -633,53 +159,56 @@
             };
     
             /**
-             * Decodes an AnalyzeModel message from the specified reader or buffer, length delimited.
+             * Decodes an Analyze message from the specified reader or buffer, length delimited.
              * @function decodeDelimited
-             * @memberof eidin.AnalyzeModel
+             * @memberof eidin.Analyze
              * @static
              * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-             * @returns {eidin.AnalyzeModel} AnalyzeModel
+             * @returns {eidin.Analyze} Analyze
              * @throws {Error} If the payload is not a reader or valid buffer
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
-            AnalyzeModel.decodeDelimited = function decodeDelimited(reader) {
+            Analyze.decodeDelimited = function decodeDelimited(reader) {
                 if (!(reader instanceof $Reader))
                     reader = new $Reader(reader);
                 return this.decode(reader, reader.uint32());
             };
     
             /**
-             * Verifies an AnalyzeModel message.
+             * Verifies an Analyze message.
              * @function verify
-             * @memberof eidin.AnalyzeModel
+             * @memberof eidin.Analyze
              * @static
              * @param {Object.<string,*>} message Plain object to verify
              * @returns {string|null} `null` if valid, otherwise the reason why it is not
              */
-            AnalyzeModel.verify = function verify(message) {
+            Analyze.verify = function verify(message) {
                 if (typeof message !== "object" || message === null)
                     return "object expected";
+                var properties = {};
                 if (message.forbidCaching != null && message.hasOwnProperty("forbidCaching"))
                     if (typeof message.forbidCaching !== "boolean")
                         return "forbidCaching: boolean expected";
-                if (message.model != null && message.hasOwnProperty("model"))
+                if (message.model != null && message.hasOwnProperty("model")) {
+                    properties._model = 1;
                     if (!$util.isString(message.model))
                         return "model: string expected";
+                }
                 return null;
             };
     
             /**
-             * Creates an AnalyzeModel message from a plain object. Also converts values to their respective internal types.
+             * Creates an Analyze message from a plain object. Also converts values to their respective internal types.
              * @function fromObject
-             * @memberof eidin.AnalyzeModel
+             * @memberof eidin.Analyze
              * @static
              * @param {Object.<string,*>} object Plain object
-             * @returns {eidin.AnalyzeModel} AnalyzeModel
+             * @returns {eidin.Analyze} Analyze
              */
-            AnalyzeModel.fromObject = function fromObject(object) {
-                if (object instanceof $root.eidin.AnalyzeModel)
+            Analyze.fromObject = function fromObject(object) {
+                if (object instanceof $root.eidin.Analyze)
                     return object;
-                var message = new $root.eidin.AnalyzeModel();
+                var message = new $root.eidin.Analyze();
                 if (object.forbidCaching != null)
                     message.forbidCaching = Boolean(object.forbidCaching);
                 if (object.model != null)
@@ -688,56 +217,57 @@
             };
     
             /**
-             * Creates a plain object from an AnalyzeModel message. Also converts values to other types if specified.
+             * Creates a plain object from an Analyze message. Also converts values to other types if specified.
              * @function toObject
-             * @memberof eidin.AnalyzeModel
+             * @memberof eidin.Analyze
              * @static
-             * @param {eidin.AnalyzeModel} message AnalyzeModel
+             * @param {eidin.Analyze} message Analyze
              * @param {$protobuf.IConversionOptions} [options] Conversion options
              * @returns {Object.<string,*>} Plain object
              */
-            AnalyzeModel.toObject = function toObject(message, options) {
+            Analyze.toObject = function toObject(message, options) {
                 if (!options)
                     options = {};
                 var object = {};
-                if (options.defaults) {
+                if (options.defaults)
                     object.forbidCaching = false;
-                    object.model = "";
-                }
                 if (message.forbidCaching != null && message.hasOwnProperty("forbidCaching"))
                     object.forbidCaching = message.forbidCaching;
-                if (message.model != null && message.hasOwnProperty("model"))
+                if (message.model != null && message.hasOwnProperty("model")) {
                     object.model = message.model;
+                    if (options.oneofs)
+                        object._model = "model";
+                }
                 return object;
             };
     
             /**
-             * Converts this AnalyzeModel to JSON.
+             * Converts this Analyze to JSON.
              * @function toJSON
-             * @memberof eidin.AnalyzeModel
+             * @memberof eidin.Analyze
              * @instance
              * @returns {Object.<string,*>} JSON object
              */
-            AnalyzeModel.prototype.toJSON = function toJSON() {
+            Analyze.prototype.toJSON = function toJSON() {
                 return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
             };
     
             /**
-             * Gets the default type url for AnalyzeModel
+             * Gets the default type url for Analyze
              * @function getTypeUrl
-             * @memberof eidin.AnalyzeModel
+             * @memberof eidin.Analyze
              * @static
              * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
              * @returns {string} The default type url
              */
-            AnalyzeModel.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+            Analyze.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
                 if (typeUrlPrefix === undefined) {
                     typeUrlPrefix = "type.googleapis.com";
                 }
-                return typeUrlPrefix + "/eidin.AnalyzeModel";
+                return typeUrlPrefix + "/eidin.Analyze";
             };
     
-            return AnalyzeModel;
+            return Analyze;
         })();
     
         eidin.PathCondition = (function() {

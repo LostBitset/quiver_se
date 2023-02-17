@@ -3,28 +3,18 @@ package eidin;
 
 option go_package = "LostBitset/quiver_se/EIDIN/proto_lib";
 
-// Analyze the target program on any input (random or predefined).
-// Direction: Orchestration Process -> Analyzer Process
-message AnalyzeAny {
-
-    // Whether or not sending this message multiple times is not allowed to just yield a
-    // cached result.
-    // Note that if this value is false, sending this message (AnalyzeAny) more than once
-    // breaks the spec.
-    bool forbid_caching = 1;
-
-}
-
 // Analyze the target program in accordance with a particular model.
 // Direction: Orchestration Process -> Analyzer Process
-message AnalyzeModel {
+message Analyze {
 
     // Whether or not sending this message multiple times is not allowed to just yield a
     // cached result.
     bool forbid_caching = 1;
 
     // The model, in accordance with the constraint format specified in SessionInit.
-    string model = 2;
+    // If this is not given, the analysis engine can proceed with any assignment. This is
+    // usually how the concolic execution process starts. 
+    optional string model = 2;
 
 }
 

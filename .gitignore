@@ -45,3 +45,6 @@ js_concolic/*_jalangi_.json
 js_concolic/**/*_jalangi_.js
 js_concolic/**/*_jalangi_.json
 
+# (ADDED) .eidin-run directory
+js_concolic/.eidin-run/
+
