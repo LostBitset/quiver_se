@@ -8,8 +8,19 @@ import (
 )
 
 func PathConditionToAnalyzeMessages(msg eidin.PathCondition) (msgs [][]byte) {
-	pc := make([]qse.IdLiteral[string], 0)
 	free_funs := make([]qse.SMTFreeFun[string, string], 0)
+	for _, free_fun_ref := range msg.GetFreeFuns() {
+		free_fun := *free_fun_ref
+		free_funs = append(
+			free_funs,
+			qse.SMTFreeFun[string, string]{
+				Name: free_fun.GetName(),
+				Args: free_fun.GetArgSorts(),
+				Ret:  free_fun.GetRetSort(),
+			},
+		)
+	}
+	pc := make([]qse.IdLiteral[string], 0)
 	for _, segment_ref := range msg.GetSegmentedPc() {
 		segment := *segment_ref
 		for _, constraint_ref := range segment.GetPartialPc() {
@@ -21,11 +32,11 @@ func PathConditionToAnalyzeMessages(msg eidin.PathCondition) (msgs [][]byte) {
 				pc,
 				qse.IdLiteral[string](
 					qse.Literal[qse.WithId_H[string]]{
-						qse.WithId_H[string]{
-							constraint.GetConstraint(),
-							hash,
+						Value: qse.WithId_H[string]{
+							Value: constraint.GetConstraint(),
+							Id:    hash,
 						},
-						constraint.GetAssertionValue(),
+						Eq: constraint.GetAssertionValue(),
 					},
 				),
 			)
