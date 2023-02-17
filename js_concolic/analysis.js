@@ -99,7 +99,7 @@ function conlog(...args) {
             if (val instanceof ConcolicValue && !name.startsWith("sym__")) {
                 result = new ConcolicValue(
                     val.ccr,
-                    [`@__RAW__(*/read-var/* **jsvar_${name})`, val.sym[1]],
+                    [`(*/read-var/* **jsvar_${name})`, val.sym[1]],
                 );
             }
             return {
@@ -120,7 +120,7 @@ function conlog(...args) {
                 result = ConcolicValue.fromFreeFun([fun, sort], symbolic_map[fun]);
             } else {
                 if (val instanceof ConcolicValue) {
-                    pc.push(`@__RAW__(*/write-var/* **jsvar_${name} *{{${val.sym[0]}}}*)`);
+                    pc.push(`(*/write-var/* **jsvar_${name} *{{${val.sym[0]}}}*)`);
                 }
             }
             return {
@@ -129,11 +129,11 @@ function conlog(...args) {
         },
 
         functionEnter: function (_iid, _f, _dis, _args) {
-            pc.push("@__RAW__(*/enter-scope/*)")
+            pc.push("(*/enter-scope/*)")
         },
 
         functionExit: function (_iid) {
-            pc.push("@__RAW__(*/leave-scope/*)");
+            pc.push("(*/leave-scope/*)");
         },
 
         declare: function (_iid, name, val, isArgument) {
@@ -146,10 +146,10 @@ function conlog(...args) {
                         result: val,
                     };
                 }
-                pc.push(`@__RAW__(*/decl-var/* **jsvar_${name})`);
+                pc.push(`(*/decl-var/* **jsvar_${name})`);
                 if (isArgument) {
                     if (val !== undefined) {
-                        pc.push(`@__RAW__(*/write-var/* **jsvar_${name} *{{${val.sym[0]}}}*)`);
+                        pc.push(`(*/write-var/* **jsvar_${name} *{{${val.sym[0]}}}*)`);
                     }
                 }
             }
@@ -215,7 +215,7 @@ function conlog(...args) {
                 let exn = args[0];
                 if (exn instanceof ReferenceError) {
                     let varName = exn.message.split(" ")[0];
-                    pc.push([`@__RAW__(*/is-defined?/* ${varName})`, false]);
+                    pc.push([`(*/is-defined?/* ${varName})`, false]);
                     return { f, base, args, skip: false };
                 }
             }

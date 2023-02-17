@@ -14,7 +14,7 @@ import (
 func PathConditionToAnalyzeMessages(msg eidin.PathCondition) (msgs [][]byte) {
 	pc, free_funs := PathConditionMessageToConjunction(msg)
 	var idsrc qse.IdSource
-	sys := qse.SMTLibv2StringSystem{Idsrc: idsrc}
+	sys := qse.SMTLib2VAStringSystem{Idsrc: idsrc}
 pcAlternativesLoop:
 	for i := range pc {
 		orig := pc[i]
