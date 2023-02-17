@@ -5,12 +5,40 @@ import (
 	"hash/fnv"
 
 	qse "LostBitset/quiver_se/lib"
+
+	"google.golang.org/protobuf/proto"
 )
 
 func PathConditionToAnalyzeMessages(msg eidin.PathCondition) (msgs [][]byte) {
 	pc, free_funs := PathConditionMessageToConjunction(msg)
 	var idsrc qse.IdSource
 	sys := qse.SMTLibv2StringSystem{Idsrc: idsrc}
+	for i := range pc {
+		orig := pc[i]
+		pc[i] = qse.IdLiteral[string]{
+			Value: orig.Value,
+			Eq:    !orig.Eq,
+		}
+		sctx := sys.CheckSat(pc, free_funs)
+		if *sctx.IsSat() {
+			model := *sctx.GetModel()
+			msgs = append(msgs, MakeAnalyzeMessage(model))
+		}
+		pc[i] = orig
+	}
+	return
+}
+
+func MakeAnalyzeMessage(model string) (msg_raw []byte) {
+	msg := &eidin.Analyze{
+		ForbidCaching: false,
+		Model:         &model,
+	}
+	out, err := proto.Marshal(msg)
+	if err != nil {
+		panic(err)
+	}
+	msg_raw = out
 	return
 }
 
