@@ -1,7 +1,7 @@
 package qse
 
 type SMTFreeFun[IDENT any, SORT any] struct {
-	name IDENT
-	args []SORT
-	ret  SORT
+	Name IDENT
+	Args []SORT
+	Ret  SORT
 }

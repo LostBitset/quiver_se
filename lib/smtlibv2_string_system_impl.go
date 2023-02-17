@@ -205,9 +205,9 @@ func (sys SMTLibv2StringSystem) GenDecls(free_funs []SMTFreeFun[string, string])
 func (sys SMTLibv2StringSystem) DeclSExpr(free_fun SMTFreeFun[string, string]) (s_expr string) {
 	s_expr = fmt.Sprintf(
 		"(declare-fun %s (%s) %s)",
-		free_fun.name,
-		strings.Join(free_fun.args, " "),
-		free_fun.ret,
+		free_fun.Name,
+		strings.Join(free_fun.Args, " "),
+		free_fun.Ret,
 	)
 	return
 }
