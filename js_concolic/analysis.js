@@ -37,6 +37,17 @@ function conlog(...args) {
     // The mapping between CGIIDs and source indexes
     var cgiid_map = {};
 
+    // The mapping between symbolic variables and assigned values
+    var symbolic_map = {};
+
+    if (process.argv.length > 1) {
+        if (process.argv.length[process.argv.length - 1] === "json-model") {
+            symbolic_map = JSON.parse(
+                process.argv[process.argv.length],
+            );
+        }
+    }
+
     // Whether or not we have identified the current callback
     let cbstreamHasCallback = false;
 
@@ -104,7 +115,7 @@ function conlog(...args) {
             if (name.startsWith("sym__") && lhs === undefined) {
                 let [fun, sort] = val.ccr.split(":");
                 free_funs.push([fun, sort]);
-                result = ConcolicValue.fromFreeFun([fun, sort]);
+                result = ConcolicValue.fromFreeFun([fun, sort], symbolic_map[fun]);
             } else {
                 if (val instanceof ConcolicValue) {
                     pc.push(`(*/write-var/* **jsvar_${name} *{{${val.sym[0]}}}*)`);

@@ -29,11 +29,18 @@ class ConcolicValue {
         );
     }
 
-    static fromFreeFun([name, sort]) {
-        return new ConcolicValue(
-            exampleSortInhabitants[sort],
-            [name, sort],
-        );
+    static fromFreeFun([name, sort], concrete) {
+        if (concrete === undefined) {
+            return new ConcolicValue(
+                exampleSortInhabitants[sort],
+                [name, sort],
+            );
+        } else {
+            return new ConcolicValue(
+                concrete,
+                [name, sort],
+            );
+        }
     }
 }
 
