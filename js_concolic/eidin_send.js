@@ -5,7 +5,11 @@
 
 const { eidin } = require("./EIDIN/proto_js/eidin_pbjs");
 
+const { v4: uuidv4} = require("uuid");
+
 const { CallbackStreamSeperator } = require("./callback_stream_sep");
+
+const { writeFileSync } = require("node:fs");
 
 function sendEIDINPathCondition(cgiid_map, free_funs, pc) {
     let spc = [];
@@ -71,7 +75,13 @@ function makeCallbackId(cgiid, cgiid_map) {
 }
 
 function sendEIDINMessage(msg) {
-    console.log(JSON.stringify(msg));
+    let filename = `m_${uuidv4()}.eidin.bin`;
+    let filepath = `.eidin-run/PathCondition/${filename}`;
+    console.log(msg);
+    writeFileSync(filepath, msg, { encoding: 'binary', flags: 'wb' }, err => {
+        if (err) throw err;
+        console.log("[js_concolic@node] [jalangi2:analysis:callback] Results written. ");
+    });
 }
 
 module.exports = {
