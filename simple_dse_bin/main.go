@@ -66,7 +66,7 @@ func main() {
 				defer wg.Done()
 				defer fmt.Println("[simple_dse] Deleted message, done processing. ")
 				defer os.Remove(msgdir + "/" + filename)
-				reqs := PathConditionToAnalyzeMessages(*msg, msg_prefix)
+				reqs := PathConditionToAnalyzeMessages(*msg)
 			sendAnalyzeMsgsLoop:
 				for _, amsg := range reqs {
 					amsg_hasher := fnv.New32a()
