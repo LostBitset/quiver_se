@@ -83,12 +83,14 @@ function md5(s) {
 }
 
 function sendEIDINMessage(msg) {
-    let infile_hash;
-    if (process.argv.length > 1 && process.argv[process.argv.length - 2] === "model-json") {
-        infile_hash = md5(process.argv[process.argv.length - 3]);
+    let infile;
+    if (process.argv.length > 1 && process.argv[process.argv.length - 2] === "json-model") {
+        infile = process.argv[process.argv.length - 3];
     } else {
-        infile_hash = md5(process.argv[process.argv.length - 1])
+        infile = process.argv[process.argv.length - 1];
     }
+    let infile_hash = md5(infile);
+    console.log(infile_hash);
     let filename = `m_${infile_hash}_${uuidv4()}.eidin.bin`;
     let filepath = `.eidin-run/PathCondition/${filename}`;
     console.log(msg);
