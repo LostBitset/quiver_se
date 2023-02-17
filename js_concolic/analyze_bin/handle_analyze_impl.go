@@ -74,6 +74,13 @@ func HandleAnalyze(msg eidin.Analyze, target string) {
 }
 
 func parseModelValueLine(line string, sort string) (repr string) {
-	repr = "424242"
+	switch sort {
+	case "Real":
+		repr = line[4 : len(line)-1]
+	case "Int":
+		repr = line[4 : len(line)-1]
+	default:
+		repr = "undefined"
+	}
 	return
 }
