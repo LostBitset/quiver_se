@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"sync"
+	"time"
 
 	"google.golang.org/protobuf/proto"
 )
@@ -26,6 +28,7 @@ func main() {
 	msg_prefix := os.Args[2]
 	// Handle messages
 	msgdir := `../.eidin-run/Analyze`
+	var wg sync.WaitGroup
 	for {
 		entries, err := os.ReadDir(msgdir)
 		if err != nil {
@@ -40,6 +43,7 @@ func main() {
 			if !strings.HasPrefix(filename, msg_prefix) {
 				continue currentAnalyzeMsgsLoop
 			}
+			fmt.Println(filename)
 			contents, errf := os.ReadFile(filename)
 			if err != nil {
 				panic(errf)
@@ -50,11 +54,16 @@ func main() {
 				panic(erru)
 			}
 			fmt.Println("[js_concolic:AnalyzerProcess] Successfully deserialized Analyze message. ")
+			wg.Add(1)
 			go func() {
+				defer wg.Done()
 				defer fmt.Println("[js_concolic:AnalyzerProcess] Deleted message, done processing. ")
 				defer os.Remove(msgdir + "/" + filename)
 				HandleAnalyze(*msg, target_filename)
 			}()
 		}
+		timer := time.After(200 * time.Millisecond)
+		wg.Wait()
+		<-timer
 	}
 }
