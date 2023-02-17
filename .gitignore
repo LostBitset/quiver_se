@@ -48,3 +48,7 @@ js_concolic/**/*_jalangi_.json
 # (ADDED) .eidin-run directory
 js_concolic/.eidin-run/
 
+# (ADDED) Generated protobuf implementations
+js_concolic/EIDIN/proto_js/
+js_concolic/EIDIN/proto_lib/
+
