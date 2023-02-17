@@ -18,5 +18,5 @@ func TestIdLiteral(t *testing.T) {
 		WithId_H[uint]{42, idsrc.Gen()},
 		false,
 	}
-	assert.True(t, lit1.value.Hash32() != lit2.value.Hash32())
+	assert.True(t, lit1.Value.Hash32() != lit2.Value.Hash32())
 }

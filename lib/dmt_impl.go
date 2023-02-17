@@ -27,16 +27,16 @@ func (n uint32_H) Hash32() (fixed_digest uint32) {
 }
 
 func (lit Literal[NODE]) Hash() (digest digest_t) {
-	digest = lit.value.Hash()
-	if !lit.eq {
+	digest = lit.Value.Hash()
+	if !lit.Eq {
 		digest = WrapInvert(digest)
 	}
 	return
 }
 
 func (lit Literal[NODE]) Hash32() (fixed_digest uint32) {
-	fixed_digest = lit.value.Hash32()
-	if !lit.eq {
+	fixed_digest = lit.Value.Hash32()
+	if !lit.Eq {
 		fixed_digest = WrapInvert32(fixed_digest)
 	}
 	return
@@ -105,8 +105,8 @@ func InvertingLiteral[NODE hashable](value NODE) (lit Literal[NODE]) {
 
 func (lit Literal[NODE]) Invert() (inverted Literal[NODE]) {
 	inverted = Literal[NODE]{
-		lit.value,
-		!lit.eq,
+		lit.Value,
+		!lit.Eq,
 	}
 	return
 }

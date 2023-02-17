@@ -35,8 +35,8 @@ func (sys SMTLibv2StringSystem) CheckSat(
 	;; This allows MUC generation to produce an MUS @@ ...
 	`)
 	for i, lit := range conjunction {
-		if strings.HasPrefix(lit.value.value, "@__RAW__") {
-			stmt, _ := strings.CutPrefix(lit.value.value, "@__RAW__")
+		if strings.HasPrefix(lit.Value.Value, "@__RAW__") {
+			stmt, _ := strings.CutPrefix(lit.Value.Value, "@__RAW__")
 			sb.WriteString(stmt)
 		} else {
 			clause := sys.ExpandStringLiteral(lit)
@@ -213,8 +213,8 @@ func (sys SMTLibv2StringSystem) DeclSExpr(free_fun SMTFreeFun[string, string]) (
 }
 
 func (sys SMTLibv2StringSystem) ExpandStringLiteral(lit IdLiteral[string]) (s_expr string) {
-	s_expr = lit.value.value
-	if !lit.eq {
+	s_expr = lit.Value.Value
+	if !lit.Eq {
 		s_expr = fmt.Sprintf(
 			"(not %s)",
 			s_expr,

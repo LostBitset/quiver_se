@@ -21,8 +21,8 @@ type uint32_H struct {
 }
 
 type Literal[NODE hashable] struct {
-	value NODE
-	eq    bool
+	Value NODE
+	Eq    bool
 }
 
 type DMT[NODE hashable, LEAF hashable] struct {

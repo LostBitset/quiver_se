@@ -67,10 +67,10 @@ func StartSiMReQ[
 				for _, set := range *chunk {
 					stdlib_set := set.ToStdlibMap()
 					for key := range stdlib_set {
-						if _, ok := processed_ids[key.value.id]; !ok {
+						if _, ok := processed_ids[key.Value.Id]; !ok {
 							walk = append(walk, IdLiteral[ATOM](key))
-							processed_ids[key.value.id] = struct{}{}
-							sum ^= FixDigest32(key.value.id, 0x4E)
+							processed_ids[key.Value.Id] = struct{}{}
+							sum ^= FixDigest32(key.Value.Id, 0x4E)
 						}
 					}
 				}
