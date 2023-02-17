@@ -1,6 +1,9 @@
 #!/bin/bash
 
+cd $(dirname -- "$0")
+
 IN_FILENAME="$1"
+
 OUT_FILENAME="${IN_FILENAME::-7}.TRANSPILED-orig_smt2va.smt2"
 
 echo "[SMTLib_2VA -> SMTLib_v2] Transpiling..."
