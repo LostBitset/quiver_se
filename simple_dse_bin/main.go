@@ -23,7 +23,7 @@ func main() {
 	seen_pc_hashes := make(map[uint32]struct{})
 	seen_analyze_hashes := make(map[uint32]struct{})
 	// Handle messages
-	msgdir := `../.eidin-run/PathCondition`
+	msgdir := `../js_concolic/.eidin-run/PathCondition`
 	var wg sync.WaitGroup
 	for {
 		entries, err := os.ReadDir(msgdir)
@@ -86,5 +86,9 @@ func main() {
 }
 
 func SendAnalyzeMessage(amsg []byte, msg_prefix string) {
-	// TODO
+	filename := `../js_concolic/.eidin-run/Analyze`
+	err := os.WriteFile(filename, amsg, 0644)
+	if err != nil {
+		panic(err)
+	}
 }
