@@ -1,7 +1,7 @@
 package qse
 
 type SMTLibv2StringSystem struct {
-	idsrc IdSource
+	Idsrc IdSource
 }
 
 type SMTLibv2StringSolvedCtx struct {

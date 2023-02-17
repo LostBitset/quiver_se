@@ -12,7 +12,7 @@ import (
 func (sys SMTLibv2StringSystem) MakeAtom(expr string) (atom WithId_H[string]) {
 	atom = WithId_H[string]{
 		expr,
-		sys.idsrc.Gen(),
+		sys.Idsrc.Gen(),
 	}
 	return
 }
