@@ -95,7 +95,7 @@ message PathConditionSegment {
     CallbackId this_callback_id = 1;
     
     // A unique identifier for the callback this segment continues on to.
-    CallbackId next_callback_id = 2;
+    optional CallbackId next_callback_id = 2;
     
     // The actual constraint set that makes up this part of the query
     repeated SMTConstraint partial_pc = 3;
