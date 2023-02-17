@@ -48,7 +48,6 @@ func (query Z3SMTLib2VAQuery) Run() (output string) {
 			temp_smt2va_file.Name(),
 		),
 	)
-	fmt.Println(transpile_cmd.String())
 	transpile_out, err_pipe := transpile_cmd.StdoutPipe()
 	if err_pipe != nil {
 		panic(err_pipe)
@@ -86,8 +85,5 @@ func (query Z3SMTLib2VAQuery) Run() (output string) {
 	}
 	log.Info("[z3smtlib2VA_query/Z3SMTLib2VAQuery.Run] Queried Z3 successfully. ")
 	output = string(z3_out)
-	fmt.Println("BEGIN OUTPUT")
-	fmt.Println(output)
-	fmt.Println("END OUTPUT")
 	return
 }
