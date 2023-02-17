@@ -49,7 +49,8 @@ function sendEIDINPathCondition(cgiid_map, free_funs, pc) {
         }),
         segmentedPc: spc,
     });
-    sendEIDINMessage(msg);
+    let msg_buffer = eidin.PathCondition.encode(msg).finish();
+    sendEIDINMessage(msg_buffer);
 }
 
 function makeCallbackId(cgiid, cgiid_map) {

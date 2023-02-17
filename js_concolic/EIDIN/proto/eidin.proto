@@ -3,38 +3,6 @@ package eidin;
 
 option go_package = "LostBitset/quiver_se/EIDIN/proto_lib";
 
-// Start a new session, describes important operation parameters and target.
-// Direction: Orchestration Process -> Analyzer Process
-message SessionInit {
-
-    // The EIDIN version number, the first of which is "0.1"
-    string eidin_version = 1;
-
-    // The format used for constraints / SMT queries.
-    // Keep in mind that complete queries are never sent as a part of this protocol. 
-    enum ConstraintFormat {
-        SMTLIB_V2 = 0;
-        SMTLIB_2VA = 1;
-        OTHER = 2;
-    }
-
-    // Target Program URI
-    // It is entirely up to the implementation what to support.
-    // Some may support only file:// URIs, others may not support them at all.
-    // The spec requires that this is a valid URI, in accordance with RFC 3986.
-    string target_uri = 2;
-
-    // If the ConstraintFormat was OTHER, you should specify what it is.
-    // Failure to do this is not breaking the spec, but is highly discouraged.
-    // For very limited testing or trial environments, this is allowed, but it should
-    // never be used in a complex or production environment. Think of this case as
-    // sending "unspecified". 
-    // *HOWEVER*, setting this when ConstraintFormat is not OTHER, *DOES* constitute
-    // breaking the spec.
-    optional string constraint_format_other = 3;
-
-}
-
 // Analyze the target program on any input (random or predefined).
 // Direction: Orchestration Process -> Analyzer Process
 message AnalyzeAny {
