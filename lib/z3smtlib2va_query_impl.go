@@ -18,6 +18,7 @@ func NewZ3SMTLib2VAQuery(query_str string) (query Z3SMTLib2VAQuery) {
 const Z3SMTLib2VAQuery_TEMP_SMT2VA_FILENAME_FORMAT = "temp_qse-go_Z3SMTLib2VAQuery-Run_*_GENERATED.smt2va"
 
 func (query Z3SMTLib2VAQuery) Run() (output string) {
+	fmt.Println(query.query)
 	log.Info("[z3smtlib2VA_query/Z3SMTLib2VAQuery.Run] Setting up SMT query. ")
 	temp_smt2va_file, err_create := os.CreateTemp("/tmp", Z3SMTLib2VAQuery_TEMP_SMT2VA_FILENAME_FORMAT)
 	if err_create != nil {

@@ -31,7 +31,8 @@ func TranspileV2From2VA(src_2va string) (src_v2 string) {
 			return
 		},
 	)
-	wo_strings_transpiled := TranspileV2From2VANoStrings(wo_strings)
+	lvbls := NewLexicallyScoped()
+	wo_strings_transpiled := TranspileV2From2VANoStrings(wo_strings, &lvbls)
 	cut_strs_re := regexp.MustCompile(`<<tmp\:string>>@\d+`)
 	with_strs := cut_strs_re.ReplaceAllStringFunc(
 		wo_strings_transpiled,
@@ -56,8 +57,7 @@ func TranspileV2From2VA(src_2va string) (src_v2 string) {
 	return
 }
 
-func TranspileV2From2VANoStrings(src_2va string) (src_v2 string) {
-	lvbls := NewLexicallyScoped()
+func TranspileV2From2VANoStrings(src_2va string, lvbls *LexicallyScoped) (src_v2 string) {
 	sexpr_2va_re := regexp.MustCompile(
 		`\(\*\/[a-z\-]+\/\*(\s\*\*[\w\-]+(\s\*{{.*}}\*)?)?\)`,
 	)
@@ -89,7 +89,8 @@ func TranspileV2From2VANoStrings(src_2va string) (src_v2 string) {
 				capture_start := strings.Index(orig, "*{{") + 3
 				capture_end := strings.Index(orig, "}}*")
 				inner := orig[capture_start:capture_end]
-				lvbls.WriteVar(name, inner)
+				inner_rec := TranspileV2From2VANoStrings(inner, lvbls)
+				lvbls.WriteVar(name, inner_rec)
 				repl = ""
 			case "read-var":
 				_, name_section_raw, _ := strings.Cut(orig, "**")
