@@ -10,6 +10,8 @@ const { cToBool, ctUnary, ctBinary } = require("./concolic_functions");
 
 const { CallbackStreamSeperator } = require("./callback_stream_sep");
 
+const { sendEIDINPathCondition } = require("./eidin_send");
+
 function conlog(...args) {
 	console.log("[js_concolic@node] [jalangi2:analysis]", ...args);
 }
@@ -309,12 +311,18 @@ function conlog(...args) {
             for (const log of logs) {
                 conlog(log);
             }
-            conlog("Ended. ");
-            console.log(JSON.stringify({
-                cgiid_map,
-                free_funs,
-                pc,
-            }));
+            if (process.argv[1].endsWith("_test_prgm.js")) {
+                conlog("Ended. ");
+                console.log(JSON.stringify({
+                    cgiid_map,
+                    free_funs,
+                    pc,
+                }));
+            } else {
+                conlog("Analysis ended, sending results over EIDIN...");
+                sendEIDINPathCondition(cgiid_map, free_funs, pc);
+                conlog("Done. ");
+            }
         },
 
     };
