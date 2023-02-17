@@ -70,6 +70,7 @@ func HandleAnalyze(msg eidin.Analyze, target string) {
 	} else {
 		addl_args = make([]string, 0)
 	}
+	fmt.Println(addl_args)
 }
 
 func parseModelValueLine(line string, sort string) (repr string) {
