@@ -2,7 +2,9 @@ package main
 
 import (
 	eidin "LostBitset/quiver_se/EIDIN/proto_lib"
+	"fmt"
 	"hash/fnv"
+	"strings"
 
 	qse "LostBitset/quiver_se/lib"
 
@@ -11,18 +13,27 @@ import (
 
 func PathConditionToAnalyzeMessages(msg eidin.PathCondition) (msgs [][]byte) {
 	pc, free_funs := PathConditionMessageToConjunction(msg)
+	fmt.Println(pc)
+	fmt.Println(free_funs)
 	var idsrc qse.IdSource
 	sys := qse.SMTLibv2StringSystem{Idsrc: idsrc}
+pcAlternativesLoop:
 	for i := range pc {
 		orig := pc[i]
+		if strings.HasPrefix(orig.Value.Value, "@__RAW__") {
+			continue pcAlternativesLoop
+		}
 		pc[i] = qse.IdLiteral[string]{
 			Value: orig.Value,
 			Eq:    !orig.Eq,
 		}
+		fmt.Println("[simple_dse] Querying solver...")
 		sctx := sys.CheckSat(pc, free_funs)
 		if *sctx.IsSat() {
+			fmt.Println("[simple_dse] Obtained model. ")
 			model := *sctx.GetModel()
 			msgs = append(msgs, MakeAnalyzeMessage(model))
+			fmt.Println("[simple_dse] Created new Analyze message (canidate).")
 		}
 		pc[i] = orig
 	}
@@ -46,8 +57,10 @@ func PathConditionMessageToConjunction(msg eidin.PathCondition) (
 	conjunction []qse.IdLiteral[string],
 	free_funs []qse.SMTFreeFun[string, string],
 ) {
+	fmt.Println(msg)
 	free_funs = make([]qse.SMTFreeFun[string, string], 0)
 	for _, free_fun_ref := range msg.GetFreeFuns() {
+		fmt.Println("FREE FUN")
 		free_fun := *free_fun_ref
 		free_funs = append(
 			free_funs,
@@ -60,6 +73,7 @@ func PathConditionMessageToConjunction(msg eidin.PathCondition) (
 	}
 	conjunction = make([]qse.IdLiteral[string], 0)
 	for _, segment_ref := range msg.GetSegmentedPc() {
+		fmt.Println("PC SEGMENT")
 		segment := *segment_ref
 		for _, constraint_ref := range segment.GetPartialPc() {
 			constraint := *constraint_ref

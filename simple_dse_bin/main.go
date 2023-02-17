@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"hash/fnv"
 	"os"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -39,7 +40,7 @@ func main() {
 			if !strings.HasPrefix(filename, msg_prefix) {
 				continue currentPCMsgsLoop
 			}
-			contents, errf := os.ReadFile(filename)
+			contents, errf := os.ReadFile(msgdir + "/" + filename)
 			if err != nil {
 				panic(errf)
 			}
@@ -55,8 +56,10 @@ func main() {
 				continue currentPCMsgsLoop
 			}
 			seen_pc_hashes[hash] = struct{}{}
+			fmt.Println(contents)
 			msg := &eidin.PathCondition{}
 			erru := proto.Unmarshal(contents, msg)
+			fmt.Println(*msg)
 			if err != nil {
 				panic(erru)
 			}
@@ -67,6 +70,7 @@ func main() {
 				defer fmt.Println("[simple_dse] Deleted message, done processing. ")
 				defer os.Remove(msgdir + "/" + filename)
 				reqs := PathConditionToAnalyzeMessages(*msg)
+				fmt.Printf("[simple_dse] Generated %v possible Analyze messages.\n", len(reqs))
 			sendAnalyzeMsgsLoop:
 				for _, amsg := range reqs {
 					amsg_hasher := fnv.New32a()
@@ -86,7 +90,12 @@ func main() {
 }
 
 func SendAnalyzeMessage(amsg []byte, msg_prefix string) {
-	filename := `../js_concolic/.eidin-run/Analyze`
+	hasher := fnv.New64a()
+	hasher.Write(amsg)
+	hash := hasher.Sum64()
+	hash_s := strconv.Itoa(int(hash))
+	filename := `../js_concolic/.eidin-run/Analyze/` + msg_prefix + hash_s + ".eidin.bin"
+	fmt.Println(filename)
 	err := os.WriteFile(filename, amsg, 0644)
 	if err != nil {
 		panic(err)
