@@ -1,0 +1,72 @@
+{
+    "segmentedPc": [
+        {
+            "thisCallbackId": {
+                "bytesStart": "0",
+                "bytesEnd": "0"
+            },
+            "nextCallbackId": {
+                "bytesStart": "1",
+                "bytesEnd": "2"
+            },
+            "partialPc": [
+                {
+                    "constraint": "@__RAW__(*/enter-scope/*)",
+                    "assertionValue": true
+                },
+                {
+                    "constraint": "@__RAW__(*/decl-var/* **jsvar_fs)",
+                    "assertionValue": true
+                },
+                {
+                    "constraint": "@__RAW__(*/leave-scope/*)",
+                    "assertionValue": true
+                }
+            ]
+        },
+        {
+            "thisCallbackId": {
+                "bytesStart": "1",
+                "bytesEnd": "2"
+            },
+            "nextCallbackId": {
+                "bytesStart": "34",
+                "bytesEnd": "35"
+            },
+            "partialPc": [
+                {
+                    "constraint": "@__RAW__(*/enter-scope/*)",
+                    "assertionValue": true
+                },
+                {
+                    "constraint": "@__RAW__(*/decl-var/* **jsvar__data)",
+                    "assertionValue": true
+                },
+                {
+                    "constraint": "@__RAW__(*/leave-scope/*)",
+                    "assertionValue": true
+                }
+            ]
+        },
+        {
+            "thisCallbackId": {
+                "bytesStart": "34",
+                "bytesEnd": "35"
+            },
+            "partialPc": [
+                {
+                    "constraint": "@__RAW__(*/enter-scope/*)",
+                    "assertionValue": true
+                },
+                {
+                    "constraint": "@__RAW__(*/decl-var/* **jsvar__data)",
+                    "assertionValue": true
+                },
+                {
+                    "constraint": "@__RAW__(*/leave-scope/*)",
+                    "assertionValue": true
+                }
+            ]
+        }
+    ]
+}
