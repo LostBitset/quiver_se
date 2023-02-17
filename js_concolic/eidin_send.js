@@ -49,6 +49,7 @@ function sendEIDINPathCondition(cgiid_map, free_funs, pc) {
         }),
         pc: spc,
     });
+    sendEIDINMessage(msg);
 }
 
 function makeCallbackId(src_range) {
@@ -65,6 +66,10 @@ function makeCallbackId(src_range) {
         bytes_start: start,
         bytes_end: end,
     });
+}
+
+function sendEIDINMessage(msg) {
+    // TODO!!!
 }
 
 module.exports = {
