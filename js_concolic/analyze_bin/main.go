@@ -50,7 +50,11 @@ func main() {
 				panic(erru)
 			}
 			fmt.Println("[js_concolic:AnalyzerProcess] Successfully deserialized Analyze message. ")
-			go HandleAnalyze(*msg, target_filename)
+			go func() {
+				defer fmt.Println("[js_concolic:AnalyzerProcess] Deleted message, done processing. ")
+				defer os.Remove(msgdir + "/" + filename)
+				HandleAnalyze(*msg, target_filename)
+			}()
 		}
 	}
 }
