@@ -79,20 +79,7 @@ function conlog(...args) {
         });
     }
 
-    // Handle the discovery of a new callback from the cbstream process
-    function cbstreamOnCallback(id) {
-        logs.push(`[cbstream::CALLBACK_TRANSITION] Transitioned to ${id}.`);
-        last_cgiid = id;
-        pc.push(new CallbackStreamSeperator(id));
-        if (single_callback_mode && id !== "__top__") {
-            onEndExecution();
-            throw new TerminatingAfterSingleCallback();
-        }
-    }
-
-    // Claim the entry point / top callback
-    cbstreamClaimCallback("__top__");
-
+    // Predefined endExecution handler
     function onEndExecution() {
         for (const log of logs) {
             conlog(log);
@@ -111,6 +98,21 @@ function conlog(...args) {
             conlog("Done. ");
         }
     }
+
+    // Handle the discovery of a new callback from the cbstream process
+    function cbstreamOnCallback(id) {
+        logs.push(`[cbstream::CALLBACK_TRANSITION] Transitioned to ${id}.`);
+        last_cgiid = id;
+        pc.push(new CallbackStreamSeperator(id));
+        if (single_callback_mode && id !== "__top__") {
+            logs.push(`[SINGLE_CALLBACK_MODE] Terminating.`);
+            onEndExecution();
+            throw new TerminatingAfterSingleCallback();
+        }
+    }
+
+    // Claim the entry point / top callback
+    cbstreamClaimCallback("__top__");
 
 	// @extern(jalangi2).analysis_object
 	lkk.analysis = {
