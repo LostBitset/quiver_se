@@ -52,14 +52,14 @@ function replaceIndexRange(str, start, end, repl) {
 function instrument(contents, estree) {
 	let code = contents;
 	let offset = 0;
-	for (const [rinject] of estreeBlockFunctions(estree)) {
+	for (const [rinject, f_estree] of estreeBlockFunctions(estree)) {
 		let inject = rinject - offset;
 		let lbefore = code.length;
 		code = replaceIndexRange(
 			code,
 			inject + 1,
 			inject + 1,
-			injectionForBlockFunction(estree),
+			injectionForBlockFunction(f_estree),
 		);
 		offset += lbefore - code.length;
 		stats_funs++;
@@ -114,12 +114,12 @@ function* estreeBlockFunctions(estree) {
 		if (sub.type == "ArrowFunctionExpression") {
 			if (sub.body.type == "BlockStatement") {
 				let inject = sub.body.start;
-				yield [inject];
+				yield [inject, estree];
 			}
 		} else if (sub.type == "FunctionDeclaration") {
 			if (sub.hasOwnProperty("generator") && !sub.generator) {
 				let inject = sub.body.start;
-				yield [inject];
+				yield [inject, estree];
 			}
 		}
 	}
