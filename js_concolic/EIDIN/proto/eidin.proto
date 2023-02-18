@@ -16,6 +16,10 @@ message Analyze {
     // usually how the concolic execution process starts. 
     optional string model = 2;
 
+    // Whether execution should stop immediately after a callback transition. 
+    // This must result in the emission of a single segment. 
+    bool single_callback = 3;
+
 }
 
 // Provides the returned path condition (analysis results).
