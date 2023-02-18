@@ -3,8 +3,8 @@
 // 1. Where the function occurs in the source code (start and end bytes)
 // 2. All of the identifiers that the function accesses
 // These are encoded in the following form:
-// 1. "!!MAGIC@function_info/src-range=<start>:<end>";
-// 2. "!!MAGIC@function_info/idents=<ident0>:<ident1>:<ident2>:<...>";
+// 1. "!!MAGIC@js_concolic/src-range=<start>:<end>";
+// 2. "!!MAGIC@js_concolic/idents=<ident0>:<ident1>:<ident2>:<...>";
 // It also wraps the code in a function, and passes exceptions to a handler
 
 import seafox from "seafox";
