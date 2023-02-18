@@ -11,7 +11,7 @@ function _Q$ent() {
 var fs = require('node:fs');
 
 function eq(x, y) {
-	"!!MAGIC@js_concolic/src-range=0:400";
+	"!!MAGIC@js_concolic/src-range=30:68";
 	
 	return x === y;
 }

@@ -35,7 +35,7 @@ function main(filename) {
 		conlog(`Parsed via seafox (estree.type == "${estree.type}").`);
 		conlog(`Starting instrumentation...`);
 		let instrumented = instrument(contents, estree, new_filename);
-		conlog(`Added information to ${stats_funs} functions, and saw a total od ${stats_idents} identifiers.`);
+		conlog(`Added information to ${stats_funs} functions, and saw a total of ${stats_idents} identifiers.`);
 		conlog(`A total of ${stats_subobjects} ESTree subobjects were walked through.`);
 		conlog(`Instrumented code generated (${Buffer.byteLength(instrumented, "utf8")} bytes).`);
 		writeFile(new_filename, instrumented, (err) => {
@@ -75,9 +75,25 @@ function isEstreeSubObject(estree_value) {
 	return estree_value.hasOwnProperty("start") && estree_value.hasOwnProperty("end");
 }
 
+function* estreeSubObjectsOfType(estree_obj, t) {
+	if (estree_obj.hasOwnProperty("type") && estree_obj.type === t) {
+		yield estree_obj;
+	}
+	for (const [_, v] of Object.entries(estree_obj)) {
+		if (isEstreeSubObject(v)) {
+			yield* estreeSubObjectsOfType(v, t);
+		} else if (v instanceof Array) {
+			for (const v_sub of v) {
+				if (isEstreeSubObject(v_sub)) {
+					yield* estreeSubObjectsOfType(v_sub, t);
+				}
+			}
+		}
+	}
+}
+
 function* estreeSubObjects(estree_obj) {
 	yield estree_obj;
-	stats_subobjects++;
 	for (const [_, v] of Object.entries(estree_obj)) {
 		if (isEstreeSubObject(v)) {
 			yield* estreeSubObjects(v);
@@ -91,35 +107,19 @@ function* estreeSubObjects(estree_obj) {
 	}
 }
 
-function* estreeSubObjectsOfType(estree_obj, t) {
-	if (estree_obj.hasOwnProperty("type") && estree_obj.type === t) {
-		yield estree_obj;
-	}
-	for (const [_, v] of Object.entries(estree_obj)) {
-		if (isEstreeSubObject(v)) {
-			yield* estreeSubObjects(v);
-		} else if (v instanceof Array) {
-			for (const v_sub of v) {
-				if (isEstreeSubObject(v_sub)) {
-					yield* estreeSubObjectsOfType(v_sub, t);
-				}
-			}
-		}
-	}
-}
-
 function* estreeBlockFunctions(estree) {
 	for (const sub of estreeSubObjects(estree.body)) {
+		stats_subobjects++;
 		if (!sub.hasOwnProperty("type")) continue;
 		if (sub.type == "ArrowFunctionExpression") {
 			if (sub.body.type == "BlockStatement") {
 				let inject = sub.body.start;
-				yield [inject, estree];
+				yield [inject, sub];
 			}
 		} else if (sub.type == "FunctionDeclaration") {
 			if (sub.hasOwnProperty("generator") && !sub.generator) {
 				let inject = sub.body.start;
-				yield [inject, estree];
+				yield [inject, sub];
 			}
 		}
 	}
