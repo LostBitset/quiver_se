@@ -85,12 +85,32 @@ function conlog(...args) {
         last_cgiid = id;
         pc.push(new CallbackStreamSeperator(id));
         if (single_callback_mode && id !== "__top__") {
+            onEndExecution();
             throw new TerminatingAfterSingleCallback();
         }
     }
 
     // Claim the entry point / top callback
     cbstreamClaimCallback("__top__");
+
+    function onEndExecution() {
+        for (const log of logs) {
+            conlog(log);
+        }
+        if (process.argv[1].endsWith("_test_prgm.js")) {
+            conlog("Ended. ");
+            console.log(JSON.stringify({
+                cgiid_map_idents,
+                cgiid_map,
+                free_funs,
+                pc,
+            }));
+        } else {
+            conlog("Analysis ended, sending results over EIDIN...");
+            sendEIDINPathCondition(cgiid_map, cgiid_map_idents, free_funs, pc);
+            conlog("Done. ");
+        }
+    }
 
 	// @extern(jalangi2).analysis_object
 	lkk.analysis = {
@@ -363,24 +383,7 @@ function conlog(...args) {
 
         // end CONCRETIZED
 
-        endExecution: function () {
-            for (const log of logs) {
-                conlog(log);
-            }
-            if (process.argv[1].endsWith("_test_prgm.js")) {
-                conlog("Ended. ");
-                console.log(JSON.stringify({
-                    cgiid_map_idents,
-                    cgiid_map,
-                    free_funs,
-                    pc,
-                }));
-            } else {
-                conlog("Analysis ended, sending results over EIDIN...");
-                sendEIDINPathCondition(cgiid_map, cgiid_map_idents, free_funs, pc);
-                conlog("Done. ");
-            }
-        },
+        endExecution: onEndExecution,
 
     };
 
