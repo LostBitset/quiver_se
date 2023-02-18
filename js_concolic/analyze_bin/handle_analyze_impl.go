@@ -74,6 +74,9 @@ func HandleAnalyze(msg eidin.Analyze, target string) {
 	} else {
 		addl_args = make([]string, 0)
 	}
+	if msg.GetSingleCallback() {
+		addl_args = append(addl_args, "--single-callback")
+	}
 	std_args := []string{
 		"../run_analysis_code" + ".sh",
 		target,
