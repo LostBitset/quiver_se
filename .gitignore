@@ -29,10 +29,10 @@ pkg/
 pkg/*
 pkg/**/*
 
-# (Added) Node.js stuff in the callback_streams/ directory
-callback_streams/node_modules/
-callback_streams/node_modules/*
-callback_streams/node_modules/**/*
+# (Added) Node.js stuff in the function_info/ directory
+function_info/node_modules/
+function_info/node_modules/*
+function_info/node_modules/**/*
 
 # (ADDED) Node.js stuff in the js_concolic/ directory
 js_concolic/node_modules/
