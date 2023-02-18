@@ -37,8 +37,14 @@ function conlog(...args) {
     // The mapping between CGIIDs and source indexes
     var cgiid_map = {};
 
+    // The mapping between CGIIDs and used identifiers
+    var cgiid_map_idents = {};
+
     // The mapping between symbolic variables and assigned values
     var symbolic_map = {};
+
+    // A mapping between known variables and their assigned sorts
+    var variable_sorts = {};
 
     console.log(process.argv);
     if (process.argv.length > 1) {
@@ -152,6 +158,9 @@ function conlog(...args) {
                         pc.push(`(*/write-var/* **jsvar_${name} *{{${val.sym[0]}}}*)`);
                     }
                 }
+                if (val instanceof ConcolicValue && val.sym !== null) {
+                    variable_sorts[name] = val.sym[1]
+                }
             }
             return {
                 result: val,
@@ -171,11 +180,24 @@ function conlog(...args) {
                     result: newVal,
                 };
             } else if (typeof val === "string") {
-                let pfx = "!!MAGIC@js_concolic/src-range=";
-                if (val.startsWith(pfx)) {
-                    let value_part = val.substring(pfx.length);
-                    if (last_cgiid !== "__top__" && !cgiid_map.hasOwnProperty(last_cgiid)) {
-                        cgiid_map[last_cgiid] = value_part;
+                if (val.startsWith("!!MAGIC@js_concolic/")) {
+                    let pfx_sr = "!!MAGIC@js_concolic/src-range=";
+                    if (val.startsWith(pfx_sr)) {
+                        let value_part = val.substring(pfx_sr.length);
+                        if (last_cgiid !== "__top__" && !cgiid_map.hasOwnProperty(last_cgiid)) {
+                            cgiid_map[last_cgiid] = value_part;
+                        }
+                    }
+                    let pfx_id = "!!MAGIC@js_concolic/idents=";
+                    if (val.startsWith(pfx_id)) {
+                        let value_part = val.substring(pfx_id.length);
+                        let used_idents = value_part.split(":");
+                        let tracked_idents = Object.fromEntries(
+                            used_idents
+                                .filter(Object.hasOwnProperty.bind(variable_sorts))
+                                .map(key => [key, variable_sorts[key]])
+                        );
+                        cgiid_map_idents[last_cgiid] = tracked_idents;
                     }
                 }
             }
