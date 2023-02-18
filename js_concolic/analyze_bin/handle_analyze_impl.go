@@ -82,15 +82,29 @@ func HandleAnalyze(msg eidin.Analyze, target string) {
 	fmt.Println("[js_concolic:AnalyzerProcess] Starting (jalangi2-based) PC analysis...")
 	cmd := exec.Command("/bin/sh", std_args...)
 	stdout, err_stdout := cmd.StdoutPipe()
+	stderr, err_stderr := cmd.StderrPipe()
 	cmd.Start()
 	if err_stdout == nil {
-		scanner := bufio.NewScanner(stdout)
-		for scanner.Scan() {
-			fmt.Println(scanner.Text())
-		}
+		go func() {
+			scanner := bufio.NewScanner(stdout)
+			for scanner.Scan() {
+				fmt.Println(scanner.Text())
+			}
+		}()
 	} else {
 		panic(err_stdout)
 	}
+	if err_stderr == nil {
+		go func() {
+			scanner := bufio.NewScanner(stderr)
+			for scanner.Scan() {
+				fmt.Println("[::StderrPipe] " + scanner.Text())
+			}
+		}()
+	} else {
+		panic(err_stderr)
+	}
+	cmd.Wait()
 }
 
 func parseModelValueLine(line string, sort string) (repr string) {
