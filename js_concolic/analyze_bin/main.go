@@ -66,7 +66,7 @@ mainLoop:
 			}
 			fmt.Println("[js_concolic:AnalyzerProcess] Successfully deserialized Analyze message. ")
 			wg.Add(1)
-			go func() {
+			func() {
 				defer wg.Done()
 				defer fmt.Println("[js_concolic:AnalyzerProcess] Deleted message, done processing. ")
 				defer os.Remove(msgdir + "/" + filename)

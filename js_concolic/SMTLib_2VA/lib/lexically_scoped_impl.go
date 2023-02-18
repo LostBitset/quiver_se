@@ -1,8 +1,6 @@
 package smtlib2va
 
 import (
-	"fmt"
-
 	"github.com/sirupsen/logrus"
 )
 
@@ -105,7 +103,7 @@ func (lvbls LexicallyScoped) IndexReadTrusting(index LexicallyScopedIndex) (val 
 func (lvbls LexicallyScoped) ReadVar(name string) (val string) {
 	val_maybe, ok := lvbls.ReadVarSafe(name)
 	if !ok {
-		panic(fmt.Errorf("Failed to read variable %s, as it was not defined", name))
+		val = "@+__2VA_UNKNOWN__+"
 	}
 	val = val_maybe
 	return

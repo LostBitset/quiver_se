@@ -10,13 +10,15 @@ func (stack *SliceStack[A]) Push(val A) {
 	stack.backing = append(stack.backing, val)
 }
 
-func (stack *SliceStack[A]) SilentPop() {
-	if len(stack.backing) == 0 {
-		panic("Stack underflow")
+func (stack *SliceStack[A]) SilentPop() (ok bool) {
+	ok = len(stack.backing) != 0
+	if !ok {
+		return
 	}
 	var zero A
 	stack.backing[len(stack.backing)-1] = zero // Reclaim memory
 	stack.backing = stack.backing[:len(stack.backing)-1]
+	return
 }
 
 func (stack SliceStack[A]) Peek() (val A) {
