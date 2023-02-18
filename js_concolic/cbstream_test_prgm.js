@@ -9,9 +9,11 @@ var fs = require("node:fs");
 
 fs.readFile("something.txt", "utf-8", function (err, _data) {
     "!!MAGIC@js_concolic/src-range=1:2";
+    "!!MAGIC@js_concolic/idents=err:fs:readFile";
     if (err !== null) {
         fs.readFile("something2.txt", "utf-8", function (err, _data) {
-            "!!MAGIC@js_concolic/src-range=34:35"
+            "!!MAGIC@js_concolic/src-range=34:35";
+            "!!MAGIC@js_concolic/idents=err:_data:console:log";
             if (err !== null) {
                 console.log("Both files do not exist.");
             }
