@@ -13,13 +13,13 @@ const { writeFileSync } = require("node:fs");
 
 const crypto = require("node:crypto");
 
-function sendEIDINPathCondition(cgiid_map, free_funs, pc) {
+function sendEIDINPathCondition(cgiid_map, cgiid_map_idents, free_funs, pc) {
     let spc = [];
     let curr_cb_id = null;
     let curr_segment = [];
     for (const elem of pc) {
         if (elem instanceof CallbackStreamSeperator) {
-            let new_cb_id = makeCallbackId(elem.cgiid, cgiid_map);
+            let new_cb_id = makeCallbackId(elem.cgiid, cgiid_map, cgiid_map_idents);
             if (curr_cb_id !== null) {
                 spc.push(eidin.PathConditionSegment.fromObject({
                     thisCallbackId: curr_cb_id,
@@ -59,11 +59,14 @@ function sendEIDINPathCondition(cgiid_map, free_funs, pc) {
     sendEIDINMessage(msg_buffer);
 }
 
-function makeCallbackId(cgiid, cgiid_map) {
+function makeCallbackId(cgiid, cgiid_map, cgiid_map_idents) {
     if (cgiid === "__top__") {
         return eidin.CallbackId.fromObject({
             bytesStart: 0,
             bytesEnd: 0,
+            usedFreeFuns: usedFreeFunsFromObject(
+                cgiid_map_idents[cgiid]
+            ),
         });
     }
     let src_range = cgiid_map[cgiid];
@@ -73,7 +76,19 @@ function makeCallbackId(cgiid, cgiid_map) {
     return eidin.CallbackId.fromObject({
         bytesStart: start,
         bytesEnd: end,
+        usedFreeFuns: usedFreeFunsFromObject(
+            cgiid_map_idents[cgiid]
+        ),
     });
+}
+
+function usedFreeFunsFromObject(obj) {
+    return Object.entries(obj)
+        .map(([fun_name, sort]) => eidin.SMTFreeFun.fromObject({
+            name: fun_name,
+            argSorts: [],
+            retSort: sort,
+        }));
 }
 
 function md5(s) {

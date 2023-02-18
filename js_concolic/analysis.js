@@ -369,7 +369,7 @@ function conlog(...args) {
                 }));
             } else {
                 conlog("Analysis ended, sending results over EIDIN...");
-                sendEIDINPathCondition(cgiid_map, free_funs, pc);
+                sendEIDINPathCondition(cgiid_map, cgiid_map_idents, free_funs, pc);
                 conlog("Done. ");
             }
         },
