@@ -43,8 +43,8 @@ func (sys SMTLibv2StringSystem) CheckSat(
 			clause_marked := sys.MarkClauseIndex(clause, uint(i))
 			assertion := SMTLibv2WrapAssertion(clause_marked)
 			sb.WriteString(assertion)
-			sb.WriteRune('\n')
 		}
+		sb.WriteRune('\n')
 	}
 	sb.WriteString(sys.Epilogue())
 	resp := NewZ3SMTLibv2Query(sb.String()).Run()
