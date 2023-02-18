@@ -35,5 +35,11 @@ cd js_concolic/SMTLib_2VA/bin
 cd ../../..
 echo "[run_tests.sh] Leave subdirectory js_concolic/SMTLib_2VA/bin. (pass)"
 
-echo "[run_tests.sh] All tests in repo passed. #[PASSED_ALL]"
+# Subdirectory: simple_dse_bin
+echo "[run_tests.sh] Enter subdirectory simple_dse_bin..."
+cd simple_dse_bin
+./simple_dse_integration_test.sh || exit 1
+cd ..
+echo "[run_tests.sh] Leave subdirectory simple_dse_bin. (pass)"
 
+echo "[run_tests.sh] All tests in repo passed. #[PASSED_ALL]"
