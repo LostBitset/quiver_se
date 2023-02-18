@@ -17,10 +17,14 @@ function eq(x, y) {
 }
 
 fs.readFile('something.txt', 'utf8', function (err, contents) {
+	"!!MAGIC@js_concolic/src-range=107:397";
+	
 	if (err !== null) {
 		throw new Error(err.toString());
 	} else {
 		fs.readFile('something2.txt', 'utf8', function (err, contents2) {
+	"!!MAGIC@js_concolic/src-range=240:390";
+	
 			if (err !== null) {
 				throw new Error(err.toString());
 			} else {

@@ -111,7 +111,7 @@ function* estreeBlockFunctions(estree) {
 	for (const sub of estreeSubObjects(estree.body)) {
 		stats_subobjects++;
 		if (!sub.hasOwnProperty("type")) continue;
-		if (sub.type == "ArrowFunctionExpression") {
+		if (sub.type == "FunctionExpression") {
 			if (sub.body.type == "BlockStatement") {
 				let inject = sub.body.start;
 				yield [inject, sub];
