@@ -13,6 +13,7 @@ function pre() {
 
 function main(magic_number) {
     "!!MAGIC@js_concolic/src-range=1:5";
+    "!!MAGIC@js_concolic/idents=console:log:sym__X:yo:magic_number:f";
     console.log("start");
 
     var sym__X = "X:Real";
