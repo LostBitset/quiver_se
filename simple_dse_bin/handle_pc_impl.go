@@ -40,8 +40,9 @@ pcAlternativesLoop:
 
 func MakeAnalyzeMessage(model string) (msg_raw []byte) {
 	msg := &eidin.Analyze{
-		ForbidCaching: false,
-		Model:         &model,
+		ForbidCaching:  false,
+		Model:          &model,
+		SingleCallback: false,
 	}
 	out, err := proto.Marshal(msg)
 	if err != nil {
