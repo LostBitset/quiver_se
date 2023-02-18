@@ -26,6 +26,7 @@ func main() {
 	// Handle messages
 	msgdir := `../js_concolic/.eidin-run/PathCondition`
 	var wg sync.WaitGroup
+mainLoop:
 	for {
 		entries, err := os.ReadDir(msgdir)
 		if err != nil {
@@ -39,6 +40,9 @@ func main() {
 			filename := entry.Name()
 			if !strings.HasPrefix(filename, msg_prefix) {
 				continue currentPCMsgsLoop
+			}
+			if strings.HasSuffix(filename, "__EIDIN-SIGNAL-STOP") {
+				break mainLoop
 			}
 			contents, errf := os.ReadFile(msgdir + "/" + filename)
 			if err != nil {
@@ -65,7 +69,7 @@ func main() {
 			}
 			fmt.Println("[simple_dse] Successfully deserialized PathCondition message. ")
 			wg.Add(1)
-			go func() {
+			func() {
 				defer wg.Done()
 				defer fmt.Println("[simple_dse] Deleted message, done processing. ")
 				defer os.Remove(msgdir + "/" + filename)

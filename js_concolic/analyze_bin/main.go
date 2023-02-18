@@ -27,8 +27,11 @@ func main() {
 	target_filename := os.Args[1]
 	msg_prefix := os.Args[2]
 	// Handle messages
+	seen_names := make(map[string]struct{})
 	msgdir := `../.eidin-run/Analyze`
 	var wg sync.WaitGroup
+	fmt.Println("[js_concolic:AnalyzerProcess] Ready.")
+mainLoop:
 	for {
 		entries, err := os.ReadDir(msgdir)
 		if err != nil {
@@ -43,7 +46,15 @@ func main() {
 			if !strings.HasPrefix(filename, msg_prefix) {
 				continue currentAnalyzeMsgsLoop
 			}
-			fmt.Println(filename)
+			if strings.HasSuffix(filename, "__EIDIN-SIGNAL-STOP") {
+				break mainLoop
+			}
+			if _, ok := seen_names[filename]; ok {
+				fmt.Printf("Name \"%s\" already seen.\n", filename)
+				continue currentAnalyzeMsgsLoop
+			}
+			seen_names[filename] = struct{}{}
+			fmt.Printf("Added \"%s\" to seen names.\n", filename)
 			contents, errf := os.ReadFile(msgdir + "/" + filename)
 			if err != nil {
 				panic(errf)
