@@ -15,5 +15,7 @@ echo "[SMTLib_2VA -> SMTLib_v2] Actual transpilation complete, cleaning up..."
 
 awk -i inplace NF $OUT_FILENAME
 
+sed -i "/@\+__2VA_UNKNOWN__\+/d" $OUT_FILENAME 
+
 echo "[SMTLib_2VA -> SMTLib_v2] Transpilation complete."
 echo "[SMTLib_2VA -> SMTLib_v2] Output file is at $OUT_FILENAME"
