@@ -12,6 +12,7 @@ const SMTLIBV2_MODEL_DEFINE_FIRST_LINE_PREFIX = "  (define-fun "
 
 func HandleAnalyze(msg eidin.Analyze, target string) {
 	fmt.Println("[js_concolic:AnalyzerProcess] Processing Analyze message...")
+	fmt.Println(msg)
 	var addl_args []string
 	if len(msg.GetModel()) > 0 {
 		lines := strings.Split(msg.GetModel(), "\n")
@@ -60,7 +61,7 @@ func HandleAnalyze(msg eidin.Analyze, target string) {
 			first = false
 			json.WriteString(
 				fmt.Sprintf(
-					`"%s": %s`,
+					`"%s":%s`,
 					k, v,
 				),
 			)

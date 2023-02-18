@@ -44,7 +44,7 @@ func main() {
 				continue currentAnalyzeMsgsLoop
 			}
 			fmt.Println(filename)
-			contents, errf := os.ReadFile(msgdir + filename)
+			contents, errf := os.ReadFile(msgdir + "/" + filename)
 			if err != nil {
 				panic(errf)
 			}
