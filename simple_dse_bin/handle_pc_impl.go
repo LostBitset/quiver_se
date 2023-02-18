@@ -4,6 +4,7 @@ import (
 	eidin "LostBitset/quiver_se/EIDIN/proto_lib"
 	"fmt"
 	"hash/fnv"
+	"os"
 	"strings"
 
 	qse "LostBitset/quiver_se/lib"
@@ -38,11 +39,21 @@ pcAlternativesLoop:
 	return
 }
 
+func SliceContains[T comparable](slice []T, item T) (has bool) {
+	for _, curr_item := range slice {
+		has = item == curr_item
+		if has {
+			return
+		}
+	}
+	return
+}
+
 func MakeAnalyzeMessage(model string) (msg_raw []byte) {
 	msg := &eidin.Analyze{
 		ForbidCaching:  false,
 		Model:          &model,
-		SingleCallback: false,
+		SingleCallback: SliceContains(os.Args, "--single-callback"),
 	}
 	out, err := proto.Marshal(msg)
 	if err != nil {
