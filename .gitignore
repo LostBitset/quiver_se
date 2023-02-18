@@ -52,3 +52,8 @@ js_concolic/.eidin-run/
 js_concolic/EIDIN/proto_js/
 js_concolic/EIDIN/proto_lib/
 
+# (ADDED) Binaries
+js_concolic/analyze_bin/analyze_bin
+js_concolic/SMTLib_2VA/bin/bin
+simple_dse_bin/simple_dse_bin
+
