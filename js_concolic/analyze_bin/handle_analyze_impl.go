@@ -42,7 +42,7 @@ func HandleAnalyze(msg eidin.Analyze, target string) {
 					looking_for_value = false
 				}
 			} else {
-				if looking_for_value {
+				if looking_for_value && strings.HasPrefix(line, "    ") {
 					curr_value += parseModelValueLine(line, curr_sort)
 				}
 			}
@@ -94,6 +94,10 @@ func HandleAnalyze(msg eidin.Analyze, target string) {
 }
 
 func parseModelValueLine(line string, sort string) (repr string) {
+	fmt.Printf(
+		"parseModelValueLine(\"%s\", \"%s\")\n",
+		line, sort,
+	)
 	switch sort {
 	case "Real":
 		repr = line[4 : len(line)-1]
