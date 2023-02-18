@@ -46,6 +46,11 @@ function conlog(...args) {
     // A mapping between known variables and their assigned sorts
     var variable_sorts = {};
 
+    // A set of variable names that have been declared but not written, so
+    // we don't know if we can assign their sorts yet
+    // The only value should be "true" (the boolean, not the string). 
+    var variable_sorts_tentative = {};
+
     console.log(process.argv);
     if (process.argv.length > 1) {
         if (process.argv[process.argv.length - 2] === "json-model") {
@@ -127,6 +132,12 @@ function conlog(...args) {
             } else {
                 if (val instanceof ConcolicValue) {
                     pc.push(`(*/write-var/* **jsvar_${name} *{{${val.sym[0]}}}*)`);
+                    if (variable_sorts_tentative.hasOwnProperty(name)) {
+                        delete variable_sorts_tentative[name];
+                        if (val.sym !== null) {
+                            variable_sorts[name] = val.sym[1];
+                        }
+                    }
                 }
             }
             return {
@@ -160,6 +171,8 @@ function conlog(...args) {
                 }
                 if (val instanceof ConcolicValue && val.sym !== null) {
                     variable_sorts[name] = val.sym[1]
+                } else {
+                    variable_sorts_tentative[name] = true;
                 }
             }
             return {
@@ -349,6 +362,7 @@ function conlog(...args) {
             if (process.argv[1].endsWith("_test_prgm.js")) {
                 conlog("Ended. ");
                 console.log(JSON.stringify({
+                    cgiid_map_idents,
                     cgiid_map,
                     free_funs,
                     pc,

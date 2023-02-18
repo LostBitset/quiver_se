@@ -1,4 +1,10 @@
 {
+    "cgiid_map_idents": {
+        "__top__": {
+            "magic_number": "Real",
+            "f": "Bool"
+        }
+    },
     "cgiid_map": {},
     "free_funs": [
         [
