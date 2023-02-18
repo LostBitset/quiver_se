@@ -41,10 +41,12 @@ function sendEIDINPathCondition(cgiid_map, cgiid_map_idents, free_funs, pc) {
             }));
         }
     }
-    spc.push(eidin.PathConditionSegment.fromObject({
-        thisCallbackId: curr_cb_id,
-        partialPc: curr_segment,
-    }));
+    if (curr_segment.length > 0) {
+        spc.push(eidin.PathConditionSegment.fromObject({
+            thisCallbackId: curr_cb_id,
+            partialPc: curr_segment,
+        }));
+    }
     let msg = eidin.PathCondition.fromObject({
         freeFuns: free_funs.map(([fun_name, sort]) => {
             return eidin.SMTFreeFun.fromObject({
