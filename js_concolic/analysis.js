@@ -12,6 +12,8 @@ const { CallbackStreamSeperator } = require("./callback_stream_sep");
 
 const { sendEIDINPathCondition } = require("./eidin_send");
 
+const { TerminatingAfterSingleCallback } = require("./custom_errors");
+
 function conlog(...args) {
 	console.log("[js_concolic@node] [jalangi2:analysis]", ...args);
 }
@@ -51,6 +53,9 @@ function conlog(...args) {
     // The only value should be "true" (the boolean, not the string). 
     var variable_sorts_tentative = {};
 
+    // Whether or not to only emit a single segment
+    var single_callback_mode = process.argv.includes("--single-callback");
+
     console.log(process.argv);
     if (process.argv.length > 1) {
         if (process.argv[process.argv.length - 2] === "json-model") {
@@ -79,6 +84,9 @@ function conlog(...args) {
         logs.push(`[cbstream::CALLBACK_TRANSITION] Transitioned to ${id}.`);
         last_cgiid = id;
         pc.push(new CallbackStreamSeperator(id));
+        if (single_callback_mode && id !== "__top__") {
+            throw new TerminatingAfterSingleCallback();
+        }
     }
 
     // Claim the entry point / top callback
