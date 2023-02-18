@@ -125,9 +125,39 @@ function* estreeBlockFunctions(estree) {
 	}
 }
 
+function* dedupGenerator(generator) {
+	const seen = new Set();
+	for (const value of generator) {
+		if (!seen.has(value)) {
+			seen.add(value);
+			yield value;
+		}
+	}
+}
+
+function* mapGenerator(sourceGenerator, mapFunction) {
+	for (const value of sourceGenerator) {
+		yield mapFunction(value);
+	}
+}
+
+function estreeIdentifiers(estree) {
+	let result = [
+		...dedupGenerator(
+			mapGenerator(
+				estreeSubObjectsOfType(estree, "Identifier"),
+				x => x.name,
+			)
+		),
+	];
+	conlog(`Found ${result.length} identifiers used by current function.`);
+	return result;
+}
+
 function injectionForBlockFunction(estree) {
 	return `
 	"!!MAGIC@js_concolic/src-range=${estree.start}:${estree.end}";
+	"!!MAGIC@js_concolic/idents=${estreeIdentifiers(estree.body).join(":")}"
 	`;
 }
 
