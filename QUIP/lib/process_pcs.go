@@ -34,7 +34,7 @@ func ProcessPathConditions(
 	seen_callbacks := make(map[uint64]struct{})
 	go InterpretPathConditionSegments(segment_chan, msg_prefix)
 	for segment_augmented := range segment_chan {
-		segment := segment_augmented.value
+		segment := segment_augmented.Value
 		cb_this := segment.GetThisCallbackId()
 		cb_next := segment.GetNextCallbackId()
 		if cb_this.GetBytesStart() != cb_this.GetBytesEnd() {
@@ -47,7 +47,7 @@ func ProcessPathConditions(
 				PerformPartialDse(*cb_next, target, msg_prefix)
 			}
 		}
-		out_updates <- SegmentToQuiverUpdate(segment, segment_augmented.augment, top_node, fail_node)
+		out_updates <- SegmentToQuiverUpdate(segment, segment_augmented.Augment, top_node, fail_node)
 	}
 	close(out_updates)
 }
@@ -117,7 +117,17 @@ mainLoop:
 					os.Remove(msgdir + "/" + filename)
 					fmt.Println("[QUIP:process_pcs.go] Deleted message, done processing. ")
 				}()
-				smt_free_funs := make([])
+				smt_free_funs := make([]q.SMTFreeFun[string, string])
+				for _, free_fun := range msg.GetFreeFuns() {
+					smt_free_funs = append(
+						smt_free_funs,
+						q.SMTFreeFun{
+							Name: free_fun.GetName(),
+							Args: free_fun.GetArgSorts(),
+							Ret: free_fun.GetRetSort(),
+						},
+					)
+				}
 				for _, segment := range msg.GetSegmentedPc() {
 					segment := segment
 					segment_item := *segment
