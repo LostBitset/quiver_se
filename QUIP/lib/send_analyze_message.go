@@ -36,7 +36,7 @@ func SendRawAnalyzeMessage(amsg []byte, msg_prefix string) {
 	hasher.Write(amsg)
 	hash := hasher.Sum64()
 	hash_s := strconv.Itoa(int(hash))
-	filename := `../js_concolic/.eidin-run/Analyze/` + msg_prefix + hash_s + ".eidin.bin"
+	filename := `../../js_concolic/.eidin-run/Analyze/` + msg_prefix + hash_s + ".eidin.bin"
 	fmt.Println(filename)
 	err := os.WriteFile(filename, amsg, 0644)
 	if err != nil {
