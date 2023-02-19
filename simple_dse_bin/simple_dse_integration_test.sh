@@ -9,12 +9,14 @@ echo "[simple_dse_integration_test] Starting Analyzer Process..."
     cd ../js_concolic/analyze_bin
     go run . dse_test_prgm_st.js m_EC551E7efjBuHARc4MsPgg==_ | tee $TMP_ANALYZER_OUTPUT
     echo "[simple_dse_integration_test] ANALYZER PROCESS TERMINATED"
+    rm ../js_concolic/.eidin-run/Analyze/m_EC551E7efjBuHARc4MsPgg==__EIDIN-SIGNAL-STOP
 ) &
 
 echo "[simple_dse_integration_test] Starting Orchestration Process..."
 (
     go run . m_EC551E7efjBuHARc4MsPgg==_
     echo "[simple_dse_integration_test] ORCHESTRATION PROCESS TERMINATED"
+    rm ../js_concolic/.eidin-run/PathCondition/m_EC551E7efjBuHARc4MsPgg==__EIDIN-SIGNAL-STOP
 ) &
 
 sleep 0.5
@@ -35,8 +37,7 @@ else
     echo "[simple_dse_integration_test] TEST FAILED!"
 fi
 
-rm ../js_concolic/.eidin-run/Analyze/m_EC551E7efjBuHARc4MsPgg==__EIDIN-SIGNAL-STOP
-rm ../js_concolic/.eidin-run/PathCondition/m_EC551E7efjBuHARc4MsPgg==__EIDIN-SIGNAL-STOP
 rm $TMP_ANALYZER_OUTPUT
 
-sleep 1
+sleep 0.5
+
