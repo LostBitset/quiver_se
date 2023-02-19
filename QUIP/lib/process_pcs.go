@@ -145,4 +145,5 @@ mainLoop:
 		wg.Wait()
 		<-timer
 	}
+	close(segment_chan)
 }
