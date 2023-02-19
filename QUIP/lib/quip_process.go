@@ -24,8 +24,8 @@ func StartQUIP(
 	target string,
 	msg_prefix string,
 ) {
-	RunSimpleDSELowFrequency(target, msg_prefix)
-	ProcessPathConditions(out_updates, top_node, fail_node, target, msg_prefix)
+	go RunSimpleDSELowFrequency(target, msg_prefix)
+	go ProcessPathConditions(out_updates, top_node, fail_node, target, msg_prefix)
 	out_models := make(chan string)
 	var idsrc q.IdSource
 	sys := q.SMTLib2VAStringSystem{Idsrc: idsrc}
