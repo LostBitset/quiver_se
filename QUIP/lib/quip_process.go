@@ -25,7 +25,7 @@ func StartQUIP(
 	msg_prefix string,
 ) {
 	go RunAnalyzer(target, msg_prefix)
-	go RunSimpleDSELowFrequency(target, msg_prefix)
+	go RunSimpleDSELowFrequency(msg_prefix)
 	go ProcessPathConditions(out_updates, top_node, fail_node, target, msg_prefix)
 	out_models := make(chan string)
 	var idsrc q.IdSource
