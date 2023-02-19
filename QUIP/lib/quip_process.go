@@ -5,7 +5,7 @@ import (
 )
 
 // QUIP does the following:
-// - Runs simple DSE
+// - Runs simple DSE at low frequency
 // - Runs partial DSE on new callbacks
 // - Listens for path conditions, updating the quiver accordingly
 // - Sends Analyze requests in response to SiMReQ
@@ -21,5 +21,9 @@ func StartQUIP(
 	],
 	top_node q.QuiverIndex,
 	fail_node q.QuiverIndex,
+	target string,
+	msg_prefix string,
 ) {
+	RunSimpleDSELowFrequency()
+	ProcessPathConditions(out_updates, top_node, fail_node)
 }
