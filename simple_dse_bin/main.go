@@ -71,8 +71,15 @@ mainLoop:
 			wg.Add(1)
 			func() {
 				defer wg.Done()
-				defer fmt.Println("[simple_dse] Deleted message, done processing. ")
-				defer os.Remove(msgdir + "/" + filename)
+				defer func() {
+					if SliceContains(os.Args, "--rename-persist-path-conditions") {
+						os.Rename(msgdir + "/" + filename, msgdir + "/persist_" + filename)
+						fmt.Println("[simple_dse] Renamed message (with different prefix), done processing.")
+					} else {
+						os.Remove(msgdir + "/" + filename)
+						fmt.Println("[simple_dse] Deleted message, done processing. ")
+					}
+				}()
 				reqs := PathConditionToAnalyzeMessages(*msg)
 				fmt.Printf("[simple_dse] Generated %v possible Analyze messages.\n", len(reqs))
 			sendAnalyzeMsgsLoop:
