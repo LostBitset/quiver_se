@@ -32,19 +32,20 @@ func CallbackIdToQuiverIndex(
 	quiver_nodes map[int]q.QuiverIndex,
 ) (
 	qindex q.QuiverIndex,
+	ok bool,
 ) {
 	if cb.GetBytesStart() == cb.GetBytesEnd() {
 		switch cb.GetBytesStart() {
 		case 0:
-			qindex = top_node
+			qindex, ok = top_node, true
 			return
 		case 1:
-			qindex = fail_node
+			qindex, ok = fail_node, true
 			return
 		default:
 			panic("Unknown special-case EIDIN CallbackId.")
 		}
 	}
-	qindex = quiver_nodes[int(cb.GetBytesStart())]
+	qindex, ok = quiver_nodes[int(cb.GetBytesStart())]
 	return
 }
