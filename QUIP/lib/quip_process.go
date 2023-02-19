@@ -24,6 +24,19 @@ func StartQUIP(
 	target string,
 	msg_prefix string,
 ) {
-	RunSimpleDSELowFrequency()
-	ProcessPathConditions(out_updates, top_node, fail_node)
+	RunSimpleDSELowFrequency(target, msg_prefix)
+	ProcessPathConditions(out_updates, top_node, fail_node, target, msg_prefix)
+	out_models := make(chan string)
+	var idsrc q.IdSource
+	sys := q.SMTLib2VAStringSystem{Idsrc: idsrc}
+	q.StartSiMReQ[int, string, string, string, string, q.SMTLib2VAStringSolvedCtx](
+		out_updates,
+		out_models,
+		sys,
+	)
+	go func() {
+		for model := range out_models {
+			SendAnalyzeMessage(model)
+		}
+	}()
 }
