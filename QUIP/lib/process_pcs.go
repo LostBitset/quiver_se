@@ -117,23 +117,26 @@ mainLoop:
 					os.Remove(msgdir + "/" + filename)
 					fmt.Println("[QUIP:process_pcs.go] Deleted message, done processing. ")
 				}()
-				smt_free_funs := make([]q.SMTFreeFun[string, string])
+				smt_free_funs := make([]q.SMTFreeFun[string, string], 0)
 				for _, free_fun := range msg.GetFreeFuns() {
 					smt_free_funs = append(
 						smt_free_funs,
-						q.SMTFreeFun{
+						q.SMTFreeFun[string, string]{
 							Name: free_fun.GetName(),
 							Args: free_fun.GetArgSorts(),
-							Ret: free_fun.GetRetSort(),
+							Ret:  free_fun.GetRetSort(),
 						},
 					)
 				}
 				for _, segment := range msg.GetSegmentedPc() {
 					segment := segment
 					segment_item := *segment
-					segment_chan <- q.Augmented{
-						Value: segment_item,
-						Augment: msg.GetFreeFuns()
+					segment_chan <- q.Augmented[
+						eidin.PathConditionSegment,
+						[]q.SMTFreeFun[string, string],
+					]{
+						Value:   segment_item,
+						Augment: smt_free_funs,
 					}
 				}
 			}()
