@@ -7,6 +7,7 @@ import (
 
 func SegmentToQuiverUpdate(
 	segment eidin.PathConditionSegment,
+	free_funs []q.SMTFreeFun[string, string],
 	top_node q.QuiverIndex,
 	fail_node q.QuiverIndex,
 ) (
