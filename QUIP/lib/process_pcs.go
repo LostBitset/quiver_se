@@ -3,6 +3,14 @@ package lib
 import (
 	eidin "LostBitset/quiver_se/EIDIN/proto_lib"
 	q "LostBitset/quiver_se/lib"
+	"fmt"
+	"hash/fnv"
+	"os"
+	"strings"
+	"sync"
+	"time"
+
+	"go.starlark.net/lib/proto"
 )
 
 // This function does the following:
@@ -22,10 +30,11 @@ func ProcessPathConditions(
 	target string,
 	msg_prefix string,
 ) {
-	segment_chan := make(chan eidin.PathConditionSegment)
+	segment_chan := make(chan q.Augmented[eidin.PathConditionSegment, []q.SMTFreeFun[string, string]])
 	seen_callbacks := make(map[uint64]struct{})
 	go InterpretPathConditionSegments(segment_chan, msg_prefix)
-	for segment := range segment_chan {
+	for segment_augmented := range segment_chan {
+		segment := segment_augmented.value
 		cb_this := segment.GetThisCallbackId()
 		cb_next := segment.GetNextCallbackId()
 		if cb_this.GetBytesStart() != cb_this.GetBytesEnd() {
@@ -38,14 +47,89 @@ func ProcessPathConditions(
 				PerformPartialDse(*cb_next, target, msg_prefix)
 			}
 		}
-		out_updates <- SegmentToQuiverUpdate(segment, top_node, fail_node)
+		out_updates <- SegmentToQuiverUpdate(segment, segment_augmented.augment, top_node, fail_node)
 	}
 	close(out_updates)
 }
 
 func InterpretPathConditionSegments(
-	segment_chan chan eidin.PathConditionSegment,
+	segment_chan chan q.Augmented[eidin.PathConditionSegment, []q.SMTFreeFun[string, string]],
 	msg_prefix string,
 ) {
-	// TODO
+	InterpretPathConditionSegmentsInner(segment_chan, "persist_"+msg_prefix)
+}
+
+func InterpretPathConditionSegmentsInner(
+	segment_chan chan q.Augmented[eidin.PathConditionSegment, []q.SMTFreeFun[string, string]],
+	msg_prefix string,
+) {
+	cycle_time_millis := 200
+	seen_pc_hashes := make(map[uint32]struct{})
+	// Handle messages
+	msgdir := `../../js_concolic/.eidin-run/PathCondition`
+	var wg sync.WaitGroup
+mainLoop:
+	for {
+		entries, err := os.ReadDir(msgdir)
+		if err != nil {
+			panic(err)
+		}
+	currentPCMsgsLoop:
+		for _, entry := range entries {
+			if entry.IsDir() {
+				continue currentPCMsgsLoop
+			}
+			filename := entry.Name()
+			if !strings.HasPrefix(filename, msg_prefix) {
+				continue currentPCMsgsLoop
+			}
+			if strings.HasSuffix(filename, "__EIDIN-SIGNAL-STOP") {
+				break mainLoop
+			}
+			contents, errf := os.ReadFile(msgdir + "/" + filename)
+			if err != nil {
+				panic(errf)
+			}
+			contents_hasher := fnv.New32a()
+			contents_hasher.Write(contents)
+			hash := contents_hasher.Sum32()
+			if _, ok := seen_pc_hashes[hash]; ok {
+				errr := os.Remove(msgdir + "/" + filename)
+				if errr != nil {
+					panic(errr)
+				}
+				fmt.Println("[QUIP:process_pcs.go] Ignored already-seen path condition.")
+				continue currentPCMsgsLoop
+			}
+			seen_pc_hashes[hash] = struct{}{}
+			fmt.Println(contents)
+			msg := &eidin.PathCondition{}
+			erru := proto.Unmarshal(contents, msg)
+			fmt.Println(*msg)
+			if err != nil {
+				panic(erru)
+			}
+			fmt.Println("[QUIP:process_pcs.go] Successfully deserialized PathCondition message. ")
+			wg.Add(1)
+			func() {
+				defer wg.Done()
+				defer func() {
+					os.Remove(msgdir + "/" + filename)
+					fmt.Println("[QUIP:process_pcs.go] Deleted message, done processing. ")
+				}()
+				smt_free_funs := make([])
+				for _, segment := range msg.GetSegmentedPc() {
+					segment := segment
+					segment_item := *segment
+					segment_chan <- q.Augmented{
+						Value: segment_item,
+						Augment: msg.GetFreeFuns()
+					}
+				}
+			}()
+		}
+		timer := time.After(time.Duration(cycle_time_millis) * time.Millisecond)
+		wg.Wait()
+		<-timer
+	}
 }
