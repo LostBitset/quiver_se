@@ -22,9 +22,9 @@ type QuiverWalk[N any, E any] struct {
 // A new edge (and possibly a new node) being added to a quiver
 // The new_dst key indicates whether dst is already a part of the quiver or not
 type QuiverUpdate[N any, E any, C ReversibleAssoc[E, QuiverIndex]] struct {
-	src  QuiverIndex
-	dst  QuiverUpdateDst[N, E, C]
-	edge E
+	Src  QuiverIndex
+	Dst  QuiverUpdateDst[N, E, C]
+	Edge E
 }
 
 // A non-trivial QuiverUpdateDst - a node itself that has to be added to the quiver
