@@ -37,7 +37,7 @@ func StartQUIP(
 	)
 	go func() {
 		for model := range out_models {
-			SendAnalyzeMessage(model)
+			SendAnalyzeMessage(model, msg_prefix)
 		}
 	}()
 }
