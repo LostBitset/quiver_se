@@ -227,7 +227,12 @@ function conlog(...args) {
                     let pfx_sr = "!!MAGIC@js_concolic/src-range=";
                     if (val.startsWith(pfx_sr)) {
                         let value_part = val.substring(pfx_sr.length);
-                        if (last_cgiid !== "__top__" && !cgiid_map.hasOwnProperty(last_cgiid)) {
+                        if (
+                            true
+                            && last_cgiid !== "__top__"
+                            && last_cgiid !== "__fail__"
+                            && !cgiid_map.hasOwnProperty(last_cgiid)
+                        ) {
                             cgiid_map[last_cgiid] = value_part;
                         }
                     }
@@ -281,6 +286,7 @@ function conlog(...args) {
                 if (exn instanceof ReferenceError) {
                     let varName = exn.message.split(" ")[0];
                     pc.push([`(*/is-defined?/* ${varName})`, false]);
+                    pc.push(new CallbackStreamSeperator("__fail__"));
                     return { f, base, args, skip: false };
                 }
             }

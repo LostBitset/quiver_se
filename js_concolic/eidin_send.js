@@ -66,9 +66,14 @@ function makeCallbackId(cgiid, cgiid_map, cgiid_map_idents) {
         return eidin.CallbackId.fromObject({
             bytesStart: 0,
             bytesEnd: 0,
-            usedFreeFuns: usedFreeFunsFromObject(
-                cgiid_map_idents[cgiid]
-            ),
+            usedFreeFuns: [],
+        });
+    }
+    if (cgiid === "__fail__") {
+        return eidin.CallbackId.fromObject({
+            bytesStart: 1,
+            bytesEnd: 1,
+            usedFreeFuns: [],
         });
     }
     let src_range = cgiid_map[cgiid];
