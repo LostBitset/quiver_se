@@ -4,6 +4,7 @@ import (
 	eidin "LostBitset/quiver_se/EIDIN/proto_lib"
 	q "LostBitset/quiver_se/lib"
 	"fmt"
+	"hash/fnv"
 )
 
 func SegmentToQuiverUpdate(
@@ -62,6 +63,25 @@ func SegmentToQuiverUpdate(
 			&backing_edge_container,
 		)
 	}
+	quiver_edge_stdlib_map := make(map[q.Literal[q.WithId_H[string]]]struct{})
+	for _, item := range segment.GetPartialPc() {
+		item := item
+		constraint := *item
+		hasher := fnv.New32a()
+		hasher.Write(
+			[]byte(constraint.GetConstraint()),
+		)
+		id := q.NumericId(hasher.Sum32())
+		key := q.Literal[q.WithId_H[string]]{
+			Value: q.WithId_H[string]{
+				Value: constraint.GetConstraint(),
+				Id:    id,
+			},
+			Eq: constraint.GetAssertionValue(),
+		}
+		quiver_edge_stdlib_map[key] = struct{}{}
+	}
+	quiver_edge := q.StdlibMapToPHashMap(quiver_edge_stdlib_map)
 	quiver_update := q.QuiverUpdate[
 		int,
 		q.PHashMap[q.Literal[q.WithId_H[string]], struct{}],
