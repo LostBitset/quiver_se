@@ -10,7 +10,7 @@ import (
 	"sync"
 	"time"
 
-	"go.starlark.net/lib/proto"
+	"google.golang.org/protobuf/proto"
 )
 
 // This function does the following:
