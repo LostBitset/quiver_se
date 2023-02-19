@@ -13,6 +13,9 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
+// The time to wait between cycles, in milliseconds.
+const CYCLE_WAIT_TIME_OPTION_PREFIX = "--cycle-wait-time="
+
 func main() {
 	fmt.Println("[simple_dse] Started orchestration process.")
 	fmt.Println("[simple_dse] Performing simple concolic execution.")
@@ -21,6 +24,18 @@ func main() {
 		panic("ERR! Need one arguments: message prefix. ")
 	}
 	msg_prefix := os.Args[1]
+	cycle_time_millis := 200
+	for _, arg := range os.Args {
+		// The time to wait between cycles, in milliseconds.
+		if strings.HasPrefix(arg, CYCLE_WAIT_TIME_OPTION_PREFIX) {
+			value_str, _ := strings.CutPrefix(arg, CYCLE_WAIT_TIME_OPTION_PREFIX)
+			arg_cycle_time_millis, err := strconv.Atoi(value_str)
+			if err != nil {
+				panic(err)
+			}
+			cycle_time_millis = arg_cycle_time_millis
+		}
+	}
 	seen_pc_hashes := make(map[uint32]struct{})
 	seen_analyze_hashes := make(map[uint32]struct{})
 	// Handle messages
@@ -73,7 +88,7 @@ mainLoop:
 				defer wg.Done()
 				defer func() {
 					if SliceContains(os.Args, "--rename-persist-path-conditions") {
-						os.Rename(msgdir + "/" + filename, msgdir + "/persist_" + filename)
+						os.Rename(msgdir+"/"+filename, msgdir+"/persist_"+filename)
 						fmt.Println("[simple_dse] Renamed message (with different prefix), done processing.")
 					} else {
 						os.Remove(msgdir + "/" + filename)
@@ -94,7 +109,7 @@ mainLoop:
 				}
 			}()
 		}
-		timer := time.After(200 * time.Millisecond)
+		timer := time.After(time.Duration(cycle_time_millis) * time.Millisecond)
 		wg.Wait()
 		<-timer
 	}
