@@ -29,6 +29,7 @@ func ProcessPathConditions(
 	fail_node q.QuiverIndex,
 	target string,
 	msg_prefix string,
+	quiver_nodes map[int]q.QuiverIndex,
 ) {
 	segment_chan := make(chan q.Augmented[eidin.PathConditionSegment, []q.SMTFreeFun[string, string]])
 	seen_callbacks := make(map[uint64]struct{})
@@ -47,7 +48,13 @@ func ProcessPathConditions(
 				PerformPartialDse(*cb_next, target, msg_prefix)
 			}
 		}
-		out_updates <- SegmentToQuiverUpdate(segment, segment_augmented.Augment, top_node, fail_node)
+		out_updates <- SegmentToQuiverUpdate(
+			segment,
+			segment_augmented.Augment,
+			top_node,
+			fail_node,
+			quiver_nodes,
+		)
 	}
 	close(out_updates)
 }

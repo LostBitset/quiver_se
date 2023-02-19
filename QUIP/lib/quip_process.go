@@ -26,7 +26,8 @@ func StartQUIP(
 ) {
 	go RunAnalyzer(target, msg_prefix)
 	go RunSimpleDSELowFrequency(msg_prefix)
-	go ProcessPathConditions(out_updates, top_node, fail_node, target, msg_prefix)
+	quiver_nodes := make(map[int]q.QuiverIndex)
+	go ProcessPathConditions(out_updates, top_node, fail_node, target, msg_prefix, quiver_nodes)
 	out_models := make(chan string)
 	var idsrc q.IdSource
 	sys := q.SMTLib2VAStringSystem{Idsrc: idsrc}

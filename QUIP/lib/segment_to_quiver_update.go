@@ -10,6 +10,7 @@ func SegmentToQuiverUpdate(
 	free_funs []q.SMTFreeFun[string, string],
 	top_node q.QuiverIndex,
 	fail_node q.QuiverIndex,
+	quiver_nodes map[int]q.QuiverIndex,
 ) (
 	update q.Augmented[
 		q.QuiverUpdate[
@@ -22,4 +23,13 @@ func SegmentToQuiverUpdate(
 ) {
 	// TODO
 	return
+}
+
+func CallbackIdToQuiverIndex(
+	cb eidin.CallbackId,
+	top_node q.QuiverIndex,
+	fail_node q.QuiverIndex,
+	quiver_nodes map[int]q.QuiverIndex,
+) {
+	// TODO
 }
