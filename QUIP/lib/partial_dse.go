@@ -4,6 +4,7 @@ import (
 	eidin "LostBitset/quiver_se/EIDIN/proto_lib"
 	q "LostBitset/quiver_se/lib"
 	"os"
+	"strings"
 )
 
 const PARTIAL_DSE_TEMP_PATTERN = "tmp_QSE_quip-partial-dse_*.js"
@@ -23,6 +24,7 @@ func PerformPartialDse(
 	location := "/tmp/" + f.Name()
 	f.Close()
 	defer os.Remove(location)
+	InstrumentFunctionInfo(location)
 	pc_chan := make(chan eidin.PathCondition)
 	go PerformDse(location, GetMessagePrefix(location), pc_chan)
 	for pc := range pc_chan {
@@ -49,5 +51,15 @@ func ExtractCallback(cb eidin.CallbackId, target string) (extracted string) {
 		panic(err)
 	}
 	extracted = string(buffer)
+	return
+}
+
+func PreparePartialDse(cb eidin.CallbackId, function_source string) (full_source string) {
+	var sb strings.Builder
+	sb.WriteString(GenerateSymbolicPrelude(cb))
+	sb.WriteRune('\n')
+	sb.WriteString(ExtractJSFunctionBody(function_source))
+	sb.WriteRune('\n')
+	full_source = sb.String()
 	return
 }
