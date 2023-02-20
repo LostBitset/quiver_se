@@ -32,10 +32,22 @@ func PerformPartialDse(
 }
 
 func ExtractCallback(cb eidin.CallbackId, target string) (extracted string) {
+	start := int64(cb.GetBytesStart())
+	end := int64(cb.GetBytesEnd())
 	f, err := os.Open(target)
 	if err != nil {
 		panic(err)
 	}
 	defer f.Close()
-	_, err = f.Seek(int64(cb.GetBytesStart()), 0)
+	_, err = f.Seek(start, 0)
+	if err != nil {
+		panic(err)
+	}
+	buffer := make([]byte, end-start)
+	_, err = f.Read(buffer)
+	if err != nil {
+		panic(err)
+	}
+	extracted = string(buffer)
+	return
 }
