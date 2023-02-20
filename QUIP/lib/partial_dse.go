@@ -30,3 +30,12 @@ func PerformPartialDse(
 		segment_chan <- GeneralizePartialDseSegment(*segment, cb)
 	}
 }
+
+func ExtractCallback(cb eidin.CallbackId, target string) (extracted string) {
+	f, err := os.Open(target)
+	if err != nil {
+		panic(err)
+	}
+	defer f.Close()
+	_, err = f.Seek(int64(cb.GetBytesStart()), 0)
+}
