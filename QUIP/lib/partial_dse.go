@@ -94,9 +94,48 @@ func GenerateSymbolicPrelude(cb eidin.CallbackId) (prelude string) {
 
 func GeneralizePartialDseSegment(
 	segment eidin.PathConditionSegment,
+	cb eidin.CallbackId,
 	free_funs []*eidin.SMTFreeFun,
 ) (
 	general_segment q.Augmented[eidin.PathConditionSegment, []q.SMTFreeFun[string, string]],
 ) {
-	// TODO
+	smt_free_funs := make([]q.SMTFreeFun[string, string], 0)
+	for _, free_fun_ref := range free_funs {
+		smt_free_funs = append(
+			smt_free_funs,
+			q.SMTFreeFun[string, string]{
+				Name: free_fun_ref.GetName(),
+				Args: free_fun_ref.GetArgSorts(),
+				Ret:  free_fun_ref.GetRetSort(),
+			},
+		)
+	}
+	modified_segment_constraints := make([]*eidin.SMTConstraint, 0)
+	for _, constraint_ref := range segment.GetPartialPc() {
+		constraint_ref := constraint_ref
+		constraint := *constraint_ref
+		original_assertion_value := constraint.GetAssertionValue()
+		modified_segment_constraints = append(
+			modified_segment_constraints,
+			&eidin.SMTConstraint{
+				Constraint: GeneralizePartialDseConstraint(
+					constraint.GetConstraint(),
+				),
+				AssertionValue: &original_assertion_value,
+			},
+		)
+	}
+	modified_segment := eidin.PathConditionSegment{
+		ThisCallbackId: &cb,
+		NextCallbackId: segment.GetNextCallbackId(),
+		PartialPc:      modified_segment_constraints,
+	}
+	general_segment = q.Augmented[
+		eidin.PathConditionSegment,
+		[]q.SMTFreeFun[string, string],
+	]{
+		Value:   modified_segment,
+		Augment: smt_free_funs,
+	}
+	return
 }
