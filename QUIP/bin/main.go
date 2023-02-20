@@ -2,13 +2,16 @@ package main
 
 import (
 	quip "LostBitset/quiver_se/QUIP/lib"
-	qse "LostBitset/quiver_se/lib"
+	"fmt"
+	"os"
 )
 
 func main() {
-	var idsrc qse.IdSource
-	sys := qse.SMTLib2VAStringSystem{idsrc}
-	in_updates
-	qse.StartSiMReQ(updates, out_models, sys)
-	quip.StartQUIP(updates, top_node, fail_node, target, msg_prefix)
+	fmt.Println("[QUIP:(bin/)main.go] Started QUIP.")
+	if len(os.Args) != 3 {
+		panic("ERR! Need two arguments, filename and message prefix. ")
+	}
+	target := os.Args[1]
+	msg_prefix := os.Args[2]
+	quip.StartQUIP(target, msg_prefix)
 }
