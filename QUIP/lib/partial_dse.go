@@ -31,7 +31,7 @@ func PerformPartialDse(
 	go PerformDse(location, GetMessagePrefix(location), pc_chan)
 	for pc := range pc_chan {
 		segment := pc.GetSegmentedPc()[0]
-		segment_chan <- GeneralizePartialDseSegment(*segment)
+		segment_chan <- GeneralizePartialDseSegment(*segment, pc.GetFreeFuns())
 	}
 }
 
@@ -94,6 +94,7 @@ func GenerateSymbolicPrelude(cb eidin.CallbackId) (prelude string) {
 
 func GeneralizePartialDseSegment(
 	segment eidin.PathConditionSegment,
+	free_funs []*eidin.SMTFreeFun,
 ) (
 	general_segment q.Augmented[eidin.PathConditionSegment, []q.SMTFreeFun[string, string]],
 ) {
