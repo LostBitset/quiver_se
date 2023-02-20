@@ -4,6 +4,7 @@ import (
 	eidin "LostBitset/quiver_se/EIDIN/proto_lib"
 	q "LostBitset/quiver_se/lib"
 	"os"
+	"regexp"
 	"strings"
 )
 
@@ -61,5 +62,13 @@ func PreparePartialDse(cb eidin.CallbackId, function_source string) (full_source
 	sb.WriteString(ExtractJSFunctionBody(function_source))
 	sb.WriteRune('\n')
 	full_source = sb.String()
+	return
+}
+
+func ExtractJSFunctionBody(function_original string) (body string) {
+	function := strings.TrimSpace(function_original)
+	prefix_re := regexp.MustCompile(`function(\s*|\s*\w+\s*)\([^\)]*\)\s*{`)
+	leftmost_prefix_loc := prefix_re.FindStringIndex(function)
+	body = function[leftmost_prefix_loc[1] : len(function)-1]
 	return
 }
