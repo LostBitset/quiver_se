@@ -3,6 +3,7 @@ package lib
 import (
 	eidin "LostBitset/quiver_se/EIDIN/proto_lib"
 	q "LostBitset/quiver_se/lib"
+	"fmt"
 	"os"
 	"regexp"
 	"strings"
@@ -70,5 +71,23 @@ func ExtractJSFunctionBody(function_original string) (body string) {
 	prefix_re := regexp.MustCompile(`function(\s*|\s*\w+\s*)\([^\)]*\)\s*{`)
 	leftmost_prefix_loc := prefix_re.FindStringIndex(function)
 	body = function[leftmost_prefix_loc[1] : len(function)-1]
+	return
+}
+
+func GenerateSymbolicPrelude(cb eidin.CallbackId) (prelude string) {
+	var sb strings.Builder
+	for _, free_fun_ref := range cb.GetUsedFreeFuns() {
+		free_fun_ref := free_fun_ref
+		free_fun := *free_fun_ref
+		name := free_fun.GetName()
+		sort := free_fun.GetRetSort()
+		sb.WriteString(
+			fmt.Sprintf(
+				"var sym__outer__%s = \"outer__%s:%s\";\n",
+				name, name, sort,
+			),
+		)
+	}
+	prelude = sb.String()
 	return
 }
