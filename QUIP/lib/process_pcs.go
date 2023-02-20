@@ -40,12 +40,12 @@ func ProcessPathConditions(
 		cb_next := segment.GetNextCallbackId()
 		if cb_this.GetBytesStart() != cb_this.GetBytesEnd() {
 			if _, ok := seen_callbacks[cb_this.GetBytesStart()]; !ok {
-				PerformPartialDse(*cb_this, target, segment_chan)
+				go PerformPartialDse(*cb_this, target, segment_chan)
 			}
 		}
 		if cb_next.GetBytesStart() != cb_next.GetBytesEnd() {
 			if _, ok := seen_callbacks[cb_next.GetBytesStart()]; !ok {
-				PerformPartialDse(*cb_next, target, segment_chan)
+				go PerformPartialDse(*cb_next, target, segment_chan)
 			}
 		}
 		out_updates <- SegmentToQuiverUpdate(
@@ -152,5 +152,4 @@ mainLoop:
 		wg.Wait()
 		<-timer
 	}
-	close(segment_chan)
 }
