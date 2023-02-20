@@ -139,3 +139,9 @@ func GeneralizePartialDseSegment(
 	}
 	return
 }
+
+func GeneralizePartialDseConstraint(original string) (generalized string) {
+	re := regexp.MustCompile(`outer__(\w+)`)
+	generalized = re.ReplaceAllString(original, "(*/read-var/* **jsvar_$1)")
+	return
+}
