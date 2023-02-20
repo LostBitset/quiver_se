@@ -26,6 +26,9 @@ func RunSimpleDSE(msg_prefix string, cycle_wait_time int) {
 	}
 	go func() {
 		defer fmt.Println("[QUIP:simple_dse.go/waiting_goroutine] Simple DSE process ended.")
-		cmd.Wait()
+		err := cmd.Wait()
+		if err != nil {
+			panic(err)
+		}
 	}()
 }

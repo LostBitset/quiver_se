@@ -13,6 +13,9 @@ func RunAnalyzer(target string, msg_prefix string) {
 	}
 	go func() {
 		defer fmt.Println("[QUIP:analyzer.go/waiting_goroutine] Analyzer process ended.")
-		cmd.Wait()
+		err := cmd.Wait()
+		if err != nil {
+			panic(err)
+		}
 	}()
 }
