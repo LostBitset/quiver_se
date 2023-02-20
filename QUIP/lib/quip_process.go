@@ -11,31 +11,29 @@ import (
 // - Sends Analyze requests in response to SiMReQ
 
 func StartQUIP(
-	out_updates chan q.Augmented[
+	target string,
+	msg_prefix string,
+) {
+	out_updates := make(chan q.Augmented[
 		q.QuiverUpdate[
 			int,
 			q.PHashMap[q.Literal[q.WithId_H[string]], struct{}],
 			*q.DMT[q.WithId_H[string], q.QuiverIndex],
 		],
 		[]q.SMTFreeFun[string, string],
-	],
-	top_node q.QuiverIndex,
-	fail_node q.QuiverIndex,
-	target string,
-	msg_prefix string,
-) {
+	])
 	go RunAnalyzer(target, msg_prefix)
 	go RunSimpleDSELowFrequency(msg_prefix)
 	quiver_nodes := make(map[int]q.QuiverIndex)
-	go ProcessPathConditions(out_updates, top_node, fail_node, target, msg_prefix, quiver_nodes)
 	out_models := make(chan string)
 	var idsrc q.IdSource
 	sys := q.SMTLib2VAStringSystem{Idsrc: idsrc}
-	q.StartSiMReQ[int, string, string, string, string, q.SMTLib2VAStringSolvedCtx](
+	_, top_node, fail_node := q.StartSiMReQ[int, string, string, string, string, q.SMTLib2VAStringSolvedCtx](
 		out_updates,
 		out_models,
 		sys,
 	)
+	go ProcessPathConditions(out_updates, top_node, fail_node, target, msg_prefix, quiver_nodes)
 	go func() {
 		for model := range out_models {
 			SendAnalyzeMessage(model, msg_prefix)
