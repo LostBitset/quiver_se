@@ -28,7 +28,7 @@ func PerformPartialDse(
 	defer os.Remove(location)
 	InstrumentFunctionInfo(location)
 	pc_chan := make(chan eidin.PathCondition)
-	go PerformDse(location, GetMessagePrefix(location), pc_chan)
+	go PerformDse(location, GetMessagePrefix(location), true, pc_chan)
 	for pc := range pc_chan {
 		segment := pc.GetSegmentedPc()[0]
 		segment_chan <- GeneralizePartialDseSegment(*segment, cb, pc.GetFreeFuns())
