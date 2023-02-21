@@ -96,7 +96,8 @@ function usedFreeFunsFromObject(obj) {
 function md5(s) {
     return crypto.createHash("md5")
         .update(s, "binary")
-        .digest("base64");
+        .digest("base64")
+        .replace(/\//g, "^");
 }
 
 function sendEIDINMessage(msg) {
