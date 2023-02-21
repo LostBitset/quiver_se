@@ -16,7 +16,7 @@ func RunAnalyzer(target string, msg_prefix string) {
 	go func() {
 		sc := bufio.NewScanner(so)
 		for sc.Scan() {
-			fmt.Println("[QUIP:simple_dse.go::StdoutPipe] " + sc.Text())
+			fmt.Println("[QUIP:analyzer.go::StdoutPipe] " + sc.Text())
 		}
 	}()
 	if se_err != nil {
@@ -25,7 +25,7 @@ func RunAnalyzer(target string, msg_prefix string) {
 	go func() {
 		sc := bufio.NewScanner(se)
 		for sc.Scan() {
-			fmt.Println("[QUIP:simple_dse.go::StderrPipe] " + sc.Text())
+			fmt.Println("[QUIP:analyzer.go::StderrPipe] " + sc.Text())
 		}
 	}()
 	err := cmd.Start()

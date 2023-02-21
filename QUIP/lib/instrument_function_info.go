@@ -22,7 +22,7 @@ func InstrumentFunctionInfo(location string) {
 	go func() {
 		sc := bufio.NewScanner(so)
 		for sc.Scan() {
-			fmt.Println("[QUIP:simple_dse.go::StdoutPipe] " + sc.Text())
+			fmt.Println("[QUIP:instrument_function_info.go::StdoutPipe] " + sc.Text())
 		}
 	}()
 	if se_err != nil {
@@ -31,7 +31,7 @@ func InstrumentFunctionInfo(location string) {
 	go func() {
 		sc := bufio.NewScanner(se)
 		for sc.Scan() {
-			fmt.Println("[QUIP:simple_dse.go::StderrPipe] " + sc.Text())
+			fmt.Println("[QUIP:instrument_function_info.go::StderrPipe] " + sc.Text())
 		}
 	}()
 	err := command.Start()

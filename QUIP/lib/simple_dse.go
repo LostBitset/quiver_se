@@ -9,18 +9,31 @@ import (
 const SIMPLE_DSE_LOW_FREQUENCY_CYCLE_WAIT_TIME_MILLIS = 500
 
 func RunSimpleDSELowFrequency(msg_prefix string) {
-	RunSimpleDSE(msg_prefix, SIMPLE_DSE_LOW_FREQUENCY_CYCLE_WAIT_TIME_MILLIS)
+	RunSimpleDSE(msg_prefix, SIMPLE_DSE_LOW_FREQUENCY_CYCLE_WAIT_TIME_MILLIS, false)
 }
 
-func RunSimpleDSE(msg_prefix string, cycle_wait_time int) {
-	cmd := exec.Command(
-		"../lib/run_simple_dse"+".sh",
-		msg_prefix,
-		fmt.Sprintf(
-			"--cycle-wait-time=%d",
-			cycle_wait_time,
-		),
-	)
+func RunSimpleDSE(msg_prefix string, cycle_wait_time int, single_callback_mode bool) {
+	var cmd *exec.Cmd
+	if single_callback_mode {
+		cmd = exec.Command(
+			"../lib/run_simple_dse"+".sh",
+			msg_prefix,
+			fmt.Sprintf(
+				"--cycle-wait-time=%d",
+				cycle_wait_time,
+			),
+			"--single-callback",
+		)
+	} else {
+		cmd = exec.Command(
+			"../lib/run_simple_dse"+".sh",
+			msg_prefix,
+			fmt.Sprintf(
+				"--cycle-wait-time=%d",
+				cycle_wait_time,
+			),
+		)
+	}
 	so, so_err := cmd.StdoutPipe()
 	se, se_err := cmd.StderrPipe()
 	if so_err != nil {
