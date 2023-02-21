@@ -1,6 +1,7 @@
 package main
 
 import (
+	eidin "LostBitset/quiver_se/EIDIN/proto_lib"
 	qse "LostBitset/quiver_se/lib"
 	"fmt"
 )
@@ -33,5 +34,5 @@ func main() {
 	](
 		in_updates, out_models, sys,
 	)
-	pc_chan := 
+	pc_chan := make(chan eidin.PathCondition)
 }
