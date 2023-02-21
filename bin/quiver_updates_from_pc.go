@@ -3,7 +3,10 @@ package main
 import (
 	eidin "LostBitset/quiver_se/EIDIN/proto_lib"
 	qse "LostBitset/quiver_se/lib"
+	"fmt"
 	"hash/fnv"
+
+	log "github.com/sirupsen/logrus"
 )
 
 func QuiverUpdatesFromPathCondition(
@@ -95,6 +98,8 @@ func QuiverUpdatesFromPathCondition(
 			},
 		)
 	}
+	log.Info("[bin/quiver_updates_from_pc.go] Generated a batch of quiver updates. ")
+	fmt.Println(quiver_updates)
 	return
 }
 

@@ -5,6 +5,8 @@ import (
 	qse "LostBitset/quiver_se/lib"
 	"fmt"
 	"os"
+
+	log "github.com/sirupsen/logrus"
 )
 
 func SanityCheck() {
@@ -21,6 +23,8 @@ func SanityCheck() {
 
 func main() {
 	SanityCheck()
+	log.SetLevel(log.InfoLevel)
+	log.Info("[bin/main.go] Started.")
 	cwd, err_cwd := os.Getwd()
 	if err_cwd != nil {
 		panic(err_cwd)
@@ -39,7 +43,7 @@ func main() {
 	])
 	out_models := make(chan string)
 	var idsrc qse.IdSource
-	sys := qse.SMTLib2VAStringSystem{idsrc}
+	sys := qse.SMTLib2VAStringSystem{Idsrc: idsrc}
 	dmtq, top_node, fail_node := qse.StartSiMReQ[
 		int,
 		string,
@@ -91,11 +95,11 @@ func main() {
 			BytesEnd:   1,
 		},
 		PartialPc: []*eidin.SMTConstraint{
-			&eidin.SMTConstraint{
+			{
 				Constraint:     "(= (*/read-var/* **jsvar_z) Y)",
 				AssertionValue: &yes,
 			},
-			&eidin.SMTConstraint{
+			{
 				Constraint:     "(*/read-var/* **jsvar_a)",
 				AssertionValue: &yes,
 			},
@@ -108,4 +112,6 @@ func main() {
 		},
 	}
 	// end EXAMPLE SPECIFIC
+	for {
+	}
 }
