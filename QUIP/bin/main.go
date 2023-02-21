@@ -18,9 +18,10 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	target = cwd + "/" + target
 	fmt.Println("[QUIP:(bin/)main.go] INFO: CWD is \"" + cwd + "\".")
 	fmt.Println("[QUIP:(bin/)main.go] INFO: Target is \"" + target + "\".")
-	quip.InstrumentFunctionInfo(cwd + "/" + target)
+	quip.InstrumentFunctionInfo(target)
 	fmt.Println("[QUIP:(bin/)main.go] Initial instrumentation complete.")
 	fmt.Println("[QUIP:(bin/)main.go] Running all QUIP components...")
 	quip.StartQUIP(target, msg_prefix)
