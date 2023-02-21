@@ -11,7 +11,7 @@ function onFirst() {
 }
 
 function onSecond() {
-    if (z == 3) {
+    if (z == 2) {
         throw 'oof';
     }
     onFirst();
