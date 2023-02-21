@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os/exec"
 	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -125,6 +126,22 @@ func parseModelValueLine(line string, sort string) (repr string) {
 		repr = "undefined"
 	}
 	ratio_re := regexp.MustCompile(`\(\/\s*([^\s]+)\s*([^\s]+)\)`)
-	repr = ratio_re.ReplaceAllString(repr, "($1/$2)")
+	submatches := ratio_re.FindStringSubmatch(repr)
+	if submatches != nil {
+		numer, errn := strconv.ParseFloat(submatches[1], 64)
+		if errn != nil {
+			panic(errn)
+		}
+		denom, errd := strconv.ParseFloat(submatches[2], 64)
+		if errd != nil {
+			panic(errd)
+		}
+		repr = strconv.FormatFloat(
+			numer/denom,
+			'g',
+			-1,
+			64,
+		)
+	}
 	return
 }
