@@ -10,7 +10,7 @@ var a = false;
 
 ev.on("first", function() {
     if (z == sym_y + 1 && a) {
-        throw 'todo: something clever';
+        throw 'Stickerbrush? Really?';
     }
     if (z < sym__y) {
         z = z + 2;
