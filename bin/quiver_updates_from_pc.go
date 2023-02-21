@@ -58,13 +58,13 @@ func QuiverUpdatesFromPathCondition(
 			sound_prefix = append(sound_prefix, ppc)
 		}
 		src := CallbackIdToQuiverIndex(
-			segment.GetThisCallbackId(),
+			*segment.GetThisCallbackId(),
 			known_callbacks,
 			top_node,
 			fail_node,
 		)
 		dst_index := CallbackIdToQuiverIndex(
-			segment.GetNextCallbackId(),
+			*segment.GetNextCallbackId(),
 			known_callbacks,
 			top_node,
 			fail_node,
