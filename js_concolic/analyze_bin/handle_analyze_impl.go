@@ -5,6 +5,7 @@ import (
 	"bufio"
 	"fmt"
 	"os/exec"
+	"regexp"
 	"strings"
 )
 
@@ -123,5 +124,7 @@ func parseModelValueLine(line string, sort string) (repr string) {
 	default:
 		repr = "undefined"
 	}
+	ratio_re := regexp.MustCompile(`\(\/\s*([^\s]+)\s*([^\s]+)\)`)
+	repr = ratio_re.ReplaceAllString(repr, "($1/$2)")
 	return
 }
