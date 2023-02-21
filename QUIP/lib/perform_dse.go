@@ -58,6 +58,7 @@ func KickstartDse(msg_prefix string) {
 	if err != nil {
 		panic(err)
 	}
+	fmt.Println("[QUIP:perform_dse.go] Kickstarted DSE with empty Analyze message.")
 }
 
 func UsePathConditionChannel(msg_prefix string, pc_chan chan eidin.PathCondition) {
