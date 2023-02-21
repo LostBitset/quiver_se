@@ -3,6 +3,7 @@ package main
 import (
 	eidin "LostBitset/quiver_se/EIDIN/proto_lib"
 	qse "LostBitset/quiver_se/lib"
+	"hash/fnv"
 )
 
 func QuiverUpdatesFromPathCondition(
@@ -125,5 +126,20 @@ func CallbackIdToQuiverIndex(
 func ConstraintsToLiteralMap(constraints []eidin.SMTConstraint) (
 	m map[qse.Literal[qse.WithId_H[string]]]struct{},
 ) {
-	// TODO
+	m = make(map[qse.Literal[qse.WithId_H[string]]]struct{})
+	for _, constraint := range constraints {
+		value := constraint.GetConstraint()
+		hasher := fnv.New32a()
+		hasher.Write([]byte(value))
+		digest := hasher.Sum32()
+		literal_form := qse.Literal[qse.WithId_H[string]]{
+			Value: qse.WithId_H[string]{
+				Value: value,
+				Id:    qse.NumericId(digest),
+			},
+			Eq: constraint.GetAssertionValue(),
+		}
+		m[literal_form] = struct{}{}
+	}
+	return
 }
