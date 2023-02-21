@@ -52,7 +52,7 @@ func main() {
 	)
 	go func() {
 		for model := range out_models {
-			SendAnalyzeRequest(model)
+			SendAnalyzeRequest(msg_prefix, model)
 		}
 	}()
 	known_callbacks := make(map[int]qse.QuiverIndex)
