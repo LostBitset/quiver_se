@@ -20,8 +20,8 @@ func main() {
 	fmt.Println("[simple_dse] Started orchestration process.")
 	fmt.Println("[simple_dse] Performing simple concolic execution.")
 	// Setup
-	if len(os.Args) != 2 {
-		panic("ERR! Need one arguments: message prefix. ")
+	if len(os.Args) < 2 {
+		panic("ERR! Need one arguments: message prefix (--cycle-wait-time=<int> optional). ")
 	}
 	msg_prefix := os.Args[1]
 	cycle_time_millis := 200
