@@ -4,6 +4,7 @@ import (
 	eidin "LostBitset/quiver_se/EIDIN/proto_lib"
 	qse "LostBitset/quiver_se/lib"
 	"fmt"
+	"os"
 )
 
 func SanityCheck() {
@@ -13,6 +14,12 @@ func SanityCheck() {
 
 func main() {
 	SanityCheck()
+	cwd, err_cwd := os.Getwd()
+	if err_cwd != nil {
+		panic(err_cwd)
+	}
+	target := cwd + "/example._fninf.js"
+	msg_prefix := GetMessagePrefix(target)
 	in_updates := make(chan qse.Augmented[
 		qse.QuiverUpdate[
 			int,
@@ -35,4 +42,5 @@ func main() {
 		in_updates, out_models, sys,
 	)
 	pc_chan := make(chan eidin.PathCondition)
+	go func() {}()
 }
