@@ -55,10 +55,6 @@ mainLoop:
 			}
 			filename := entry.Name()
 			if !strings.HasPrefix(filename, msg_prefix) {
-				fmt.Println("[simple_dse] Skipping unwatched. DBG DBG DBG")
-				fmt.Println(filename)
-				fmt.Println("prefix:")
-				fmt.Println(msg_prefix)
 				continue currentPCMsgsLoop
 			}
 			if strings.HasSuffix(filename, "__EIDIN-SIGNAL-STOP") {
