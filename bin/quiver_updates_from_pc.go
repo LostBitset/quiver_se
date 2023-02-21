@@ -56,7 +56,7 @@ func QuiverUpdatesFromPathCondition(
 			ppc := *ppc
 			sound_prefix = append(sound_prefix, ppc)
 		}
-		src_index := CallbackIdToQuiverIndex(
+		src := CallbackIdToQuiverIndex(
 			segment.GetThisCallbackId(),
 			known_callbacks,
 			top_node,
@@ -68,7 +68,6 @@ func QuiverUpdatesFromPathCondition(
 			top_node,
 			fail_node,
 		)
-		src := dmtq.ParameterizeIndex(src_index)
 		dst := dmtq.ParameterizeIndex(dst_index)
 		quiver_updates = append(
 			quiver_updates,
@@ -80,9 +79,20 @@ func QuiverUpdatesFromPathCondition(
 				],
 				[]qse.SMTFreeFun[string, string],
 			]{
-				Value:   0,
+				Value: qse.QuiverUpdate[
+					int,
+					qse.PHashMap[qse.Literal[qse.WithId_H[string]], struct{}],
+					*qse.DMT[qse.WithId_H[string], qse.QuiverIndex],
+				]{
+					Src: src,
+					Dst: dst,
+					Edge: qse.StdlibMapToPHashMap(
+						ConstraintsToLiteralMap(sound_prefix),
+					),
+				},
 				Augment: free_funs,
 			},
 		)
 	}
+	return
 }
