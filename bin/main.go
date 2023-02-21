@@ -50,6 +50,11 @@ func main() {
 	](
 		in_updates, out_models, sys,
 	)
+	go func() {
+		for model := range out_models {
+			SendAnalyzeRequest(model)
+		}
+	}()
 	known_callbacks := make(map[int]qse.QuiverIndex)
 	// bgn EXAMPLE SPECIFIC
 	known_callback_locations := []int{170, 355, 489}
@@ -60,7 +65,7 @@ func main() {
 	}
 	pc_chan := make(chan eidin.PathCondition)
 	go PathConditionsUpdateQuiver(pc_chan, in_updates, known_callbacks, top_node, fail_node)
-	go SendPathConditions(msg_prefix, pc_chan)
+	go StreamPathConditions(msg_prefix, pc_chan)
 	// bgn EXAMPLE SPECIFIC
 	yes := true
 	fail_segment := eidin.PathConditionSegment{
