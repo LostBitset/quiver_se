@@ -6,7 +6,7 @@ import (
 )
 
 func RunAnalyzer(target string, msg_prefix string) {
-	cmd := exec.Command("run_analyzer"+".sh", target, msg_prefix)
+	cmd := exec.Command("../lib/run_analyzer"+".sh", target, msg_prefix)
 	err := cmd.Start()
 	if err != nil {
 		panic(err)

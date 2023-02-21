@@ -13,7 +13,7 @@ func RunSimpleDSELowFrequency(msg_prefix string) {
 
 func RunSimpleDSE(msg_prefix string, cycle_wait_time int) {
 	cmd := exec.Command(
-		"run_simple_dse"+".sh",
+		"../lib/run_simple_dse"+".sh",
 		msg_prefix,
 		fmt.Sprintf(
 			"--cycle-wait-time=%d",
