@@ -1,24 +1,20 @@
-const EventEmitter = require("node:events");
-
 var sym__x = "X:Real";
 var sym__y = "Y:Real";
 
-var z;
+var z = sym__x;
 
-const demo = new EventEmitter();
-
-demo.on("first", function() {
+function onFirst() {
     if (z < sym__y) {
         z = z + 1;
-        demo.emit("second");
+        onSecond();
     }
-});
+}
 
-demo.on("second", function() {
+function onSecond() {
     if (z == 3) {
         throw 'oof';
     }
-    demo.emit("first");
-});
+    onFirst();
+}
 
-z = sym__x;
+onFirst();

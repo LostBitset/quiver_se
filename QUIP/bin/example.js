@@ -8,36 +8,32 @@ function _Q$xnH(e) { throw e; }
 // bgn entry-point (has-script)
 function _Q$ent() {
 
-const EventEmitter = require("node:events");
-
 var sym__x = "X:Real";
 var sym__y = "Y:Real";
 
-var z;
+var z = sym__x;
 
-const demo = new EventEmitter();
-
-demo.on("first", function() {
-	"!!MAGIC@js_concolic/src-range=152:242";
-	"!!MAGIC@js_concolic/idents=z:sym__y:demo:emit"
+function onFirst() {
+	"!!MAGIC@js_concolic/src-range=64:153";
+	"!!MAGIC@js_concolic/idents=z:sym__y:onSecond"
 	
     if (z < sym__y) {
         z = z + 1;
-        demo.emit("second");
+        onSecond();
     }
-});
+}
 
-demo.on("second", function() {
-	"!!MAGIC@js_concolic/src-range=264:347";
-	"!!MAGIC@js_concolic/idents=z:demo:emit"
+function onSecond() {
+	"!!MAGIC@js_concolic/src-range=155:238";
+	"!!MAGIC@js_concolic/idents=z:onFirst"
 	
     if (z == 3) {
         throw 'oof';
     }
-    demo.emit("first");
-});
+    onFirst();
+}
 
-z = sym__x;
+onFirst();
 
 
 }
