@@ -49,6 +49,7 @@ func KickstartDse(msg_prefix string) {
 		"../../js_concolic/analyze_bin/empty_Analyze.eidin.bin",
 		"../../js_concolic/.eidin-run/Analyze/"+msg_prefix+"_spec-empty.eidin.bin",
 	)
+	fmt.Println("[QUIP:perform_dse.go] Ran \"" + cmd.String() + "\".")
 	err := cmd.Start()
 	if err != nil {
 		panic(err)
