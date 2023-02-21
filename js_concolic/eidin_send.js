@@ -111,7 +111,7 @@ function sendEIDINMessage(msg) {
     } else {
         infile = process.argv[process.argv.length - 1];
     }
-    let infile_hash = md5(infile);
+    let infile_hash = md5(infile).replace("/", "^");
     console.log(infile_hash);
     let filename = `m_${infile_hash}_${uuidv4()}.eidin.bin`;
     let filepath = `.eidin-run/PathCondition/${filename}`;
