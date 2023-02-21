@@ -34,7 +34,7 @@ func StartQUIP(
 		out_models,
 		sys,
 	)
-	go ProcessPathConditions(out_updates, top_node, fail_node, target, msg_prefix, quiver_nodes)
+	go ProcessPathConditions(out_updates, top_node, fail_node, target, "persist_"+msg_prefix, quiver_nodes)
 	go func() {
 		for model := range out_models {
 			SendAnalyzeMessage(model, msg_prefix)

@@ -22,7 +22,12 @@ func PerformDse(
 	single_callback_mode bool,
 	pc_chan chan eidin.PathCondition,
 ) {
-	go RunSimpleDSE(msg_prefix, SUBROUTINE_DSE_CYCLE_WAIT_TIME_MILLIS, single_callback_mode)
+	go RunSimpleDSE(
+		msg_prefix,
+		SUBROUTINE_DSE_CYCLE_WAIT_TIME_MILLIS,
+		single_callback_mode,
+		true,
+	)
 	go RunAnalyzer(location, msg_prefix)
 	go UsePathConditionChannel(msg_prefix, pc_chan)
 	defer close(pc_chan)

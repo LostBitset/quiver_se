@@ -9,30 +9,65 @@ import (
 const SIMPLE_DSE_LOW_FREQUENCY_CYCLE_WAIT_TIME_MILLIS = 500
 
 func RunSimpleDSELowFrequency(msg_prefix string) {
-	RunSimpleDSE(msg_prefix, SIMPLE_DSE_LOW_FREQUENCY_CYCLE_WAIT_TIME_MILLIS, false)
+	RunSimpleDSE(
+		msg_prefix,
+		SIMPLE_DSE_LOW_FREQUENCY_CYCLE_WAIT_TIME_MILLIS,
+		false,
+		true,
+	)
 }
 
-func RunSimpleDSE(msg_prefix string, cycle_wait_time int, single_callback_mode bool) {
+func RunSimpleDSE(
+	msg_prefix string,
+	cycle_wait_time int,
+	single_callback_mode bool,
+	perist_mode bool,
+) {
 	var cmd *exec.Cmd
-	if single_callback_mode {
-		cmd = exec.Command(
-			"../lib/run_simple_dse"+".sh",
-			msg_prefix,
-			fmt.Sprintf(
-				"--cycle-wait-time=%d",
-				cycle_wait_time,
-			),
-			"--single-callback",
-		)
+	if perist_mode {
+		if single_callback_mode {
+			cmd = exec.Command(
+				"../lib/run_simple_dse"+".sh",
+				msg_prefix,
+				fmt.Sprintf(
+					"--cycle-wait-time=%d",
+					cycle_wait_time,
+				),
+				"--single-callback",
+				"--rename-persist-path-conditions",
+			)
+		} else {
+			cmd = exec.Command(
+				"../lib/run_simple_dse"+".sh",
+				msg_prefix,
+				fmt.Sprintf(
+					"--cycle-wait-time=%d",
+					cycle_wait_time,
+				),
+				"--rename-persist-path-conditions",
+			)
+		}
 	} else {
-		cmd = exec.Command(
-			"../lib/run_simple_dse"+".sh",
-			msg_prefix,
-			fmt.Sprintf(
-				"--cycle-wait-time=%d",
-				cycle_wait_time,
-			),
-		)
+		if single_callback_mode {
+			cmd = exec.Command(
+				"../lib/run_simple_dse"+".sh",
+				msg_prefix,
+				fmt.Sprintf(
+					"--cycle-wait-time=%d",
+					cycle_wait_time,
+				),
+				"--single-callback",
+			)
+		} else {
+			cmd = exec.Command(
+				"../lib/run_simple_dse"+".sh",
+				msg_prefix,
+				fmt.Sprintf(
+					"--cycle-wait-time=%d",
+					cycle_wait_time,
+				),
+			)
+		}
 	}
 	so, so_err := cmd.StdoutPipe()
 	se, se_err := cmd.StderrPipe()
