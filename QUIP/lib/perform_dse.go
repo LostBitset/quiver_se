@@ -26,7 +26,6 @@ func PerformDse(
 	go RunAnalyzer(location, msg_prefix)
 	go UsePathConditionChannel(msg_prefix, pc_chan)
 	defer close(pc_chan)
-	KickstartDse(msg_prefix)
 	<-time.After(time.Duration(SUBROUTINE_DSE_TIMEOUT_MILLIS) * time.Millisecond)
 	msgdir := `../../js_concolic/.eidin-run/PathCondition`
 	f, err := os.Create(msgdir + "/" + msg_prefix + "__EIDIN-SIGNAL-STOP")
