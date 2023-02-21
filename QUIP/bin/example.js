@@ -1,13 +1,3 @@
-
-// This code has been instrumented by function_info/instrument.js
-
-// bgn decl-prefix (static)
-function _Q$xnH(e) { throw e; }
-// end decl-prefix (static)
-
-// bgn entry-point (has-script)
-function _Q$ent() {
-
 const EventEmitter = require("node:events");
 
 var sym__x = "X:Real";
@@ -32,16 +22,3 @@ demo.on("second", () => {
 });
 
 z = sym__x;
-
-
-}
-// end entry-point (has-script)
-
-// bgn main-rescue (actual-entry-point)
-try {
-	_Q$ent();
-} catch (e) {
-	_Q$xnH(e);
-}
-// end main-rescue (actual-entry-point)
-

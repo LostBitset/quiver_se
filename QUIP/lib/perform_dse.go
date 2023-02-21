@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"hash/fnv"
 	"os"
+	"os/exec"
 	"strings"
 	"time"
 
@@ -25,6 +26,7 @@ func PerformDse(
 	go RunAnalyzer(location, msg_prefix)
 	go UsePathConditionChannel(msg_prefix, pc_chan)
 	defer close(pc_chan)
+	KickstartDse(msg_prefix)
 	<-time.After(time.Duration(SUBROUTINE_DSE_TIMEOUT_MILLIS) * time.Millisecond)
 	msgdir := `../../js_concolic/.eidin-run/PathCondition`
 	f, err := os.Create(msgdir + "/" + msg_prefix + "__EIDIN-SIGNAL-STOP")
@@ -40,6 +42,22 @@ func PerformDse(
 	}
 	defer os.Remove(msgdir + "/" + f.Name())
 	defer f.Close()
+}
+
+func KickstartDse(msg_prefix string) {
+	cmd := exec.Command(
+		"cp",
+		"../../js_concolic/analyze_bin/empty_Analyze.eidin.bin",
+		"../../js_concolic/.eidin-run/Analyze/"+msg_prefix+"_spec-empty.eidin.bin",
+	)
+	err := cmd.Start()
+	if err != nil {
+		panic(err)
+	}
+	err = cmd.Wait()
+	if err != nil {
+		panic(err)
+	}
 }
 
 func UsePathConditionChannel(msg_prefix string, pc_chan chan eidin.PathCondition) {
