@@ -105,7 +105,21 @@ func CallbackIdToQuiverIndex(
 ) (
 	quiver_index qse.QuiverIndex,
 ) {
-	// TODO
+	start := cb.GetBytesStart()
+	if start == cb.GetBytesEnd() {
+		switch start {
+		case 0:
+			quiver_index = top_node
+			return
+		case 1:
+			quiver_index = fail_node
+			return
+		default:
+			panic("[ERR@bin/quiver_updates_from_pc.go:CallbackIdToQuiverIndex] Bad special start.")
+		}
+	}
+	quiver_index = known_callbacks[int(cb.GetBytesStart())]
+	return
 }
 
 func ConstraintsToLiteralMap(constraints []eidin.SMTConstraint) (
