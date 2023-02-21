@@ -96,3 +96,20 @@ func QuiverUpdatesFromPathCondition(
 	}
 	return
 }
+
+func CallbackIdToQuiverIndex(
+	cb eidin.CallbackId,
+	known_callbacks map[int]qse.QuiverIndex,
+	top_node qse.QuiverIndex,
+	fail_node qse.QuiverIndex,
+) (
+	quiver_index qse.QuiverIndex,
+) {
+	// TODO
+}
+
+func ConstraintsToLiteralMap(constraints []eidin.SMTConstraint) (
+	m map[qse.Literal[qse.WithId_H[string]]]struct{},
+) {
+	// TODO
+}
