@@ -36,6 +36,7 @@ func main() {
 			cycle_time_millis = arg_cycle_time_millis
 		}
 	}
+	fmt.Printf("[simple_dse] cycle_time_millis=%d\n", cycle_time_millis)
 	seen_pc_hashes := make(map[uint32]struct{})
 	seen_analyze_hashes := make(map[uint32]struct{})
 	// Handle messages
@@ -54,6 +55,10 @@ mainLoop:
 			}
 			filename := entry.Name()
 			if !strings.HasPrefix(filename, msg_prefix) {
+				fmt.Println("[simple_dse] Skipping unwatched. DBG DBG DBG")
+				fmt.Println(filename)
+				fmt.Println("prefix:")
+				fmt.Println(msg_prefix)
 				continue currentPCMsgsLoop
 			}
 			if strings.HasSuffix(filename, "__EIDIN-SIGNAL-STOP") {
