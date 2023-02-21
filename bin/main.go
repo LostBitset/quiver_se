@@ -64,7 +64,19 @@ func main() {
 		known_callbacks[loc] = dmtq.InsertNode(loc, &backing_dmt)
 	}
 	pc_chan := make(chan eidin.PathCondition)
-	go PathConditionsUpdateQuiver(pc_chan, in_updates, known_callbacks, top_node, fail_node)
+	go func() {
+		for pc := range pc_chan {
+			quiver_updates := QuiverUpdatesFromPathCondition(
+				pc,
+				known_callbacks,
+				top_node,
+				fail_node,
+			)
+			for _, update := range quiver_updates {
+				in_updates <- update
+			}
+		}
+	}()
 	go StreamPathConditions(msg_prefix, pc_chan)
 	// bgn EXAMPLE SPECIFIC
 	yes := true
