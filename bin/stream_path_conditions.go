@@ -52,7 +52,9 @@ func StreamPathConditions(msg_prefix_original string, pc_chan chan eidin.PathCon
 			if err != nil {
 				panic(erru)
 			}
-			fmt.Println("[simple_dse] Successfully deserialized PathCondition message. ")
+			fmt.Println(
+				"[bin/stream_path_conditions.go] Successfully deserialized PathCondition message. ",
+			)
 			pc_chan <- *msg
 		}
 		timer := time.After(200 * time.Millisecond)
