@@ -12,14 +12,14 @@ func main() {
 		panic("ERR! Need two arguments, filename and message prefix. ")
 	}
 	target := os.Args[1]
-	msg_prefix := quip.GetMessagePrefix(target)
-	fmt.Println("[QUIP:(bin/)main.go] Performing initial instrumentation...")
 	cwd, err := os.Getwd()
 	if err != nil {
 		panic(err)
 	}
-	target = cwd + "/" + target
 	fmt.Println("[QUIP:(bin/)main.go] INFO: CWD is \"" + cwd + "\".")
+	target = cwd + "/" + target
+	msg_prefix := quip.GetMessagePrefix(target)
+	fmt.Println("[QUIP:(bin/)main.go] Performing initial instrumentation...")
 	fmt.Println("[QUIP:(bin/)main.go] INFO: Target is \"" + target + "\".")
 	quip.InstrumentFunctionInfo(target)
 	fmt.Println("[QUIP:(bin/)main.go] Initial instrumentation complete.")
