@@ -14,7 +14,11 @@ func main() {
 	target := os.Args[1]
 	msg_prefix := quip.GetMessagePrefix(target)
 	fmt.Println("[QUIP:(bin/)main.go] Performing initial instrumentation...")
-	quip.InstrumentFunctionInfo(target)
+	cwd, err := os.Getwd()
+	if err != nil {
+		panic(err)
+	}
+	quip.InstrumentFunctionInfo(cwd + "/" + target)
 	fmt.Println("[QUIP:(bin/)main.go] Initial instrumentation complete.")
 	fmt.Println("[QUIP:(bin/)main.go] Running all QUIP components...")
 	quip.StartQUIP(target, msg_prefix)

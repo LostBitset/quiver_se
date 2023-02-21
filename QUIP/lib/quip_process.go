@@ -2,6 +2,7 @@ package lib
 
 import (
 	q "LostBitset/quiver_se/lib"
+	"fmt"
 )
 
 // QUIP does the following:
@@ -39,4 +40,7 @@ func StartQUIP(
 			SendAnalyzeMessage(model, msg_prefix)
 		}
 	}()
+	fmt.Println("[QUIP:quip_process.go] ENTERING INFINITE LOOP...")
+	for {
+	}
 }

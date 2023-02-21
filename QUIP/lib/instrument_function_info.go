@@ -1,9 +1,17 @@
 package lib
 
-import "os/exec"
+import (
+	"os/exec"
+	"strings"
+)
 
 func InstrumentFunctionInfo(location string) {
-	command := exec.Command("../lib/run_function_info_inplace"+".sh", location)
+	location_without_js, _ := strings.CutSuffix(location, ".js")
+	command := exec.Command(
+		"../lib/run_function_info_inplace"+".sh",
+		location,
+		location_without_js+"._fninf.js",
+	)
 	err := command.Start()
 	if err != nil {
 		panic(err)
