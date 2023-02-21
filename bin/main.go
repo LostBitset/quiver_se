@@ -71,6 +71,7 @@ func main() {
 				known_callbacks,
 				top_node,
 				fail_node,
+				dmtq,
 			)
 			for _, update := range quiver_updates {
 				in_updates <- update
