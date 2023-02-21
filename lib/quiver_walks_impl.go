@@ -144,7 +144,7 @@ func (q Quiver[N, E, C]) EmitSimpleWalksFromToRev(
 	q.EmitSimpleWalksFromToRevPrefix(out_simple_walks, src, dst, &backing_prefix, seen)
 }
 
-const QUIVER_SIMPLE_WALKS_MAX_TRAVERSAL_CYCLE_COUNT = 1
+const QUIVER_SIMPLE_WALKS_MAX_TRAVERSAL_CYCLE_COUNT = 2
 
 func (q Quiver[N, E, C]) EmitSimpleWalksFromToRevPrefix(
 	out_simple_walks chan []E,
