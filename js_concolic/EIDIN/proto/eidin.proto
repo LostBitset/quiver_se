@@ -80,12 +80,7 @@ message SMTConstraint {
 // NOT AN ACTUAL MESSAGE, just a component of one.
 // Represents a unique identifier for a particular callback
 message CallbackId {
-
-    // If both the bytes_start and bytes_end fields are identical, this indicates some
-    // sort of special pseudo-callback:
-    // 0 -> The "top" callback, that represents the entry point of the program. 
-    // 1 -> The "fail" callback, that represents failure. 
-
+    
     // The (byte) offset in the original file of the start of the callback source.
     uint64 bytes_start = 1;
 

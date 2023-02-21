@@ -11,8 +11,8 @@ func (warden_config DMTQWardenConfig[N, ATOM, AUG]) Start() {
 		var wg sync.WaitGroup
 		for update_augmented := range warden_config.in_updates {
 			log.Info("[dmtq_warden/go1] Received (augmented) quiver update. ")
-			update := update_augmented.Value
-			augment := update_augmented.Augment
+			update := update_augmented.value
+			augment := update_augmented.augment
 			out_walks_specific := make(chan QuiverWalk[N, PHashMap[Literal[ATOM], struct{}]])
 			log.Info("[dmtq_warden/go1] Applying update to quiver and emitting new walks. ")
 			warden_config.dmtq.ApplyUpdateAndEmitWalks(

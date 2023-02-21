@@ -66,14 +66,9 @@ function makeCallbackId(cgiid, cgiid_map, cgiid_map_idents) {
         return eidin.CallbackId.fromObject({
             bytesStart: 0,
             bytesEnd: 0,
-            usedFreeFuns: [],
-        });
-    }
-    if (cgiid === "__fail__") {
-        return eidin.CallbackId.fromObject({
-            bytesStart: 1,
-            bytesEnd: 1,
-            usedFreeFuns: [],
+            usedFreeFuns: usedFreeFunsFromObject(
+                cgiid_map_idents[cgiid]
+            ),
         });
     }
     let src_range = cgiid_map[cgiid];
@@ -111,7 +106,7 @@ function sendEIDINMessage(msg) {
     } else {
         infile = process.argv[process.argv.length - 1];
     }
-    let infile_hash = md5(infile).replace("/", "^");
+    let infile_hash = md5(infile);
     console.log(infile_hash);
     let filename = `m_${infile_hash}_${uuidv4()}.eidin.bin`;
     let filepath = `.eidin-run/PathCondition/${filename}`;

@@ -55,7 +55,7 @@ func StartSiMReQ[
 		for walk_recv := range walks {
 			log.Info("[simreq_part/go1(junction)] Received (augmented) quiver walk. ")
 			sum := uint32(0xE4E4)
-			walk_chunked := walk_recv.Value
+			walk_chunked := walk_recv.value
 			chunks := walk_chunked.edges_chunked
 			if len(*chunks[len(chunks)-1]) == 0 {
 				continue
@@ -101,7 +101,7 @@ func StartSiMReQ[
 			canidates <- SMRDNFClause[ATOM, IDENT, SORT]{
 				walk[:failure_boundary],
 				walk[failure_boundary:],
-				walk_recv.Augment,
+				walk_recv.augment,
 			}
 			log.Info("[simreq_part/go1(junction)] Sent (augmented) quiver walk in canidate form. ")
 		}

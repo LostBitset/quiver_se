@@ -5,8 +5,6 @@ import (
 	"bufio"
 	"fmt"
 	"os/exec"
-	"regexp"
-	"strconv"
 	"strings"
 )
 
@@ -124,24 +122,6 @@ func parseModelValueLine(line string, sort string) (repr string) {
 		repr = line[4 : len(line)-1]
 	default:
 		repr = "undefined"
-	}
-	ratio_re := regexp.MustCompile(`\(\/\s*([^\s]+)\s*([^\s]+)\)`)
-	submatches := ratio_re.FindStringSubmatch(repr)
-	if submatches != nil {
-		numer, errn := strconv.ParseFloat(submatches[1], 64)
-		if errn != nil {
-			panic(errn)
-		}
-		denom, errd := strconv.ParseFloat(submatches[2], 64)
-		if errd != nil {
-			panic(errd)
-		}
-		repr = strconv.FormatFloat(
-			numer/denom,
-			'g',
-			-1,
-			64,
-		)
 	}
 	return
 }

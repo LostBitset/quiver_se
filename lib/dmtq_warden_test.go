@@ -67,7 +67,7 @@ func TestDMTQWarden(t *testing.T) {
 	close(in_updates)
 	walks := make([][]PHashMap[Literal[uint32_H], struct{}], 0)
 	for walk_recv := range out_walks {
-		walk_chunked := walk_recv.Value
+		walk_chunked := walk_recv.value
 		new_walk := make([]PHashMap[Literal[uint32_H], struct{}], 0)
 		for _, chunk := range walk_chunked.edges_chunked {
 			new_walk = append(new_walk, *chunk...)
