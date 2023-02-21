@@ -7,14 +7,14 @@ var z;
 
 const demo = new EventEmitter();
 
-demo.on("first", () => {
+demo.on("first", function() {
     if (z < sym__y) {
         z = z + 1;
         demo.emit("second");
     }
 });
 
-demo.on("second", () => {
+demo.on("second", function() {
     if (z == 3) {
         throw 'oof';
     }
