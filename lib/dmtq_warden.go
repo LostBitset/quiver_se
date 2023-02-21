@@ -15,6 +15,6 @@ type DMTQWardenConfig[N any, ATOM hashable, AUG any] struct {
 }
 
 type Augmented[A any, B any] struct {
-	value   A
-	augment B
+	Value   A
+	Augment B
 }

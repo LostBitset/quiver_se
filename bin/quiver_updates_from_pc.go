@@ -70,5 +70,19 @@ func QuiverUpdatesFromPathCondition(
 		)
 		src := dmtq.ParameterizeIndex(src_index)
 		dst := dmtq.ParameterizeIndex(dst_index)
+		quiver_updates = append(
+			quiver_updates,
+			qse.Augmented[
+				qse.QuiverUpdate[
+					int,
+					qse.PHashMap[qse.Literal[qse.WithId_H[string]], struct{}],
+					*qse.DMT[qse.WithId_H[string], qse.QuiverIndex],
+				],
+				[]qse.SMTFreeFun[string, string],
+			]{
+				Value:   0,
+				Augment: free_funs,
+			},
+		)
 	}
 }
