@@ -14,8 +14,8 @@ func TestSiMReQPart(t *testing.T) {
 	out_models := make(chan string)
 	var idsrc IdSource
 	sys := SMTLibv2StringSystem{idsrc}
-	dmtq, top_node, fail_node := StartSiMReQ[int, string, string, string, string, SMTLibv2StringSolvedCtx](
-		in_updates, out_models, sys,
+	dmtq, top_node, fail_node, _ := StartSiMReQ[int, string, string, string, string, SMTLibv2StringSolvedCtx](
+		in_updates, out_models, sys, nil,
 	)
 	update_dmt := NewDMT[WithId_H[string], QuiverIndex]()
 	intended_node := dmtq.NewIntendedNode(47, &update_dmt)

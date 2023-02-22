@@ -25,10 +25,12 @@ func StartSiMReQ[
 	],
 	out_models chan MODEL,
 	sys SYS,
+	aot_nodes []QNODE,
 ) (
 	dmtq Quiver[QNODE, PHashMap[Literal[WithId_H[ATOM]], struct{}], *DMT[WithId_H[ATOM], QuiverIndex]],
 	top_node QuiverIndex,
 	fail_node QuiverIndex,
+	aot_indices []QuiverIndex,
 ) {
 	walks := make(chan Augmented[
 		QuiverWalk[QNODE, PHashMap[Literal[WithId_H[ATOM]], struct{}]],
@@ -42,6 +44,13 @@ func StartSiMReQ[
 	var zero_node QNODE
 	top_node = dmtq.InsertNode(zero_node, &top_node_dmt)
 	fail_node = top_node
+	if aot_nodes != nil {
+		aot_indices = make([]QuiverIndex, len(aot_nodes))
+		for i, node := range aot_nodes {
+			aot_backing_dmt := NewDMT[WithId_H[ATOM], QuiverIndex]()
+			aot_indices[i] = dmtq.InsertNode(node, &aot_backing_dmt)
+		}
+	}
 	warden_config := DMTQWardenConfig[QNODE, WithId_H[ATOM], []SMTFreeFun[IDENT, SORT]]{
 		in_updates: in_updates,
 		out_walks:  walks,

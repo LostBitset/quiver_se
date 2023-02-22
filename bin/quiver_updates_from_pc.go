@@ -13,7 +13,7 @@ func QuiverUpdatesFromPathCondition(
 	known_callbacks map[int]qse.QuiverIndex,
 	top_node qse.QuiverIndex,
 	fail_node qse.QuiverIndex,
-	dmtq *qse.Quiver[
+	dmtq qse.Quiver[
 		int,
 		qse.PHashMap[qse.Literal[qse.WithId_H[string]], struct{}],
 		*qse.DMT[qse.WithId_H[string], qse.QuiverIndex],
