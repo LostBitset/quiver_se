@@ -8,7 +8,7 @@ function _Q$xnH(e) { throw e; }
 // bgn entry-point (has-script)
 function _Q$ent() {
 
-const EventEmitter = require("node:events");
+var EventEmitter = require("node:events");
 
 var ev = new EventEmitter();
 
@@ -19,11 +19,11 @@ var z = sym__x;
 var a = false;
 
 ev.on("first", function() {
-	"!!MAGIC@js_concolic/src-range=170:335";
+	"!!MAGIC@js_concolic/src-range=168:332";
 	"!!MAGIC@js_concolic/idents=z:sym_y:a:sym__y:ev:emit"
 	
     if (z == sym_y + 1 && a) {
-        throw 'todo: something clever';
+        throw 'Stickerbrush? Really?';
     }
     if (z < sym__y) {
         z = z + 2;
@@ -32,7 +32,7 @@ ev.on("first", function() {
 });
 
 ev.on("second", function() {
-	"!!MAGIC@js_concolic/src-range=355:470";
+	"!!MAGIC@js_concolic/src-range=352:467";
 	"!!MAGIC@js_concolic/idents=z:sym__y:a:ev:emit"
 	
     if (z === sym__y && !a) {
@@ -43,7 +43,7 @@ ev.on("second", function() {
 });
 
 ev.on("third", function() {
-	"!!MAGIC@js_concolic/src-range=489:582";
+	"!!MAGIC@js_concolic/src-range=486:579";
 	"!!MAGIC@js_concolic/idents=z:a:ev:emit"
 	
     z = z - 1;

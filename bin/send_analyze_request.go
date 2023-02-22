@@ -6,10 +6,12 @@ import (
 	"hash/fnv"
 	"os"
 
+	log "github.com/sirupsen/logrus"
 	"google.golang.org/protobuf/proto"
 )
 
 func SendAnalyzeRequest(msg_prefix string, model string) {
+	log.Info("[bin/send_analyze_request.go] Sending Analyze message. ")
 	message := eidin.Analyze{
 		ForbidCaching:  false,
 		Model:          &model,

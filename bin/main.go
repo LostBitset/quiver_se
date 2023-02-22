@@ -33,6 +33,8 @@ func main() {
 	target := cwd + "/example._fninf.js"
 	// end EXAMPLE SPECIFIC
 	msg_prefix := GetMessagePrefix(target)
+	fmt.Println("@parameter target=\"" + target + "\"")
+	fmt.Println("@parameter msg_prefix=\"" + msg_prefix + "\"")
 	in_updates := make(chan qse.Augmented[
 		qse.QuiverUpdate[
 			int,
@@ -87,8 +89,8 @@ func main() {
 	yes := true
 	fail_segment := eidin.PathConditionSegment{
 		ThisCallbackId: &eidin.CallbackId{
-			BytesStart: 170,
-			BytesEnd:   335,
+			BytesStart: 168,
+			BytesEnd:   332,
 		},
 		NextCallbackId: &eidin.CallbackId{
 			BytesStart: 1,
