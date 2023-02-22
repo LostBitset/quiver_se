@@ -8,10 +8,6 @@ function _Q$xnH(e) { throw e; }
 // bgn entry-point (has-script)
 function _Q$ent() {
 
-var EventEmitter = require("node:events");
-
-var ev = new EventEmitter();
-
 var sym__x = "X:Real";
 var sym__y = "Y:Real";
 
@@ -21,7 +17,7 @@ var a = false;
 
 
 function onFirst() {
-	"!!MAGIC@js_concolic/src-range=155:333";
+	"!!MAGIC@js_concolic/src-range=81:259";
 	"!!MAGIC@js_concolic/idents=z:sym__y:a:setImmediate:onSecond";
 	
     if (z === sym__y + 1 && a) {
@@ -34,7 +30,7 @@ function onFirst() {
 }
 
 function onSecond() {
-	"!!MAGIC@js_concolic/src-range=335:469";
+	"!!MAGIC@js_concolic/src-range=261:395";
 	"!!MAGIC@js_concolic/idents=z:sym__y:a:setImmediate:onThird:onFirst";
 	
     if (z === sym__y && !a) {
@@ -45,7 +41,7 @@ function onSecond() {
 }
 
 function onThird() {
-	"!!MAGIC@js_concolic/src-range=471:577";
+	"!!MAGIC@js_concolic/src-range=397:503";
 	"!!MAGIC@js_concolic/idents=z:a:setImmediate:onFirst";
 	
     z = z - 1;

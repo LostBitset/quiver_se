@@ -13,7 +13,12 @@ import (
 
 func StreamPathConditions(msg_prefix_original string, pc_chan chan eidin.PathCondition) {
 	msgdir := `../js_concolic/.eidin-run/PathCondition`
-	msg_prefix := "persist_" + msg_prefix_original
+	var msg_prefix string
+	if os.Args[len(os.Args)-1] == "--watch-persisted" {
+		msg_prefix = "persist_" + msg_prefix_original
+	} else {
+		msg_prefix = msg_prefix_original
+	}
 	seen_pc_hashes := make(map[uint32]struct{})
 	for {
 		entries, err := os.ReadDir(msgdir)

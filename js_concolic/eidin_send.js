@@ -62,13 +62,12 @@ function sendEIDINPathCondition(cgiid_map, cgiid_map_idents, free_funs, pc) {
 }
 
 function makeCallbackId(cgiid, cgiid_map, cgiid_map_idents) {
+    console.log("Making CallbackId protobuf message for CGIID: " + cgiid);
     if (cgiid === "__top__") {
         return eidin.CallbackId.fromObject({
             bytesStart: 0,
             bytesEnd: 0,
-            usedFreeFuns: usedFreeFunsFromObject(
-                cgiid_map_idents[cgiid]
-            ),
+            usedFreeFuns: [],
         });
     }
     let src_range = cgiid_map[cgiid];

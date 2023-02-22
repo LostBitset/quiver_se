@@ -1,7 +1,3 @@
-var EventEmitter = require("node:events");
-
-var ev = new EventEmitter();
-
 var sym__x = 0;
 var sym__y = 0;
 
