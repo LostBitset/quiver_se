@@ -55,6 +55,10 @@ func QuiverUpdatesFromPathCondition(
 	sound_prefix := make([]eidin.SMTConstraint, 0)
 	for _, segment := range pc.GetSegmentedPc() {
 		segment := *segment
+		if segment.GetNextCallbackId() == nil {
+			log.Info("[bin/quiver_updates_from_pc.go] Skipping segment that led to termination. ")
+			continue
+		}
 		for _, ppc := range segment.GetPartialPc() {
 			ppc := *ppc
 			sound_prefix = append(sound_prefix, ppc)
