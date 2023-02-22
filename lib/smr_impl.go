@@ -86,14 +86,17 @@ func (smr_config SMRConfig[ATOM, IDENT, SORT, MODEL, SCTX, SYS]) Start() {
 	eternal_slumber := NewSMRIsSleeping()
 	eternal_slumber.Wake()
 	go func() {
+		defer log.Info("[smr/go1] Entered eternal slumber. ")
 		defer close(smr_config.out_models)
 		defer close(wakeup_chan)
 	runSMRLoop:
 		for {
 			log.Info("[smr/go1] SMR iteration goroutine awake. ")
 			if eternal_slumber.Check() {
+				log.Info("[smr/go1] Performing all current work before eternal slumber. ")
 				for !smr_config.RunSMR() {
 				}
+				log.Info("[smr/go1] Entering eternal slumber. ")
 				break runSMRLoop
 			}
 			for !smr_config.RunSMR() {
@@ -105,15 +108,20 @@ func (smr_config SMRConfig[ATOM, IDENT, SORT, MODEL, SCTX, SYS]) Start() {
 	}()
 	go func() {
 		defer func() {
+			log.Info("[smr/go2] Preparing for eternal slumber. ")
 			eternal_slumber.Sleep()
 			wakeup_chan <- struct{}{}
+			log.Info("[smr/go2] Requesting eternal slumber. ")
 		}()
+		log.Info("[smr/go2] Waiting for canidates. ")
 		for canidate := range smr_config.in_canidates {
 			log.Info("[smr/go2] Received canidate. ")
 			smr_config.unfinished.Append(canidate)
 			if !is_sleeping.Wake() {
 				log.Info("[smr/go2] Waking up SMR iteration goroutine. ")
 				wakeup_chan <- struct{}{}
+			} else {
+				log.Info("[smr/go2] SMR iteration goroutine is already awake. ")
 			}
 		}
 	}()
