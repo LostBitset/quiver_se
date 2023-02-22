@@ -42,9 +42,13 @@ func main() {
 		[]qse.SMTFreeFun[string, string],
 	])
 	out_models := make(chan string)
+	known_callbacks := make(map[int]qse.QuiverIndex)
+	// bgn EXAMPLE SPECIFIC
+	aot_nodes := []int{170, 355, 489}
+	// end EXAMPLE SPECIFIC
 	var idsrc qse.IdSource
 	sys := qse.SMTLib2VAStringSystem{Idsrc: idsrc}
-	dmtq, top_node, fail_node := qse.StartSiMReQ[
+	dmtq, top_node, fail_node, aot_indices := qse.StartSiMReQ[
 		int,
 		string,
 		string,
@@ -52,21 +56,17 @@ func main() {
 		string,
 		qse.SMTLib2VAStringSolvedCtx,
 	](
-		in_updates, out_models, sys,
+		in_updates, out_models, sys, aot_nodes,
 	)
+	for i, loc := range aot_nodes {
+		known_callbacks[loc] = aot_indices[i]
+	}
 	go func() {
 		for model := range out_models {
 			SendAnalyzeRequest(msg_prefix, model)
 		}
 	}()
-	known_callbacks := make(map[int]qse.QuiverIndex)
-	// bgn EXAMPLE SPECIFIC
-	known_callback_locations := []int{170, 355, 489}
-	// end EXAMPLE SPECIFIC
-	for _, loc := range known_callback_locations {
-		backing_dmt := qse.NewDMT[qse.WithId_H[string], qse.QuiverIndex]()
-		known_callbacks[loc] = dmtq.InsertNode(loc, &backing_dmt)
-	}
+
 	pc_chan := make(chan eidin.PathCondition)
 	go func() {
 		for pc := range pc_chan {
