@@ -50,17 +50,19 @@ func StreamPathConditions(msg_prefix_original string, pc_chan chan eidin.PathCon
 				continue currentPCMsgsLoop
 			}
 			seen_pc_hashes[hash] = struct{}{}
+			fmt.Println("CONTENTS OF PATHCONDITION MESSAGE BELOW:")
 			fmt.Println(contents)
 			msg := &eidin.PathCondition{}
 			erru := proto.Unmarshal(contents, msg)
-			fmt.Println(*msg)
+			msg_value := *msg
+			fmt.Println(msg_value)
 			if err != nil {
 				panic(erru)
 			}
 			fmt.Println(
 				"[bin/stream_path_conditions.go] Successfully deserialized PathCondition message. ",
 			)
-			pc_chan <- *msg
+			pc_chan <- msg_value
 		}
 		timer := time.After(200 * time.Millisecond)
 		<-timer
