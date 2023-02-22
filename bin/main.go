@@ -46,7 +46,7 @@ func main() {
 	out_models := make(chan string)
 	known_callbacks := make(map[int]qse.QuiverIndex)
 	// bgn EXAMPLE SPECIFIC
-	aot_nodes := []int{170, 355, 489}
+	aot_nodes := []int{81, 261, 397}
 	// end EXAMPLE SPECIFIC
 	var idsrc qse.IdSource
 	sys := qse.SMTLib2VAStringSystem{Idsrc: idsrc}
