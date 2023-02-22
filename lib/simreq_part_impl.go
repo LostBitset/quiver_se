@@ -26,12 +26,10 @@ func StartSiMReQ[
 	out_models chan MODEL,
 	sys SYS,
 ) (
-	dmtqr *Quiver[QNODE, PHashMap[Literal[WithId_H[ATOM]], struct{}], *DMT[WithId_H[ATOM], QuiverIndex]],
+	dmtq Quiver[QNODE, PHashMap[Literal[WithId_H[ATOM]], struct{}], *DMT[WithId_H[ATOM], QuiverIndex]],
 	top_node QuiverIndex,
 	fail_node QuiverIndex,
 ) {
-	var dmtq Quiver[QNODE, PHashMap[Literal[WithId_H[ATOM]], struct{}], *DMT[WithId_H[ATOM], QuiverIndex]]
-	dmtqr = &dmtq
 	walks := make(chan Augmented[
 		QuiverWalk[QNODE, PHashMap[Literal[WithId_H[ATOM]], struct{}]],
 		[]SMTFreeFun[IDENT, SORT],
