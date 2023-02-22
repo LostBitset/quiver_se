@@ -39,8 +39,10 @@ func StartSiMReQ[
 		canidates, out_models, sys,
 	)
 	top_node_dmt := NewDMT[WithId_H[ATOM], QuiverIndex]()
+	fail_node_dmt := NewDMT[WithId_H[ATOM], QuiverIndex]()
 	var zero_node QNODE
 	top_node = dmtq.InsertNode(zero_node, &top_node_dmt)
+	fail_node = dmtq.InsertNode(zero_node, &fail_node_dmt)
 	warden_config := DMTQWardenConfig[QNODE, WithId_H[ATOM], []SMTFreeFun[IDENT, SORT]]{
 		in_updates: in_updates,
 		out_walks:  walks,
