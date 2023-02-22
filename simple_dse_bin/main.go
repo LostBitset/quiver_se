@@ -17,8 +17,8 @@ func main() {
 	fmt.Println("[simple_dse] Started orchestration process.")
 	fmt.Println("[simple_dse] Performing simple concolic execution.")
 	// Setup
-	if len(os.Args) != 2 {
-		panic("ERR! Need one arguments: message prefix. ")
+	if len(os.Args) < 2 {
+		panic("ERR! Need (at least) one arguments: message prefix. ")
 	}
 	msg_prefix := os.Args[1]
 	seen_pc_hashes := make(map[uint32]struct{})
@@ -73,7 +73,7 @@ mainLoop:
 				defer wg.Done()
 				defer func() {
 					if SliceContains(os.Args, "--rename-persist-path-conditions") {
-						os.Rename(msgdir + "/" + filename, msgdir + "/persist_" + filename)
+						os.Rename(msgdir+"/"+filename, msgdir+"/persist_"+filename)
 						fmt.Println("[simple_dse] Renamed message (with different prefix), done processing.")
 					} else {
 						os.Remove(msgdir + "/" + filename)
