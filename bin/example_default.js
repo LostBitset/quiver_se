@@ -2,8 +2,8 @@ var EventEmitter = require("node:events");
 
 var ev = new EventEmitter();
 
-var sym__x = "X:Real";
-var sym__y = "Y:Real";
+var sym__x = 0;
+var sym__y = 0;
 
 var z = sym__x;
 var a = false;

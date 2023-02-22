@@ -21,10 +21,10 @@ var a = false;
 
 
 function onFirst() {
-	"!!MAGIC@js_concolic/src-range=155:327";
-	"!!MAGIC@js_concolic/idents=z:sym_y:a:sym__y:ev:emit";
+	"!!MAGIC@js_concolic/src-range=155:329";
+	"!!MAGIC@js_concolic/idents=z:sym__y:a:ev:emit";
 	
-    if (z == sym_y + 1 && a) {
+    if (z === sym__y + 1 && a) {
         throw 'Stickerbrush? Really?';
     }
     if (z < sym__y) {
@@ -34,7 +34,7 @@ function onFirst() {
 }
 
 function onSecond() {
-	"!!MAGIC@js_concolic/src-range=329:453";
+	"!!MAGIC@js_concolic/src-range=331:455";
 	"!!MAGIC@js_concolic/idents=z:sym__y:a:ev:emit";
 	
     if (z === sym__y && !a) {
@@ -45,7 +45,7 @@ function onSecond() {
 }
 
 function onThird() {
-	"!!MAGIC@js_concolic/src-range=455:556";
+	"!!MAGIC@js_concolic/src-range=457:558";
 	"!!MAGIC@js_concolic/idents=z:a:ev:emit";
 	
     z = z - 1;
