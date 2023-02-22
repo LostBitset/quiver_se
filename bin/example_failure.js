@@ -16,15 +16,15 @@ function onFirst() {
     }
     if (z < sym__y) {
         z = z + 2;
-        ev.emit("second");
+        setImmediate(onSecond)
     }
 }
 
 function onSecond() {
     if (z === sym__y && !a) {
-        ev.emit("third");
+        setImmediate(onThird);
     } else {
-        ev.emit("first");
+        setImmediate(onFirst);
     }
 }
 
@@ -33,13 +33,9 @@ function onThird() {
     if (z != 2) {
         a = true;
     }
-    ev.emit("first");
+    setImmediate(onFirst);
 }
 
-ev.on("first", onFirst);
-ev.on("second", onSecond);
-ev.on("third", onThird);
-
 if (sym__x < sym__y) {
-    ev.emit("first");
+    setImmediate(onFirst);
 }

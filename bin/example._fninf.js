@@ -21,46 +21,42 @@ var a = false;
 
 
 function onFirst() {
-	"!!MAGIC@js_concolic/src-range=155:329";
-	"!!MAGIC@js_concolic/idents=z:sym__y:a:ev:emit";
+	"!!MAGIC@js_concolic/src-range=155:333";
+	"!!MAGIC@js_concolic/idents=z:sym__y:a:setImmediate:onSecond";
 	
     if (z === sym__y + 1 && a) {
         throw 'Stickerbrush? Really?';
     }
     if (z < sym__y) {
         z = z + 2;
-        ev.emit("second");
+        setImmediate(onSecond)
     }
 }
 
 function onSecond() {
-	"!!MAGIC@js_concolic/src-range=331:455";
-	"!!MAGIC@js_concolic/idents=z:sym__y:a:ev:emit";
+	"!!MAGIC@js_concolic/src-range=335:469";
+	"!!MAGIC@js_concolic/idents=z:sym__y:a:setImmediate:onThird:onFirst";
 	
     if (z === sym__y && !a) {
-        ev.emit("third");
+        setImmediate(onThird);
     } else {
-        ev.emit("first");
+        setImmediate(onFirst);
     }
 }
 
 function onThird() {
-	"!!MAGIC@js_concolic/src-range=457:558";
-	"!!MAGIC@js_concolic/idents=z:a:ev:emit";
+	"!!MAGIC@js_concolic/src-range=471:577";
+	"!!MAGIC@js_concolic/idents=z:a:setImmediate:onFirst";
 	
     z = z - 1;
     if (z != 2) {
         a = true;
     }
-    ev.emit("first");
+    setImmediate(onFirst);
 }
 
-ev.on("first", onFirst);
-ev.on("second", onSecond);
-ev.on("third", onThird);
-
 if (sym__x < sym__y) {
-    ev.emit("first");
+    setImmediate(onFirst);
 }
 
 
