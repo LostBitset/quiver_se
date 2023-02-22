@@ -89,8 +89,8 @@ func main() {
 	yes := true
 	fail_segment := eidin.PathConditionSegment{
 		ThisCallbackId: &eidin.CallbackId{
-			BytesStart: 168,
-			BytesEnd:   332,
+			BytesStart: 155,
+			BytesEnd:   327,
 		},
 		NextCallbackId: &eidin.CallbackId{
 			BytesStart: 1,

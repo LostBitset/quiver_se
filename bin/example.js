@@ -8,7 +8,9 @@ var sym__y = "Y:Real";
 var z = sym__x;
 var a = false;
 
-ev.on("first", function() {
+
+
+function onFirst() {
     if (z == sym_y + 1 && a) {
         throw 'Stickerbrush? Really?';
     }
@@ -16,23 +18,27 @@ ev.on("first", function() {
         z = z + 2;
         ev.emit("second");
     }
-});
+}
 
-ev.on("second", function() {
+function onSecond() {
     if (z === sym__y && !a) {
         ev.emit("third");
     } else {
         ev.emit("first");
     }
-});
+}
 
-ev.on("third", function() {
+function onThird() {
     z = z - 1;
     if (z != 2) {
         a = true;
     }
     ev.emit("first");
-});
+}
+
+ev.on("first", onFirst);
+ev.on("second", onSecond);
+ev.on("third", onThird);
 
 if (sym__x < sym__y) {
     ev.emit("first");

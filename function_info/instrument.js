@@ -157,7 +157,7 @@ function estreeIdentifiers(estree) {
 function injectionForBlockFunction(estree) {
 	return `
 	"!!MAGIC@js_concolic/src-range=${estree.start}:${estree.end}";
-	"!!MAGIC@js_concolic/idents=${estreeIdentifiers(estree.body).join(":")}"
+	"!!MAGIC@js_concolic/idents=${estreeIdentifiers(estree.body).join(":")}";
 	`;
 }
 

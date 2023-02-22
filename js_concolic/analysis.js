@@ -223,6 +223,7 @@ function conlog(...args) {
                     result: newVal,
                 };
             } else if (typeof val === "string") {
+                logs.push("Saw strlit: " + val);
                 if (val.startsWith("!!MAGIC@js_concolic/")) {
                     let pfx_sr = "!!MAGIC@js_concolic/src-range=";
                     if (val.startsWith(pfx_sr)) {
@@ -241,6 +242,7 @@ function conlog(...args) {
                                 .map(key => [key, variable_sorts[key]])
                         );
                         cgiid_map_idents[last_cgiid] = tracked_idents;
+                        logs.push(`Saved identifiers for cgiid ${last_cgiid}`);
                     }
                 }
             }
