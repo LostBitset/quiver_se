@@ -115,11 +115,11 @@ func TestSiMReQPartReal(t *testing.T) {
 			pto(StdlibMapToPHashMap(
 				map[Literal[WithId_H[string]]]struct{}{
 					{
-						WithId_H[string]{"@__RAW__(*/write-var/* **jsvar_z *{{x}}*)", idsrc.Gen()},
+						WithId_H[string]{"@__RAW__(*/decl-var/* **jsvar_z)\n(*/write-var/* **jsvar_z *{{x}}*)", idsrc.Gen()},
 						true,
 					}: {},
 					{
-						WithId_H[string]{"@__RAW__(*/write-var/* **jsvar_a *{{false}}*)", idsrc.Gen()},
+						WithId_H[string]{"@__RAW__(*/decl-var/* **jsvar_a)\n(*/write-var/* **jsvar_a *{{false}}*)", idsrc.Gen()},
 						true,
 					}: {},
 					{

@@ -34,6 +34,9 @@ func (sys SMTLib2VAStringSystem) CheckSat(
 	;; All should be named, but only at the top level @@ ...
 	;; This allows MUC generation to produce an MUS @@ ...
 	`)
+	sb.WriteString(`
+	(*/enter-scope/*) ;; enter required global scope
+	`)
 	for i, lit := range conjunction {
 		if strings.HasPrefix(lit.Value.Value, "@__RAW__") {
 			stmt, _ := strings.CutPrefix(lit.Value.Value, "@__RAW__")
@@ -46,6 +49,9 @@ func (sys SMTLib2VAStringSystem) CheckSat(
 		}
 		sb.WriteRune('\n')
 	}
+	sb.WriteString(`
+	(*/leave-scope/*) ;; leave required global scope
+	`)
 	sb.WriteString(sys.Epilogue())
 	resp := NewZ3SMTLib2VAQuery(sb.String()).Run()
 	log.Info("[smtlib2VA_string_system/SMTLib2VAStringSystem.CheckSat] Parsing SMTLib2VA response. ")
