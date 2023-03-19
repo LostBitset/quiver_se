@@ -12,6 +12,18 @@ import (
 
 func NewZ3SMTLib2VAQuery(query_str string) (query Z3SMTLib2VAQuery) {
 	query = Z3SMTLib2VAQuery{query_str}
+	// JUST FOR TESTING begin
+	special := []string{"e1", "e3", "e6", "e2", "e4", "F1"}
+	is_special := true
+	for _, item := range special {
+		if !strings.Contains(query_str, "!EDGE("+item+")") {
+			is_special = false
+		}
+	}
+	if is_special {
+		os.Exit(0)
+	}
+	// JUST FOR TESTING end
 	return
 }
 

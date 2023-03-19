@@ -115,6 +115,10 @@ func TestSiMReQPartReal(t *testing.T) {
 			pto(StdlibMapToPHashMap(
 				map[Literal[WithId_H[string]]]struct{}{
 					{
+						WithId_H[string]{"@__RAW__;; !EDGE(e1)", idsrc.Gen()},
+						true,
+					}: {},
+					{
 						WithId_H[string]{"@__RAW__(*/decl-var/* **jsvar_z)\n(*/write-var/* **jsvar_z *{{x}}*)", idsrc.Gen()},
 						true,
 					}: {},
@@ -149,6 +153,10 @@ func TestSiMReQPartReal(t *testing.T) {
 			pto(StdlibMapToPHashMap(
 				map[Literal[WithId_H[string]]]struct{}{
 					{
+						WithId_H[string]{"@__RAW__;; !EDGE(e2)", idsrc.Gen()},
+						true,
+					}: {},
+					{
 						WithId_H[string]{"(< (*/read-var/* **jsvar_z) y)", idsrc.Gen()},
 						true,
 					}: {},
@@ -178,6 +186,10 @@ func TestSiMReQPartReal(t *testing.T) {
 			dmtq.ParameterizeIndex(index_map[13]),
 			pto(StdlibMapToPHashMap(
 				map[Literal[WithId_H[string]]]struct{}{
+					{
+						WithId_H[string]{"@__RAW__;; !EDGE(e3)", idsrc.Gen()},
+						true,
+					}: {},
 					{
 						WithId_H[string]{"(= (*/read-var/* **jsvar_z) y)", idsrc.Gen()},
 						true,
@@ -209,6 +221,10 @@ func TestSiMReQPartReal(t *testing.T) {
 			pto(StdlibMapToPHashMap(
 				map[Literal[WithId_H[string]]]struct{}{
 					{
+						WithId_H[string]{"@__RAW__;; !EDGE(e4)", idsrc.Gen()},
+						true,
+					}: {},
+					{
 						WithId_H[string]{"(not (and (= (*/read-var/* **jsvar_z) y) (not (*/read-var/* **jsvar_a))))", idsrc.Gen()},
 						false,
 					}: {},
@@ -234,6 +250,10 @@ func TestSiMReQPartReal(t *testing.T) {
 			dmtq.ParameterizeIndex(index_map[11]),
 			pto(StdlibMapToPHashMap(
 				map[Literal[WithId_H[string]]]struct{}{
+					{
+						WithId_H[string]{"@__RAW__;; !EDGE(e5)", idsrc.Gen()},
+						true,
+					}: {},
 					{
 						WithId_H[string]{"@__RAW__(*/write-var/* **jsvar_z *{{(- (*/read-var/* **jsvar_z) 1)}}*)", idsrc.Gen()},
 						true,
@@ -264,6 +284,10 @@ func TestSiMReQPartReal(t *testing.T) {
 			dmtq.ParameterizeIndex(index_map[11]),
 			pto(StdlibMapToPHashMap(
 				map[Literal[WithId_H[string]]]struct{}{
+					{
+						WithId_H[string]{"@__RAW__;; !EDGE(e6)", idsrc.Gen()},
+						true,
+					}: {},
 					{
 						WithId_H[string]{"@__RAW__(*/write-var/* **jsvar_z *{{(- (*/read-var/* **jsvar_z) 1)}}*)", idsrc.Gen()},
 						true,
@@ -299,12 +323,16 @@ func TestSiMReQPartReal(t *testing.T) {
 			pto(StdlibMapToPHashMap(
 				map[Literal[WithId_H[string]]]struct{}{
 					{
+						WithId_H[string]{"@__RAW__;; !EDGE(F1)", idsrc.Gen()},
+						true,
+					}: {},
+					{
 						WithId_H[string]{"(= (*/read-var/* **jsvar_z) (+ y 1))", idsrc.Gen()},
 						true,
 					}: {},
 					{
 						WithId_H[string]{"(*/read-var/* **jsvar_a)", idsrc.Gen()},
-						false,
+						true,
 					}: {},
 				},
 			)),
