@@ -2,6 +2,8 @@ package main
 
 import (
 	qse "LostBitset/quiver_se/lib"
+	"math"
+	"math/rand"
 
 	"strconv"
 	"strings"
@@ -136,5 +138,37 @@ func (g Generator) SMTFreeFuns() (smt_free_funs []qse.SMTFreeFun[string, string]
 			Ret:  val.sort.String(),
 		}
 	}
+	return
+}
+
+func (g Generator) Generate(sort Sort) (expr string) {
+	expr = g.GenerateAtDepth(
+		sort,
+		int(math.Round(math.Max(
+			0,
+			(rand.NormFloat64()*g.n_depth_stddev)+g.n_depth_mean,
+		))),
+	)
+	return
+}
+
+func (g Generator) GenerateAtDepth(sort Sort, depth int) (expr string) {
+	if depth == 0 {
+		index := rand.Intn(len(g.vals))
+		return g.vals[sort][index].name
+	}
+	index := rand.Intn(len(g.ops))
+	head := g.ops[sort][index]
+	var sb strings.Builder
+	sb.WriteRune('(')
+	sb.WriteString(head.name)
+	for _, sub_sort := range head.args {
+		sb.WriteRune(' ')
+		sb.WriteString(
+			g.GenerateAtDepth(sub_sort, depth-1),
+		)
+	}
+	sb.WriteRune(')')
+	expr = sb.String()
 	return
 }
