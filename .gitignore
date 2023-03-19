@@ -28,32 +28,35 @@ go.work
 pkg/
 pkg/*
 pkg/**/*
+archived-work/pkg/
+archived-work/pkg/*
+archived-work/pkg/**/*
 
 # (Added) Node.js stuff in the function_info/ directory
-function_info/node_modules/
-function_info/node_modules/*
-function_info/node_modules/**/*
+archived-work/function_info/node_modules/
+archived-work/function_info/node_modules/*
+archived-work/function_info/node_modules/**/*
 
 # (ADDED) Node.js stuff in the js_concolic/ directory
-js_concolic/node_modules/
-js_concolic/node_modules/*
-js_concolic/node_modules/**/*
+archived-work/js_concolic/node_modules/
+archived-work/js_concolic/node_modules/*
+archived-work/js_concolic/node_modules/**/*
 
 # (ADDED) Jalangi2 stuff in the js_concolic/ directory
-js_concolic/*_jalangi_.js
-js_concolic/*_jalangi_.json
-js_concolic/**/*_jalangi_.js
-js_concolic/**/*_jalangi_.json
+archived-work/js_concolic/*_jalangi_.js
+archived-work/js_concolic/*_jalangi_.json
+archived-work/js_concolic/**/*_jalangi_.js
+archived-work/js_concolic/**/*_jalangi_.json
 
 # (ADDED) .eidin-run directory
-js_concolic/.eidin-run/
+archived-work/js_concolic/.eidin-run/
 
 # (ADDED) Generated protobuf implementations
-js_concolic/EIDIN/proto_js/
-js_concolic/EIDIN/proto_lib/
+archived-work/js_concolic/EIDIN/proto_js/
+archived-work/js_concolic/EIDIN/proto_lib/
 
 # (ADDED) Binaries
-js_concolic/analyze_bin/analyze_bin
-js_concolic/SMTLib_2VA/bin/bin
-simple_dse_bin/simple_dse_bin
+archived-work/js_concolic/analyze_bin/analyze_bin
+archived-work/js_concolic/SMTLib_2VA/bin/bin
+archived-work/simple_dse_bin/simple_dse_bin
 
