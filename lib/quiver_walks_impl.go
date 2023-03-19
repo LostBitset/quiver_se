@@ -79,7 +79,9 @@ func (intended_node QuiverIntendedNode[N, E, C]) ResolveAsQuiverUpdateDst(q_ptr 
 func (q *Quiver[N, E, C]) ApplyUpdate(update QuiverUpdate[N, E, C]) (src, dst QuiverIndex) {
 	src = update.Src
 	dst = update.Dst.ResolveAsQuiverUpdateDst(q)
-	q.InsertEdge(src, dst, update.Edge)
+	if update.Edge != nil {
+		q.InsertEdge(src, dst, *update.Edge)
+	}
 	log.Info("[quiver_walks/Quiver.ApplyUpdate] Updated quiver. ")
 	return
 }
@@ -91,8 +93,11 @@ func (q *Quiver[N, E, C]) ApplyUpdateAndEmitWalks(
 	dst_final QuiverIndex,
 ) {
 	update_src, update_dst := q.ApplyUpdate(update)
+	if update.Edge == nil {
+		return
+	}
 	start := start_unresolved.ResolveAsQuiverUpdateDst(q)
-	update_walk_chunk := []E{update.Edge}
+	update_walk_chunk := []E{*update.Edge}
 	walk_prefixes := make(chan []E)
 	walk_suffixes := make(chan []E)
 	go func() {

@@ -24,7 +24,7 @@ type QuiverWalk[N any, E any] struct {
 type QuiverUpdate[N any, E any, C ReversibleAssoc[E, QuiverIndex]] struct {
 	Src  QuiverIndex
 	Dst  QuiverUpdateDst[N, E, C]
-	Edge E
+	Edge *E
 }
 
 // A non-trivial QuiverUpdateDst - a node itself that has to be added to the quiver

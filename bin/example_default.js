@@ -1,5 +1,5 @@
-var sym__x = 0;
-var sym__y = 0;
+var sym__x = 1;
+var sym__y = 3;
 
 var z = sym__x;
 var a = false;

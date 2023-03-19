@@ -20,7 +20,7 @@ func TestQuiverUpdates(t *testing.T) {
 	update := QuiverUpdate[int, int, *SimpleReversibleAssoc[int, QuiverIndex]]{
 		n1,
 		q.ParameterizeIndex(n3),
-		99,
+		pto(99),
 	}
 	q.ApplyUpdate(update)
 	assert.ElementsMatch(
@@ -65,7 +65,7 @@ func TestQuiverUpdatesInduceCycle(t *testing.T) {
 	update := QuiverUpdate[int, int, *SimpleReversibleAssoc[int, QuiverIndex]]{
 		n3,
 		q.ParameterizeIndex(n1),
-		88,
+		pto(88),
 	}
 	q.ApplyUpdate(update)
 	assert.ElementsMatch(
@@ -114,7 +114,7 @@ func TestQuiverWalks(t *testing.T) {
 	update := QuiverUpdate[int, int, *SimpleReversibleAssoc[int, QuiverIndex]]{
 		n3,
 		q.ParameterizeIndex(n1),
-		88,
+		pto(88),
 	}
 	walks_chan := make(chan QuiverWalk[int, int])
 	q.ApplyUpdateAndEmitWalks(

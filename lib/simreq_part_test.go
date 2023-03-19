@@ -30,7 +30,7 @@ func TestSiMReQPart(t *testing.T) {
 				]{
 					index,
 					dmtq.ParameterizeIndex(fail_node),
-					StdlibMapToPHashMap(
+					pto(StdlibMapToPHashMap(
 						map[Literal[WithId_H[string]]]struct{}{
 							{
 								WithId_H[string]{"(= a b)", idsrc.Gen()},
@@ -41,7 +41,7 @@ func TestSiMReQPart(t *testing.T) {
 								false,
 							}: {},
 						},
-					),
+					)),
 				},
 				[]SMTFreeFun[string, string]{
 					{"a", []string{}, "Int"},
@@ -61,7 +61,7 @@ func TestSiMReQPart(t *testing.T) {
 		]{
 			top_node,
 			intended_node,
-			StdlibMapToPHashMap(
+			pto(StdlibMapToPHashMap(
 				map[Literal[WithId_H[string]]]struct{}{
 					{
 						WithId_H[string]{"(= a 1)", idsrc.Gen()},
@@ -72,7 +72,7 @@ func TestSiMReQPart(t *testing.T) {
 						false,
 					}: {},
 				},
-			),
+			)),
 		},
 		[]SMTFreeFun[string, string]{
 			{"a", []string{}, "Int"},

@@ -6,6 +6,12 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func pto[T any](x T) (p *T) {
+	x_slot := x
+	p = &x_slot
+	return
+}
+
 func TestDMTQWarden(t *testing.T) {
 	in_updates := make(
 		chan Augmented[
@@ -45,22 +51,22 @@ func TestDMTQWarden(t *testing.T) {
 			uint32_H{1},
 			&update_node_dmt,
 		),
-		StdlibMapToPHashMap(
+		pto(StdlibMapToPHashMap(
 			map[Literal[uint32_H]]struct{}{
 				{uint32_H{46}, false}: {},
 			},
-		),
+		)),
 	}
 	update2 := QuiverUpdate[
 		uint32_H, PHashMap[Literal[uint32_H], struct{}], *DMT[uint32_H, QuiverIndex],
 	]{
 		top_node,
 		dmtq.ParameterizeIndex(fail_node),
-		StdlibMapToPHashMap(
+		pto(StdlibMapToPHashMap(
 			map[Literal[uint32_H]]struct{}{
 				{uint32_H{47}, false}: {},
 			},
-		),
+		)),
 	}
 	in_updates <- NewAugmentedSimple(update1)
 	in_updates <- NewAugmentedSimple(update2)

@@ -4,8 +4,6 @@ var sym__y = "Y:Real";
 var z = sym__x;
 var a = false;
 
-
-
 function onFirst() {
     if (z === sym__y + 1 && a) {
         throw 'Stickerbrush? Really?';
