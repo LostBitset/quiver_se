@@ -37,7 +37,7 @@ func TestDMTQWarden(t *testing.T) {
 		out_walks:  out_walks,
 		walk_src:   top_node,
 		walk_dst:   fail_node,
-		dmtq:       dmtq,
+		dmtq:       &dmtq,
 	}
 	warden_config.Start()
 	update_node_dmt := NewDMT[uint32_H, QuiverIndex]()
