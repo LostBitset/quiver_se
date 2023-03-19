@@ -1,0 +1,6 @@
+{
+	"type": "module",
+	"devDependencies": {
+		"seafox": "^1.7.1"
+	}
+}

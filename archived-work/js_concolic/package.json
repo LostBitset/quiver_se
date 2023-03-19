@@ -1,0 +1,11 @@
+{
+	"type": "commonjs",
+	"devDependencies": {
+		"jalangi2": "^0.2.6"
+	},
+	"dependencies": {
+		"protobufjs": "~7.2.2",
+		"protobufjs-cli": "^1.1.1",
+		"uuid": "^9.0.0"
+	}
+}
