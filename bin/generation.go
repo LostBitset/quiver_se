@@ -4,8 +4,9 @@ type Generator struct {
 	n_callbacks    int
 	n_depth_mean   float64
 	n_depth_stddev float64
-	n_operators    []Op
-	n_values       []Val
+	ops            map[Sort][]Op
+	vals           map[Sort][]Val
+	next_var_id    int
 }
 
 type Op struct {
