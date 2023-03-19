@@ -1,7 +1,10 @@
 package main
 
 import (
+	qse "LostBitset/quiver_se/lib"
+
 	"strconv"
+	"strings"
 )
 
 func GetStandardItemLists() (ops []Op, vals []Val) {
@@ -77,6 +80,21 @@ func (g Generator) Verify() {
 	}
 }
 
+func (sort Sort) String() (s string) {
+	switch sort {
+	case RealSort:
+		s = "Real"
+		return
+	case BoolSort:
+		s = "Bool"
+		return
+	default:
+		panic("Unknown sort in Sort.String: #" + strconv.Itoa(int(uint8(sort))))
+	}
+}
+
+const VARIABLE_PREFIX = "var_"
+
 func (g Generator) AddVariables(n int, sort_distr DDistr[Sort]) {
 	for i := 0; i < n; i++ {
 		g.AddVariable(sort_distr)
@@ -87,11 +105,36 @@ func (g Generator) AddVariable(sort_distr DDistr[Sort]) {
 	sort := sort_distr.Sample()
 	id := g.next_var_id
 	g.next_var_id++
-	val := Val{"var_" + strconv.Itoa(id), sort}
+	val := Val{VARIABLE_PREFIX + strconv.Itoa(id), sort}
 	if _, ok := g.vals[sort]; !ok {
 		g.vals[sort] = make([]Val, 1)
 		g.vals[sort][0] = val
 	} else {
 		g.vals[sort] = append(g.vals[sort], val)
 	}
+}
+
+func (g Generator) Variables() (vars []Val) {
+	vars = make([]Val, 0)
+	for _, val_subset := range g.vals {
+		for _, val := range val_subset {
+			if strings.HasPrefix(val.name, VARIABLE_PREFIX) {
+				vars = append(vars, val)
+			}
+		}
+	}
+	return
+}
+
+func (g Generator) SMTFreeFuns() (smt_free_funs []qse.SMTFreeFun[string, string]) {
+	vars := g.Variables()
+	smt_free_funs = make([]qse.SMTFreeFun[string, string], len(vars))
+	for i, val := range vars {
+		smt_free_funs[i] = qse.SMTFreeFun[string, string]{
+			Name: val.name,
+			Args: []string{},
+			Ret:  val.sort.String(),
+		}
+	}
+	return
 }
