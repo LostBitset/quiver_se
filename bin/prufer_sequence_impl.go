@@ -5,7 +5,7 @@ func BakePruferSequence(sequence []int) (ps PruferSequence) {
 	n := len(sequence)
 	occurences := make([]int, n+1)
 	for i := 0; i < n+1; i++ {
-		occurences[i] = 0
+		occurences[i] = 1
 	}
 	for _, item := range sequence {
 		occurences[item] += 1
@@ -14,4 +14,6 @@ func BakePruferSequence(sequence []int) (ps PruferSequence) {
 	return
 }
 
-func (ps PruferSequence) ToTree()
+func (ps PruferSequence) ToTree() (tree SimpleTree) {
+
+}
