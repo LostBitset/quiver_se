@@ -14,7 +14,6 @@ func GetStandardItemLists() (ops []Op, vals []Val) {
 		{"+", []Sort{RealSort, RealSort}, RealSort},
 		{"-", []Sort{RealSort, RealSort}, RealSort},
 		{"and", []Sort{BoolSort, BoolSort}, BoolSort},
-		{"or", []Sort{BoolSort, BoolSort}, BoolSort},
 		{"not", []Sort{BoolSort}, BoolSort},
 		{"=", []Sort{RealSort, RealSort}, BoolSort},
 		{"<", []Sort{RealSort, RealSort}, BoolSort},
@@ -22,7 +21,7 @@ func GetStandardItemLists() (ops []Op, vals []Val) {
 		{"ite", []Sort{BoolSort, RealSort, RealSort}, RealSort}, // Generic but it doesn't matter
 	}
 	vals = make([]Val, 0)
-	for i := -10; i <= 10; i++ {
+	for i := -2; i <= 3; i++ {
 		vals = append(vals, Val{strconv.Itoa(i), RealSort})
 	}
 	vals = append(vals, []Val{
@@ -65,7 +64,7 @@ func GetStandardItems() (ops map[Sort][]Op, vals map[Sort][]Val) {
 	return
 }
 
-func (g Generator) Verify() {
+func (g ConstraintGenerator) Verify() {
 	for k, v := range g.ops {
 		for _, i := range v {
 			if k != i.ret {
@@ -97,26 +96,36 @@ func (sort Sort) String() (s string) {
 
 const VARIABLE_PREFIX = "var_"
 
-func (g Generator) AddVariables(n int, sort_distr DDistr[Sort]) {
+func (g ConstraintGenerator) AddVariables(n int, sort_distr DDistr[Sort], p_var float64) {
+	prev := len(g.vals)
+	// p_var = rep*n / (prev + rep*n)
+	// p_var*prev + p_var*rep*n = rep*n
+	// p_var*prev = (1 - p_var)*rep*n
+	// p_var*prev / (1 - p_var)*n = rep
+	rep := int(math.Round(
+		(p_var * float64(prev)) / ((1 - p_var) * float64(n)),
+	))
 	for i := 0; i < n; i++ {
-		g.AddVariable(sort_distr)
+		g.AddVariable(sort_distr, rep)
 	}
 }
 
-func (g Generator) AddVariable(sort_distr DDistr[Sort]) {
+func (g ConstraintGenerator) AddVariable(sort_distr DDistr[Sort], rep int) {
 	sort := sort_distr.Sample()
-	id := g.next_var_id
-	g.next_var_id++
+	id := *g.next_var_id
+	*g.next_var_id++
 	val := Val{VARIABLE_PREFIX + strconv.Itoa(id), sort}
-	if _, ok := g.vals[sort]; !ok {
-		g.vals[sort] = make([]Val, 1)
-		g.vals[sort][0] = val
-	} else {
-		g.vals[sort] = append(g.vals[sort], val)
+	for i := 0; i < rep; i++ {
+		if _, ok := g.vals[sort]; !ok {
+			g.vals[sort] = make([]Val, 1)
+			g.vals[sort][0] = val
+		} else {
+			g.vals[sort] = append(g.vals[sort], val)
+		}
 	}
 }
 
-func (g Generator) Variables() (vars []Val) {
+func (g ConstraintGenerator) Variables() (vars []Val) {
 	vars = make([]Val, 0)
 	for _, val_subset := range g.vals {
 		for _, val := range val_subset {
@@ -128,7 +137,7 @@ func (g Generator) Variables() (vars []Val) {
 	return
 }
 
-func (g Generator) SMTFreeFuns() (smt_free_funs []qse.SMTFreeFun[string, string]) {
+func (g ConstraintGenerator) SMTFreeFuns() (smt_free_funs []qse.SMTFreeFun[string, string]) {
 	vars := g.Variables()
 	smt_free_funs = make([]qse.SMTFreeFun[string, string], len(vars))
 	for i, val := range vars {
@@ -141,7 +150,7 @@ func (g Generator) SMTFreeFuns() (smt_free_funs []qse.SMTFreeFun[string, string]
 	return
 }
 
-func (g Generator) Generate(sort Sort) (expr string) {
+func (g ConstraintGenerator) Generate(sort Sort) (expr string) {
 	expr = g.GenerateAtDepth(
 		sort,
 		int(math.Round(math.Max(
@@ -152,12 +161,12 @@ func (g Generator) Generate(sort Sort) (expr string) {
 	return
 }
 
-func (g Generator) GenerateAtDepth(sort Sort, depth int) (expr string) {
+func (g ConstraintGenerator) GenerateAtDepth(sort Sort, depth int) (expr string) {
 	if depth == 0 {
-		index := rand.Intn(len(g.vals))
+		index := rand.Intn(len(g.vals[sort]))
 		return g.vals[sort][index].name
 	}
-	index := rand.Intn(len(g.ops))
+	index := rand.Intn(len(g.ops[sort]))
 	head := g.ops[sort][index]
 	var sb strings.Builder
 	sb.WriteRune('(')

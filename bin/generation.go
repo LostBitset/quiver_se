@@ -1,12 +1,11 @@
 package main
 
-type Generator struct {
-	n_callbacks    int
+type ConstraintGenerator struct {
 	n_depth_mean   float64
 	n_depth_stddev float64
 	ops            map[Sort][]Op
 	vals           map[Sort][]Val
-	next_var_id    int
+	next_var_id    *int
 }
 
 type Op struct {
