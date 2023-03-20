@@ -26,6 +26,8 @@ func main() {
 		test := gtor.Generate(BoolSort)
 		fmt.Printf(strconv.Itoa(i)+": %#+v\n", test)
 	}
-	tree := PruferRandomTree(5)
-	fmt.Println(tree)
+	seq := RandomPruferSequence(5)
+	fmt.Printf("seq: %#+v\n", seq.sequence)
+	tree := seq.ToTree()
+	fmt.Printf("size: %#+v\n", tree.ComputeSize())
 }

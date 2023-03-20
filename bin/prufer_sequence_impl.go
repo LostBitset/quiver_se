@@ -113,3 +113,11 @@ func PruferRandomTree(n int) (tree SimpleTree) {
 	tree = ps.ToTree()
 	return
 }
+
+func (tree SimpleTree) ComputeSize() (size int) {
+	size = 1
+	for _, child := range tree.children {
+		size += child.ComputeSize()
+	}
+	return
+}
