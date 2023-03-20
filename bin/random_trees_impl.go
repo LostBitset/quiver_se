@@ -54,7 +54,11 @@ func PruferEvenFinalRandomTree(n_nonleaf int, n_leaves int) (tree SimpleTree) {
 		panic("Unreachable. Should have generated a tree of a different size.")
 	}
 	if tree.ComputeLeafCount() != n_leaves {
-		fmt.Printf("Incorrrectly generated a tree with %d leaves.\n", tree.ComputeLeafCount())
+		fmt.Printf(
+			"Incorrrectly generated a tree with %d leaves. Should have had %d leaves.\n",
+			tree.ComputeLeafCount(),
+			n_leaves,
+		)
 		panic("Unreachable. Should have generated a tree with n_leaves leaves, but did not.")
 	}
 	return
