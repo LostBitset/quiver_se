@@ -97,7 +97,7 @@ func (tree *SimpleTree) CleanUpNonNegativeSubtrees() (destroy bool) {
 	} else {
 		offset := 0
 		for _, child_index := range children_to_destroy {
-			qse.SpliceOutReclaim(&children_to_destroy, child_index-offset)
+			qse.SpliceOutReclaim(&tree.children, child_index-offset)
 			offset += 1
 		}
 	}
