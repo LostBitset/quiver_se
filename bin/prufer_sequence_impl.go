@@ -46,10 +46,13 @@ addFinalNodeLoop:
 		}
 	}
 	al[final_src] = append(al[final_src], final_dst)
+	// Convert to a tree
+	// We know that the indegree is always one
+	// Except for node 0
 	tree = SimpleTreeFromAdjList(al, len(degrees))
 	return
 }
 
 func SimpleTreeFromAdjList(al map[int][]int, n int) (tree SimpleTree) {
-	// TODO
+	return
 }
