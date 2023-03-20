@@ -106,3 +106,10 @@ func RandomPruferSequenceElement(n int) (elem int) {
 	elem = int(math.Floor(float_value))
 	return
 }
+
+// Generate a random tree as defined by a random Prüfer Sequence
+func PruferRandomTree(n int) (tree SimpleTree) {
+	ps := RandomPruferSequence(n)
+	tree = ps.ToTree()
+	return
+}
