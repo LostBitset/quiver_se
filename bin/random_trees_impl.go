@@ -72,9 +72,9 @@ func (tree *SimpleTree) CleanUpNonNegativeSubtrees() (destroy bool) {
 	if len(tree.children) == 0 {
 		if tree.id < 0 {
 			// Negative leaf case
-			destroy = true
 			return
 		} else {
+			destroy = true
 			// Nonnegative leaf case
 			return
 		}
