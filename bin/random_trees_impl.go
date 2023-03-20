@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	qse "LostBitset/quiver_se/lib"
+	"fmt"
+)
 
 func (tree *SimpleTree) ComputeLeafReferences() (leaf_refs []*SimpleTree) {
 	if len(tree.children) == 0 {
@@ -43,8 +46,15 @@ func PruferEvenFinalRandomTree(n_nonleaf int, n_leaves int) (tree SimpleTree) {
 			}
 			actual_leaves[j] = &backing_leaf
 		}
-		fmt.Printf("append count: %#+v\n", len(actual_leaves))
 		(*leaf_ref).children = append((*leaf_ref).children, actual_leaves...)
+	}
+	must_destroy_root := tree.CleanUpNonNegativeSubtrees()
+	if must_destroy_root {
+		if n_leaves == 0 {
+			panic("Cannot generate a tree with no leaves. ")
+		} else {
+			panic("Unreachable. Was forced to generate a tree with no leaves. ")
+		}
 	}
 	if tree.ComputeSize() != (n_nonleaf + n_leaves) {
 		fmt.Printf(
@@ -61,6 +71,35 @@ func PruferEvenFinalRandomTree(n_nonleaf int, n_leaves int) (tree SimpleTree) {
 			n_leaves,
 		)
 		panic("Unreachable. Should have generated a tree with n_leaves leaves, but did not.")
+	}
+	return
+}
+
+func (tree SimpleTree) CleanUpNonNegativeSubtrees() (destroy bool) {
+	destroy = false
+	if tree.id >= 0 {
+		// Nonnegative case
+		return
+	}
+	// Negative case
+	children_to_destroy := make([]int, 0)
+	destroy_all_children := true
+	for i, child := range tree.children {
+		destroy_child := child.CleanUpNonNegativeSubtrees()
+		if destroy_child {
+			children_to_destroy = append(children_to_destroy, i)
+		} else {
+			destroy_all_children = false
+		}
+	}
+	if destroy_all_children {
+		destroy = true
+	} else {
+		offset := 0
+		for _, child_index := range children_to_destroy {
+			qse.SpliceOutReclaim(&children_to_destroy, child_index-offset)
+			offset += 1
+		}
 	}
 	return
 }
