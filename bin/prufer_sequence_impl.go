@@ -48,12 +48,17 @@ func (ps PruferSequence) ToTree() (tree SimpleTree) {
 	final_src, final_dst := -1, -1
 addFinalNodeLoop:
 	for node := range degrees {
-		if degrees[node] == 0 {
-			final_src = node
-		} else {
-			final_dst = node
-			break addFinalNodeLoop
+		if degrees[node] == 1 {
+			if final_src == -1 {
+				final_src = node
+			} else {
+				final_dst = node
+				break addFinalNodeLoop
+			}
 		}
+	}
+	if (final_src == -1) || (final_dst == -1) {
+		panic("Unreachable. There should have been two nodes with degree one at this stage.")
 	}
 	al[final_src] = append(al[final_src], final_dst)
 	observed_indegrees[final_dst] += 1
@@ -69,7 +74,7 @@ findRootNodeByIndegreeLoop:
 		}
 	}
 	if root_node == -1 {
-		panic("Something went wrong. No root node found for what should have been a tree graph. ")
+		panic("Unreachable. No root node found for what should have been a tree graph. ")
 	}
 	tree = SimpleTreeFromAdjList(al, root_node)
 	return
@@ -111,6 +116,9 @@ func RandomPruferSequenceElement(n int) (elem int) {
 func PruferRandomTree(n int) (tree SimpleTree) {
 	ps := RandomPruferSequence(n)
 	tree = ps.ToTree()
+	if tree.ComputeSize() != (n + 2) {
+		panic("Unreachable. Should have generated a tree of size n+2 but did not. ")
+	}
 	return
 }
 
