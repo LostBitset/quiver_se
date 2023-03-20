@@ -75,7 +75,7 @@ func PruferEvenFinalRandomTree(n_nonleaf int, n_leaves int) (tree SimpleTree) {
 	return
 }
 
-func (tree SimpleTree) CleanUpNonNegativeSubtrees() (destroy bool) {
+func (tree *SimpleTree) CleanUpNonNegativeSubtrees() (destroy bool) {
 	destroy = false
 	if tree.id >= 0 {
 		// Nonnegative case
