@@ -43,6 +43,7 @@ func PruferEvenFinalRandomTree(n_nonleaf int, n_leaves int) (tree SimpleTree) {
 			}
 			actual_leaves[j] = &backing_leaf
 		}
+		fmt.Printf("append count: %#+v\n", len(actual_leaves))
 		(*leaf_ref).children = append((*leaf_ref).children, actual_leaves...)
 	}
 	if tree.ComputeSize() != (n_nonleaf + n_leaves) {
