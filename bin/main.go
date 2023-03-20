@@ -26,6 +26,7 @@ func main() {
 		test := gtor.Generate(BoolSort)
 		fmt.Printf(strconv.Itoa(i)+": %#+v\n", test)
 	}
-	ps := BakePruferSequence([]int{3, 4, 1, 7})
-	ps.ToTree()
+	ps := BakePruferSequence([]int{3, 4, 1, 7, 2})
+	tree := ps.ToTree()
+	fmt.Println(tree)
 }

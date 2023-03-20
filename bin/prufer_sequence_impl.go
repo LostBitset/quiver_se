@@ -3,8 +3,8 @@ package main
 func BakePruferSequence(sequence []int) (ps PruferSequence) {
 	ps.sequence = sequence
 	n := len(sequence)
-	degrees := make([]int, n+1)
-	for i := 0; i < n+1; i++ {
+	degrees := make([]int, n+2)
+	for i := 0; i < len(degrees); i++ {
 		degrees[i] = 1
 	}
 	for _, item := range sequence {
@@ -17,6 +17,10 @@ func BakePruferSequence(sequence []int) (ps PruferSequence) {
 func (ps PruferSequence) ToTree() (tree SimpleTree) {
 	degrees := make([]int, len(ps.degrees))
 	copy(degrees, ps.degrees)
+	observed_indegrees := make(map[int]int)
+	for node := range degrees {
+		observed_indegrees[node] = 0
+	}
 	al := make(map[int][]int) // Adjacency List
 	for node := range degrees {
 		al[node] = make([]int, 0)
@@ -28,6 +32,7 @@ func (ps PruferSequence) ToTree() (tree SimpleTree) {
 		for dst_node, degree := range degrees {
 			if degree == 1 {
 				al[src_node] = append(al[src_node], dst_node)
+				observed_indegrees[dst_node] += 1
 				degrees[src_node] -= 1
 				degrees[dst_node] -= 1
 				break findDestinationNodeLoop
@@ -46,13 +51,35 @@ addFinalNodeLoop:
 		}
 	}
 	al[final_src] = append(al[final_src], final_dst)
-	// Convert to a tree
+	observed_indegrees[final_dst] += 1
+	// Find the root node
 	// We know that the indegree is always one
-	// Except for node 0
-	tree = SimpleTreeFromAdjList(al, len(degrees))
+	// Except for the root node with indegree zero
+	root_node := -1
+findRootNodeByIndegreeLoop:
+	for node := range degrees {
+		if observed_indegrees[node] == 0 {
+			root_node = node
+			break findRootNodeByIndegreeLoop
+		}
+	}
+	if root_node == -1 {
+		panic("Something went wrong. No root node found for what should have been a tree graph. ")
+	}
+	tree = SimpleTreeFromAdjList(al, root_node)
 	return
 }
 
-func SimpleTreeFromAdjList(al map[int][]int, n int) (tree SimpleTree) {
+func SimpleTreeFromAdjList(al map[int][]int, root int) (tree SimpleTree) {
+	outneighbors := al[root]
+	children := make([]*SimpleTree, len(outneighbors))
+	for i, outneighbor := range outneighbors {
+		backing_subtree := SimpleTreeFromAdjList(al, outneighbor)
+		children[i] = &backing_subtree
+	}
+	tree = SimpleTree{
+		id:       root,
+		children: children,
+	}
 	return
 }

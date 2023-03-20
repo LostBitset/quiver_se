@@ -6,7 +6,6 @@ type PruferSequence struct {
 }
 
 type SimpleTree struct {
-	id    int
-	left  *SimpleTree
-	right *SimpleTree
+	id       int
+	children []*SimpleTree
 }
