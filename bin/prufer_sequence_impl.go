@@ -1,5 +1,10 @@
 package main
 
+import (
+	"math"
+	"math/rand"
+)
+
 func BakePruferSequence(sequence []int) (ps PruferSequence) {
 	ps.sequence = sequence
 	n := len(sequence)
@@ -81,5 +86,23 @@ func SimpleTreeFromAdjList(al map[int][]int, root int) (tree SimpleTree) {
 		id:       root,
 		children: children,
 	}
+	return
+}
+
+func RandomPruferSequence(n int) (ps PruferSequence) {
+	// A sequence of length n containing integers in the range [1, n+2]
+	sequence := make([]int, n)
+	for i := range sequence {
+		sequence[i] = RandomPruferSequenceElement(n)
+	}
+	ps = BakePruferSequence(sequence)
+	return
+}
+
+func RandomPruferSequenceElement(n int) (elem int) {
+	in_unit_interval := rand.Float64()
+	in_shifted_range := in_unit_interval * float64(n+2)
+	float_value := in_shifted_range + 1
+	elem = int(math.Floor(float_value))
 	return
 }
