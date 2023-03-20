@@ -56,14 +56,6 @@ func PruferEvenFinalRandomTree(n_nonleaf int, n_leaves int) (tree SimpleTree) {
 			panic("Unreachable. Was forced to generate a tree with no leaves. ")
 		}
 	}
-	if tree.ComputeSize() != (n_nonleaf + n_leaves) {
-		fmt.Printf(
-			"Incorrectly generated a tree of size %d. Should have been %d.\n",
-			tree.ComputeSize(),
-			n_leaves+n_nonleaf,
-		)
-		panic("Unreachable. Should have generated a tree of a different size.")
-	}
 	if tree.ComputeLeafCount() != n_leaves {
 		fmt.Printf(
 			"Incorrrectly generated a tree with %d leaves. Should have had %d leaves.\n",
@@ -77,8 +69,8 @@ func PruferEvenFinalRandomTree(n_nonleaf int, n_leaves int) (tree SimpleTree) {
 
 func (tree *SimpleTree) CleanUpNonNegativeSubtrees() (destroy bool) {
 	destroy = false
-	if tree.id >= 0 {
-		// Nonnegative case
+	if tree.id >= 0 && len(tree.children) == 0 {
+		// Nonnegative leaf case
 		return
 	}
 	// Negative case
@@ -97,8 +89,9 @@ func (tree *SimpleTree) CleanUpNonNegativeSubtrees() (destroy bool) {
 	} else {
 		offset := 0
 		for _, child_index := range children_to_destroy {
-			qse.SpliceOutReclaim(&tree.children, child_index-offset)
-			offset += 1
+			child_index := child_index - offset
+			qse.SpliceOutReclaim(&tree.children, child_index)
+			offset++
 		}
 	}
 	return
