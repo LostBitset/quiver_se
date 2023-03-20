@@ -2,10 +2,10 @@ package main
 
 import "fmt"
 
-func (tree SimpleTree) ComputeLeafReferences() (leaf_refs []*SimpleTree) {
+func (tree *SimpleTree) ComputeLeafReferences() (leaf_refs []*SimpleTree) {
 	if len(tree.children) == 0 {
 		backing_current := tree
-		leaf_refs = []*SimpleTree{&backing_current}
+		leaf_refs = []*SimpleTree{backing_current}
 	} else {
 		leaf_refs = make([]*SimpleTree, 0)
 		for _, child := range tree.children {
@@ -27,7 +27,6 @@ func PruferEvenFinalRandomTree(n_nonleaf int, n_leaves int) (tree SimpleTree) {
 	base_former_leaf_degree := n_leaves / period
 	n_addl_leaf_degree := n_leaves % period
 	for i, leaf_ref := range leaf_refs {
-		fmt.Println(leaf_ref)
 		leaf_degree := base_former_leaf_degree
 		if i < n_addl_leaf_degree {
 			leaf_degree += 1
