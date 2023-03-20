@@ -23,7 +23,8 @@ func TestConstraintGeneration(t *testing.T) {
 	}
 	var_sorts_distr := BakeDDistr[Sort](var_sorts)
 	gtor.AddVariables(4, var_sorts_distr, 0.75)
-	for i := 0; i < 1000; i++ {
+	fmt.Printf("Generating %d random SMTLib-v2 constraints.\n", TEST_ITERATIONS)
+	for i := 0; i < TEST_ITERATIONS; i++ {
 		test := gtor.Generate(BoolSort)
 		fmt.Printf(strconv.Itoa(i)+": %#+v\n", test)
 	}
