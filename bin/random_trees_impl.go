@@ -1,5 +1,7 @@
 package main
 
+import "fmt"
+
 func (tree SimpleTree) ComputeLeafReferences() (leaf_refs []*SimpleTree) {
 	if len(tree.children) == 0 {
 		backing_current := tree
@@ -44,9 +46,15 @@ func PruferEvenFinalRandomTree(n_nonleaf int, n_leaves int) (tree SimpleTree) {
 		(*leaf_ref).children = append((*leaf_ref).children, actual_leaves...)
 	}
 	if tree.ComputeSize() != (n_nonleaf + n_leaves) {
+		fmt.Printf(
+			"Incorrectly generated a tree of size %d. Should have been %d.\n",
+			tree.ComputeSize(),
+			n_leaves+n_nonleaf,
+		)
 		panic("Unreachable. Should have generated a tree of a different size.")
 	}
 	if tree.ComputeLeafCount() != n_leaves {
+		fmt.Printf("Incorrrectly generated a tree with %d leaves.\n", tree.ComputeLeafCount())
 		panic("Unreachable. Should have generated a tree with n_leaves leaves, but did not.")
 	}
 	return
