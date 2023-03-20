@@ -8,8 +8,8 @@ import (
 func main() {
 	ops, vals := GetStandardItems()
 	gtor := ConstraintGenerator{
-		n_depth_mean:   3.0,
-		n_depth_stddev: 1.0,
+		n_depth_mean:   2.0,
+		n_depth_stddev: 1.5,
 		ops:            ops,
 		vals:           vals,
 		next_var_id:    pto(0),
