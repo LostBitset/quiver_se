@@ -8,7 +8,7 @@ func BakePruferSequence(sequence []int) (ps PruferSequence) {
 		degrees[i] = 1
 	}
 	for _, item := range sequence {
-		degrees[item] += 1
+		degrees[item-1] += 1
 	}
 	ps.degrees = degrees
 	return
@@ -23,7 +23,7 @@ func (ps PruferSequence) ToTree() (tree SimpleTree) {
 	}
 	// Actually build up the tree graph
 	for _, item := range ps.sequence {
-		src_node := item + 1
+		src_node := item - 1
 	findDestinationNodeLoop:
 		for dst_node, degree := range degrees {
 			if degree == 1 {
