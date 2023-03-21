@@ -14,8 +14,8 @@ type Microprogram struct {
 }
 
 type MicroprogramTransition struct {
-	dst_state  MicroprogramState
-	constraint string
+	dst_state   MicroprogramState
+	constraints []string
 }
 
 type MicroprogramGenerator struct {
