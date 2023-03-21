@@ -1,5 +1,6 @@
 package main
 
+/*
 import qse "LostBitset/quiver_se/lib"
 
 func (uprgm Microprogram) ExecuteGetPathCondition(model string) (pc []string) {
@@ -44,3 +45,4 @@ func (uprgm Microprogram) ModelSatisfiesConstraints(model string, constraints []
 	sys := qse.SMTLibv2StringSystem{idsrc}
 	sys.CheckSat(complete_query)
 }
+*/

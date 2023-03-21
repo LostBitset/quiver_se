@@ -67,12 +67,13 @@ func (tree SimpleTree) AsMicroprogramTransitionsWithPrefix(
 			left_constraint_prefix,
 			[]string{},
 		)...)
-		right_constraint := "(not " + left_constraint + ")"
+		right_constraint := InvertedConstraintForMicroprogram(left_constraint)
 		right_constraint_prefix := make([]string, constraint_size)
 		copy(right_constraint_prefix, constraint_prefix)
 		right_constraint_prefix[len(constraint_prefix)] = right_constraint
 		for i, invertible_prefix_constraint := range invertible_constraint_prefix {
-			left_constraint_prefix[constraint_size-1-i] = "(not " + invertible_prefix_constraint + ")"
+			inverted_constraint := InvertedConstraintForMicroprogram(invertible_prefix_constraint)
+			left_constraint_prefix[constraint_size-1-i] = inverted_constraint
 		}
 		transitions = append(transitions, right_child.AsMicroprogramTransitionsWithPrefix(
 			dst_states,
@@ -83,5 +84,10 @@ func (tree SimpleTree) AsMicroprogramTransitionsWithPrefix(
 	} else {
 		panic("Invalid. Maximum degree must be 2. ")
 	}
+	return
+}
+
+func InvertedConstraintForMicroprogram(orig string) (inverted_form string) {
+	inverted_form = "@__INVERTED__" + orig
 	return
 }
