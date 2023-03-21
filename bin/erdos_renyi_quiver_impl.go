@@ -46,3 +46,8 @@ func ErdosRenyiQuiverGivenEdges(n int, p float64, avg_ne int) (al SimpleQuiverAd
 	al = ErdosRenyiQuiver(n, p, r)
 	return
 }
+
+func (sqal *SimpleQuiverAdjList) InsertEdge(src int, dst int) {
+	sqal.adj_list = append(sqal.adj_list, SimpleEdgeDesc{src, dst})
+	return
+}
