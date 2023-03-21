@@ -84,3 +84,24 @@ func MicroprogramConstraintToIdLiteral(
 	id_literal = qse.IdLiteral[string](id_literal_raw)
 	return
 }
+
+func (cgen ConstraintGenerator) UniformAssignmentOfSMTFreeFuns(
+	sort_values map[string]string,
+) (
+	model string,
+) {
+	var sb strings.Builder
+	for _, smt_free_fun := range cgen.SMTFreeFuns() {
+		if len(smt_free_fun.Args) != 0 {
+			panic("Invalid. Cannot generate a uniform assignment of parametric SMT funs.")
+		}
+		sb.WriteString(
+			smt_free_fun.DefinitionString(
+				sort_values[smt_free_fun.Ret],
+			),
+		)
+		sb.WriteRune('\n')
+	}
+	model = sb.String()
+	return
+}
