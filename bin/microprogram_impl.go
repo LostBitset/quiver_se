@@ -75,7 +75,7 @@ buildUpUprgmTransitionsLoop:
 		top_state:     top_state,
 		fail_state:    failure_state,
 		transitions:   uprgm_transitions,
-		smt_free_funs: gen.smt_free_funs,
+		smt_free_funs: gen.constraintgen.SMTFreeFuns(),
 	}
 	return
 }

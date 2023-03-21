@@ -1,7 +1,5 @@
 package main
 
-import qse "LostBitset/quiver_se/lib"
-
 func BuildTestingMicroprogramGenerator() (uprgm_gen MicroprogramGenerator) {
 	ops, vals := GetStandardItems()
 	constraint_gen := ConstraintGenerator{
@@ -27,7 +25,6 @@ func BuildTestingMicroprogramGenerator() (uprgm_gen MicroprogramGenerator) {
 		n_entry_samples:   3,
 		n_tree_nonleaf:    4,
 		constraintgen:     constraint_gen,
-		smt_free_funs:     []qse.SMTFreeFun[string, string]{},
 	}
 	return
 }

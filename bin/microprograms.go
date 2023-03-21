@@ -26,6 +26,5 @@ type MicroprogramGenerator struct {
 	n_entry_samples   int
 	n_tree_nonleaf    int
 	constraintgen     ConstraintGenerator
-	smt_free_funs     []qse.SMTFreeFun[string, string]
 	next_state_id     MicroprogramState
 }
