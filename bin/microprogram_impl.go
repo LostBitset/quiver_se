@@ -28,6 +28,7 @@ func (gen *MicroprogramGenerator) RandomMicroprogram() (uprgm Microprogram) {
 	node_allocation := gen.AllocateStateIds(gen.n_states + 2)
 	// Add a failure node and connections to it with probability p_fallible
 	failure_node := gen.n_states
+	failure_state := node_allocation.ShiftBy(failure_node)
 	for i := 0; i < gen.n_states; i++ {
 		if rand.Float64() < gen.p_fallible {
 			base_quiver.InsertEdge(i, failure_node)
@@ -35,6 +36,7 @@ func (gen *MicroprogramGenerator) RandomMicroprogram() (uprgm Microprogram) {
 	}
 	// Add a top state connected to n_entry_samples random nodes
 	top_node := gen.n_states + 1
+	top_state := node_allocation.ShiftBy(top_node)
 	for i := 0; i < gen.n_entry_samples; i++ {
 		base_quiver.InsertEdge(top_node, rand.Intn(gen.n_states))
 	}
