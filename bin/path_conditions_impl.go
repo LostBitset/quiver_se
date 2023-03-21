@@ -85,6 +85,15 @@ func MicroprogramConstraintToIdLiteral(
 	return
 }
 
+func (uprgm_gen MicroprogramGenerator) UniformAssignmentOfSMTFreeFuns(
+	sort_values map[string]string,
+) (
+	model string,
+) {
+	model = uprgm_gen.UniformAssignmentOfSMTFreeFuns(sort_values)
+	return
+}
+
 func (cgen ConstraintGenerator) UniformAssignmentOfSMTFreeFuns(
 	sort_values map[string]string,
 ) (
@@ -96,7 +105,7 @@ func (cgen ConstraintGenerator) UniformAssignmentOfSMTFreeFuns(
 			panic("Invalid. Cannot generate a uniform assignment of parametric SMT funs.")
 		}
 		sb.WriteString(
-			smt_free_fun.DefinitionString(
+			StringSMTFreeFun{smt_free_fun}.DefinitionString(
 				sort_values[smt_free_fun.Ret],
 			),
 		)
