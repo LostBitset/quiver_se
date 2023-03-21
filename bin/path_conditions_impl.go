@@ -85,6 +85,15 @@ func MicroprogramConstraintToIdLiteral(
 	return
 }
 
+func (uprgm_gen MicroprogramGenerator) UnitializedAssignment() (model string) {
+	sort_values_uninit := map[string]string{
+		"Real": "0.0",
+		"Bool": "false",
+	}
+	model = uprgm_gen.UniformAssignmentOfSMTFreeFuns(sort_values_uninit)
+	return
+}
+
 func (uprgm_gen MicroprogramGenerator) UniformAssignmentOfSMTFreeFuns(
 	sort_values map[string]string,
 ) (
