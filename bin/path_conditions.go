@@ -55,22 +55,15 @@ func (uprgm Microprogram) ModelSatisfiesConstraints(model string, constraints []
 }
 
 func MicroprogramConstraintToIdLiteral(
-	constraint string, idsrc *qse.IdSource,
+	constraint_raw string, idsrc *qse.IdSource,
 ) (
 	id_literal qse.IdLiteral[string],
 ) {
-	raw_constraint := constraint
-	constraint_prefixes_reversed := make([]string, 0)
-	for strings.HasPrefix(raw_constraint, "@__") {
-		raw_constraint, new_prefix := CutConstraintMarkerPrefix(raw_constraint)
-		constraint_prefixes_reversed = append(constraint_prefixes_reversed, new_prefix)
+	constraint := constraint_raw
+	eq := true
+	if strings.HasPrefix(constraint, "@__INVERTED__") {
+		constraint, _ = strings.CutPrefix(constraint, "@__INVERTED__")
+		eq = !eq
 	}
-	n_constraint_prefixes := len(constraint_prefixes_reversed)
-	var constraint_prefixes_sb strings.Builder
-	for i := range constraint_prefixes_reversed {
-		new_prefix := constraint_prefixes_reversed[n_constraint_prefixes-i-1]
-		constraint_prefixes_sb.WriteString(new_prefix)
-	}
-	constraint_prefixes := constraint_prefixes_sb.String()
-
+	// TODO rest
 }
