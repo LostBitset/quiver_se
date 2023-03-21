@@ -57,18 +57,17 @@ mainDSESearchAlternativesLoop:
 		if new_model_ptr == nil {
 			continue mainDSESearchAlternativesLoop
 		}
-		new_model := *new_model_ptr
+		new_model := FilterModelFromZ3(*new_model_ptr)
 		fails, pc := uprgm.ExecuteGetPathCondition(new_model)
 		if fails {
-			new_model_filtered := FilterModelFromZ3(new_model)
 			hasher := fnv.New32a()
-			hasher.Write([]byte(new_model_filtered))
+			hasher.Write([]byte(new_model))
 			new_model_hash := hasher.Sum32()
 			if _, ok := detected_model_hashes[new_model_hash]; !ok {
 				n_bugs++
 				detected_model_hashes[new_model_hash] = struct{}{}
 				fmt.Println("[result] [bin:dse_impl/RunDSE] Found a failure-inducing input:")
-				fmt.Println(new_model_filtered)
+				fmt.Println(new_model)
 			}
 		}
 		desired_path = make([]qse.IdLiteral[string], len(pc))
