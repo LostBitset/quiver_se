@@ -13,5 +13,6 @@ func TestErdosRenyiQuiverBasic(t *testing.T) {
 		p := (rand.Float64() * 0.8) + 0.1
 		avg_ne := rand.Intn(20) + 3
 		ErdosRenyiQuiverGivenEdges(n, p, avg_ne)
+		fmt.Printf("Generated quiver with n=%d p=%.3f avg_ne=%d.\n", n, p, avg_ne)
 	}
 }
