@@ -32,16 +32,28 @@ func (tree SimpleTree) AsMicroprogramTransitionsWithPrefix(
 	} else {
 		// Non-leaf case
 		transitions = make([]MicroprogramTransition, 0)
-		for _, child := range tree.children {
-			new_constraint := constraintgen.Generate(BoolSort)
-			new_constraint_prefix := make([]string, len(constraint_prefix)+1)
-			copy(new_constraint_prefix, constraint_prefix)
-			new_constraint_prefix[len(constraint_prefix)] = new_constraint
-			transitions = append(transitions, child.AsMicroprogramTransitionsWithPrefix(
+		if len(tree.children) == 2 {
+			left_child, right_child := tree.children[0], tree.children[1]
+			left_constraint := constraintgen.Generate(BoolSort)
+			left_constraint_prefix := make([]string, len(constraint_prefix)+1)
+			copy(left_constraint_prefix, constraint_prefix)
+			left_constraint_prefix[len(constraint_prefix)] = left_constraint
+			transitions = append(transitions, left_child.AsMicroprogramTransitionsWithPrefix(
 				dst_states,
 				constraintgen,
-				new_constraint_prefix,
+				left_constraint_prefix,
 			)...)
+			right_constraint := "(not " + left_constraint + ")"
+			right_constraint_prefix := make([]string, len(constraint_prefix)+1)
+			copy(right_constraint_prefix, constraint_prefix)
+			right_constraint_prefix[len(constraint_prefix)] = right_constraint
+			transitions = append(transitions, right_child.AsMicroprogramTransitionsWithPrefix(
+				dst_states,
+				constraintgen,
+				right_constraint_prefix,
+			)...)
+		} else {
+			panic("Invalid. Must be a binary tree. ")
 		}
 	}
 	return
