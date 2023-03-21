@@ -23,5 +23,6 @@ type MicroprogramGenerator struct {
 	p_transition            float64
 	n_max_overlapping_edges int
 	p_fallible              float64
+	n_entry_samples         int
 	next_state_id           MicroprogramState
 }
