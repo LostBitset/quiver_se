@@ -26,6 +26,7 @@ func (uprgm Microprogram) ExecuteGetPathConditionFrom(
 		return
 	}
 	transitions := uprgm.transitions[state]
+	not_taken := make([]string, 0)
 selectTransitionLoop:
 	for _, transition := range transitions {
 		if uprgm.ModelSatisfiesConstraints(model, transition.constraints) {
@@ -47,7 +48,14 @@ selectTransitionLoop:
 			}
 			break selectTransitionLoop
 		}
+		for _, not_taken_constraint := range transition.constraints {
+			not_taken = append(
+				not_taken,
+				InvertedConstraintForMicroprogram(not_taken_constraint),
+			)
+		}
 	}
+	pc = not_taken
 	return
 }
 

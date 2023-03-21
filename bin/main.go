@@ -27,12 +27,13 @@ func main() {
 			{Name: "y", Args: []string{}, Ret: "Real"},
 		},
 	}
-	fmt.Println("INITIAL ASSIGNMENT: ")
+	fmt.Println(uprgm.ExecuteGetPathCondition(uprgm.UnitializedAssignment()))
+	/*fmt.Println("INITIAL ASSIGNMENT: ")
 	fmt.Println(uprgm.UnitializedAssignment())
 	n_bugs := uprgm.RunDSE()
 	if n_bugs == -1 {
 		fmt.Println("RESULT: Program fails immediately. Should not use.")
 	} else {
 		fmt.Printf("RESULT: Concolic execution found %d bugs.\n", n_bugs)
-	}
+	}*/
 }
