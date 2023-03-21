@@ -3,6 +3,8 @@ package main
 import (
 	qse "LostBitset/quiver_se/lib"
 	"strings"
+
+	log "github.com/sirupsen/logrus"
 )
 
 func (uprgm Microprogram) RunDSE() (n_bugs int) {
@@ -12,6 +14,7 @@ func (uprgm Microprogram) RunDSE() (n_bugs int) {
 	model := uprgm.UnitializedAssignment()
 	imm_failure, imm_pc := uprgm.ExecuteGetPathCondition(model)
 	if imm_failure {
+		log.Info("[bin:dse_impl] Immediate failure. ")
 		n_bugs = -1 // Don't use results when the program failed immediately
 		return
 	}

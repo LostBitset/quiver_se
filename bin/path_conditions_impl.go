@@ -4,6 +4,8 @@ import (
 	qse "LostBitset/quiver_se/lib"
 	"strconv"
 	"strings"
+
+	log "github.com/sirupsen/logrus"
 )
 
 func (uprgm Microprogram) ExecuteGetPathCondition(model string) (fails bool, pc []string) {
@@ -17,6 +19,7 @@ func (uprgm Microprogram) ExecuteGetPathConditionFrom(
 	fails bool,
 	pc []string,
 ) {
+	log.Info("[bin:path_conditions] Microprogram entered state: " + strconv.Itoa(int(state)))
 	pc = make([]string, 0)
 	fails = state == uprgm.fail_state
 	if fails {

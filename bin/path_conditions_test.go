@@ -1,8 +1,11 @@
 package main
 
 import (
+	qse "LostBitset/quiver_se/lib"
 	"fmt"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 const TEST_ITERATIONS_PC = TEST_ITERATIONS / 16
@@ -24,4 +27,20 @@ func TestPathConditions(t *testing.T) {
 		}
 		fmt.Printf("So far: %d / %d PCs led to failure.", fail_count, i+1)
 	}
+}
+
+func TestModelStatisfiesConstraint(t *testing.T) {
+	test_model := `
+	(define-fun x () Real 0)
+	`
+	test_constraints := []string{"(= x 7)"}
+	uprgm := Microprogram{
+		smt_free_funs: []qse.SMTFreeFun[string, string]{
+			{Name: "x", Args: []string{}, Ret: "Real"},
+		},
+	}
+	assert.False(
+		t,
+		uprgm.ModelSatisfiesConstraints(test_model, test_constraints),
+	)
 }
