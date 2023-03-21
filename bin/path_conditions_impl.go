@@ -45,7 +45,10 @@ func (uprgm Microprogram) ModelSatisfiesConstraints(model string, constraints []
 		complete_query_with_ids[i] = MicroprogramConstraintToIdLiteral(part, &idsrc)
 	}
 	sys := qse.SMTLibv2StringSystem{Idsrc: idsrc}
-	solver_result := sys.CheckSat(complete_query_with_ids, uprgm.smt_free_funs)
+	solver_result := sys.CheckSat(
+		complete_query_with_ids,
+		[]qse.SMTFreeFun[string, string]{}, // Query contains model, which gives definitions
+	)
 	does_ptr := solver_result.IsSat()
 	does = false
 	if does_ptr != nil && *does_ptr {
