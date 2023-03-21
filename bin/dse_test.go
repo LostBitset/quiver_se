@@ -14,7 +14,8 @@ func TestDSESimple(t *testing.T) {
 		fail_state: 2,
 		transitions: map[MicroprogramState][]MicroprogramTransition{
 			1: {
-				{3, []string{"false"}},
+				{5, []string{"false"}},
+				{5, []string{"(and (= x 8) (= x 9))"}},
 				{4, []string{"(= x 7)"}},
 			},
 			3: {

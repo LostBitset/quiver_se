@@ -30,6 +30,7 @@ func (uprgm Microprogram) ExecuteGetPathConditionFrom(
 selectTransitionLoop:
 	for _, transition := range transitions {
 		if uprgm.ModelSatisfiesConstraints(model, transition.constraints) {
+			pc = append(pc, not_taken...)
 			pc = append(pc, transition.constraints...)
 			pc = append(
 				pc,
