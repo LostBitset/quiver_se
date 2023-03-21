@@ -19,10 +19,11 @@ type MicroprogramTransition struct {
 }
 
 type MicroprogramGenerator struct {
-	n_states                int
-	p_transition            float64
-	n_max_overlapping_edges int
-	p_fallible              float64
-	n_entry_samples         int
-	next_state_id           MicroprogramState
+	n_states          int
+	p_transition      float64
+	avg_n_transitions int
+	p_fallible        float64
+	n_entry_samples   int
+	smt_free_funs     []qse.SMTFreeFun[string, string]
+	next_state_id     MicroprogramState
 }
