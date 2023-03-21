@@ -24,6 +24,7 @@ type MicroprogramGenerator struct {
 	avg_n_transitions int
 	p_fallible        float64
 	n_entry_samples   int
+	n_tree_nonleaf    int
 	smt_free_funs     []qse.SMTFreeFun[string, string]
 	next_state_id     MicroprogramState
 }

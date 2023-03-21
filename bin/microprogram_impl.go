@@ -25,7 +25,8 @@ func (gen *MicroprogramGenerator) RandomMicroprogram() (uprgm Microprogram) {
 		gen.p_transition,
 		gen.avg_n_transitions,
 	)
-	node_allocation := gen.AllocateStateIds(gen.n_states + 2)
+	n_nodes := gen.n_states + 2
+	node_allocation := gen.AllocateStateIds(n_nodes)
 	// Add a failure node and connections to it with probability p_fallible
 	failure_node := gen.n_states
 	failure_state := node_allocation.ShiftBy(failure_node)
@@ -41,5 +42,24 @@ func (gen *MicroprogramGenerator) RandomMicroprogram() (uprgm Microprogram) {
 		base_quiver.InsertEdge(top_node, rand.Intn(gen.n_states))
 	}
 	// Replace edges with random trees of random constraints
-	// TODO
+	adj_list_map := base_quiver.ExtractAdjListAsMap(n_nodes)
+	uprgm_transitions := make(map[MicroprogramState][]MicroprogramTransition)
+	for src, dst_list := range adj_list_map {
+		n_branches := len(dst_list)
+		tree := PruferEvenFinalRandomTree(gen.n_tree_nonleaf, n_branches)
+		src_state := node_allocation.ShiftBy(src)
+		dst_states := make([]MicroprogramState, n_branches)
+		for i, dst := range dst_list {
+			dst_states[i] = node_allocation.ShiftBy(dst)
+		}
+		new_transitions := tree.AsMicroprogramTransitions()
+		uprgm_transitions[src_state] = append(uprgm_transitions[src_state], new_transitions...)
+	}
+	uprgm = Microprogram{
+		top_state:     top_state,
+		fail_state:    failure_state,
+		transitions:   uprgm_transitions,
+		smt_free_funs: gen.smt_free_funs,
+	}
+	return
 }

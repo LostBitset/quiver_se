@@ -51,3 +51,14 @@ func (sqal *SimpleQuiverAdjList) InsertEdge(src int, dst int) {
 	sqal.adj_list = append(sqal.adj_list, SimpleEdgeDesc{src, dst})
 	return
 }
+
+func (sqal SimpleQuiverAdjList) ExtractAdjListAsMap(n int) (al map[int][]int) {
+	al = make(map[int][]int)
+	for i := 0; i < n; i++ {
+		al[i] = make([]int, 0)
+	}
+	for _, edge := range sqal.adj_list {
+		al[edge.src] = append(al[edge.src], edge.dst)
+	}
+	return
+}
