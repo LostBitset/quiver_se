@@ -1,7 +1,6 @@
 package qse
 
 import (
-	"fmt"
 	"os"
 	"os/exec"
 
@@ -9,7 +8,6 @@ import (
 )
 
 func NewZ3SMTLibv2Query(query_str string) (query Z3SMTLibv2Query) {
-	fmt.Println(query_str)
 	query = Z3SMTLibv2Query{query_str}
 	return
 }
