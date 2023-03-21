@@ -44,7 +44,7 @@ mainDSESearchAlternativesLoop:
 			Value: orig_expr.Value,
 			Eq:    !orig_expr.Eq,
 		})
-		new_model_ptr := uprgm.SolveForInputZ3(desired_path)
+		new_model_ptr := uprgm.SolveForInputZ3(desired_path, idsrc)
 		if new_model_ptr == nil {
 			continue mainDSESearchAlternativesLoop
 		}
@@ -68,6 +68,23 @@ mainDSESearchAlternativesLoop:
 			}
 			alt_stack = append(alt_stack, index)
 		}
+	}
+	return
+}
+
+func (uprgm Microprogram) SolveForInputZ3(
+	constraints []qse.IdLiteral[string],
+	idsrc *qse.IdSource,
+) (
+	model_ptr *string,
+) {
+	sys := qse.SMTLibv2StringSystem{Idsrc: *idsrc}
+	sctx := sys.CheckSat(constraints, uprgm.smt_free_funs)
+	is_sat_ptr := sctx.IsSat()
+	if is_sat_ptr != nil && *is_sat_ptr {
+		model_ptr = sctx.GetModel()
+	} else {
+		model_ptr = nil
 	}
 	return
 }
