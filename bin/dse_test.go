@@ -18,11 +18,11 @@ func TestDSESimple(t *testing.T) {
 				{4, []string{"(= x 7)"}},
 			},
 			3: {
-				{2, []string{"(< y 4)"}},
+				{2, []string{"(= y 88)"}},
 			},
 			4: {
-				{3, []string{"(> x 0)", "(> y 0)"}},
-				{2, []string{"(= y 99)"}},
+				{3, []string{"(> x 0)"}},
+				{2, []string{"@__INVERTED__(> x 0)", "(= y 99)"}},
 			},
 		},
 		smt_free_funs: []qse.SMTFreeFun[string, string]{
@@ -33,5 +33,5 @@ func TestDSESimple(t *testing.T) {
 	fmt.Println("INITIAL ASSIGNMENT: ")
 	fmt.Println(uprgm.UnitializedAssignment())
 	n_bugs := uprgm.RunDSE()
-	assert.GreaterOrEqual(t, n_bugs, 2)
+	assert.Equal(t, n_bugs, 2)
 }

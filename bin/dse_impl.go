@@ -2,6 +2,8 @@ package main
 
 import (
 	qse "LostBitset/quiver_se/lib"
+	"fmt"
+	"hash/fnv"
 	"strings"
 
 	log "github.com/sirupsen/logrus"
@@ -21,6 +23,8 @@ func (uprgm Microprogram) RunDSE() (n_bugs int) {
 	// The two main variables for the concolic execution algorithm:
 	alt_stack := make([]uint, 0)
 	desired_path := make([]qse.IdLiteral[string], 0)
+	// Also need to avoid duplicate detections
+	detected_model_hashes := make(map[uint32]struct{})
 	// Set them up using the first path condition
 	stack_setup_index := 0
 setupAltStackAndPathLoop:
@@ -56,7 +60,16 @@ mainDSESearchAlternativesLoop:
 		new_model := *new_model_ptr
 		fails, pc := uprgm.ExecuteGetPathCondition(new_model)
 		if fails {
-			n_bugs++
+			new_model_filtered := FilterModelFromZ3(new_model)
+			hasher := fnv.New32a()
+			hasher.Write([]byte(new_model_filtered))
+			new_model_hash := hasher.Sum32()
+			if _, ok := detected_model_hashes[new_model_hash]; !ok {
+				n_bugs++
+				detected_model_hashes[new_model_hash] = struct{}{}
+				fmt.Println("[result] [bin:dse_impl/RunDSE] Found a failure-inducing input:")
+				fmt.Println(new_model_filtered)
+			}
 		}
 		desired_path = make([]qse.IdLiteral[string], len(pc))
 		for i, path_condition_elem := range pc {
