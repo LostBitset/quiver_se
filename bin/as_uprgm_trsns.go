@@ -1,21 +1,25 @@
 package main
 
 func (tree SimpleTree) AsMicroprogramTransitions(
-	leaf_allocation MicroprogramState,
+	dst_states []MicroprogramState,
 	constraintgen ConstraintGenerator,
 ) (
 	transitions []MicroprogramTransition,
 ) {
-	transitions = tree.AsMicroprogramTransitionsWithPrefix(leaf_allocation, constraintgen, []string{})
+	transitions = tree.AsMicroprogramTransitionsWithPrefix(dst_states, constraintgen, []string{})
 	return
 }
 
 func (tree SimpleTree) AsMicroprogramTransitionsWithPrefix(
-	leaf_allocation MicroprogramState,
+	dst_states []MicroprogramState,
 	constraintgen ConstraintGenerator,
 	constraint_prefix []string,
 ) (
 	transitions []MicroprogramTransition,
 ) {
-	// TODO
+	transitions = make([]MicroprogramTransition, len(tree.children))
+	for i, child := range tree.children {
+
+		transitions[i] = new_transition
+	}
 }
