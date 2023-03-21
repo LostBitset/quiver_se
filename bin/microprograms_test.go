@@ -8,7 +8,7 @@ import (
 
 const TEST_ITERATIONS_MICROPROGRAMS = TEST_ITERATIONS * 2
 
-func TestMicroprogramGeneration(t *testing.T) {
+func BuildTestingMicroprogramGenerator() (uprgm_gen MicroprogramGenerator) {
 	ops, vals := GetStandardItems()
 	constraint_gen := ConstraintGenerator{
 		n_depth_mean:   2.0,
@@ -25,7 +25,7 @@ func TestMicroprogramGeneration(t *testing.T) {
 	}
 	var_sorts_distr := BakeDDistr[Sort](var_sorts)
 	constraint_gen.AddVariables(4, var_sorts_distr, 0.75)
-	uprgm_gen := MicroprogramGenerator{
+	uprgm_gen = MicroprogramGenerator{
 		n_states:          7,
 		p_transition:      0.75,
 		avg_n_transitions: 2.0,
@@ -35,6 +35,11 @@ func TestMicroprogramGeneration(t *testing.T) {
 		constraintgen:     constraint_gen,
 		smt_free_funs:     []qse.SMTFreeFun[string, string]{},
 	}
+	return
+}
+
+func TestMicroprogramGeneration(t *testing.T) {
+	uprgm_gen := BuildTestingMicroprogramGenerator()
 	fmt.Printf("Generating %d random microprograms.\n", TEST_ITERATIONS_MICROPROGRAMS)
 	for i := 0; i < TEST_ITERATIONS_MICROPROGRAMS; i++ {
 		uprgm_gen.RandomMicroprogram()
