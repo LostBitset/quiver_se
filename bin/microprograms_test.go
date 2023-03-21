@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-const TEST_ITERATIONS_MICROPROGRAMS = TEST_ITERATIONS * 2
+const TEST_ITERATIONS_MICROPROGRAMS = TEST_ITERATIONS * 20
 
 func TestMicroprogramGeneration(t *testing.T) {
 	uprgm_gen := BuildTestingMicroprogramGenerator()
