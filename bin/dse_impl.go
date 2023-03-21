@@ -5,7 +5,9 @@ import (
 	"strings"
 )
 
-func (uprgm Microprogram) RunDSE(idsrc *qse.IdSource) (n_bugs int) {
+func (uprgm Microprogram) RunDSE() (n_bugs int) {
+	var backing_idsrc qse.IdSource
+	idsrc := &backing_idsrc
 	n_bugs = 0
 	model := uprgm.UnitializedAssignment()
 	imm_failure, imm_pc := uprgm.ExecuteGetPathCondition(model)
