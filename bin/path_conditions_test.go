@@ -31,7 +31,7 @@ func TestPathConditions(t *testing.T) {
 
 func TestModelStatisfiesConstraint(t *testing.T) {
 	test_model := `
-	(define-fun x () Real 0)
+	(define-fun x () Real 0.0)
 	`
 	test_constraints := []string{"(= x 7)"}
 	uprgm := Microprogram{

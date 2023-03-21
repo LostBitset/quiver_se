@@ -7,7 +7,7 @@ func (sff StringSMTFreeFun) DefinitionString(rhs string) (stmt string) {
 		panic("Invalid. Cannot generate definition string for parametric SMT fun.")
 	}
 	var sb strings.Builder
-	sb.WriteRune('(')
+	sb.WriteString("(define-fun ")
 	sb.WriteString(sff.FreeFun.Name)
 	sb.WriteString(" () ")
 	sb.WriteString(sff.FreeFun.Ret)
