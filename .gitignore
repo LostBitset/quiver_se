@@ -56,6 +56,7 @@ archived-work/js_concolic/EIDIN/proto_js/
 archived-work/js_concolic/EIDIN/proto_lib/
 
 # (ADDED) Binaries
+bin/bin
 archived-work/js_concolic/analyze_bin/analyze_bin
 archived-work/js_concolic/SMTLib_2VA/bin/bin
 archived-work/simple_dse_bin/simple_dse_bin
