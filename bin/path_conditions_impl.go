@@ -2,6 +2,7 @@ package main
 
 import (
 	qse "LostBitset/quiver_se/lib"
+	"strconv"
 	"strings"
 )
 
@@ -26,6 +27,13 @@ selectTransitionLoop:
 	for _, transition := range transitions {
 		if uprgm.ModelSatisfiesConstraints(model, transition.constraints) {
 			pc = append(pc, transition.constraints...)
+			pc = append(
+				pc,
+				"@__RAW__;;@RICHPC:was-segment "+
+					strconv.Itoa(int(state))+
+					" "+
+					strconv.Itoa(int(transition.dst_state)),
+			)
 			rec_fails, rec_pc := uprgm.ExecuteGetPathConditionFrom(
 				model, transition.dst_state,
 			)

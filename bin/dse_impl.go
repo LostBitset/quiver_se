@@ -21,4 +21,5 @@ func (uprgm Microprogram) RunDSE() (n_bugs int) {
 	for len(alt_stack) > 0 {
 		// TODO all of this
 	}
+	return
 }
