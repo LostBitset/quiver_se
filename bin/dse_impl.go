@@ -1,5 +1,7 @@
 package main
 
+import "strings"
+
 func (uprgm Microprogram) RunDSE() (n_bugs int) {
 	n_bugs = 0
 	model := uprgm.UnitializedAssignment()
@@ -9,13 +11,18 @@ func (uprgm Microprogram) RunDSE() (n_bugs int) {
 		return
 	}
 	// The two main variables for the concolic execution algorithm:
-	// (both have changing lengths don't be fooled by their initial lengths)
-	alt_stack := make([]uint, len(imm_pc))
-	desired_path := make([]string, len(imm_pc))
+	alt_stack := make([]uint, 0)
+	desired_path := make([]string, 0)
 	// Set them up using the first path condition
-	for index, constraint := range imm_pc {
-		alt_stack[index] = uint(index)
-		desired_path[index] = constraint
+	stack_setup_index := 0
+setupAltStackAndPathLoop:
+	for _, constraint := range imm_pc {
+		if strings.HasPrefix(constraint, "@__RAW__;;@RICHPC:") {
+			continue setupAltStackAndPathLoop
+		}
+		alt_stack = append(alt_stack, uint(stack_setup_index))
+		desired_path = append(desired_path, constraint)
+		stack_setup_index++
 	}
 	// Main loop
 	for len(alt_stack) > 0 {
