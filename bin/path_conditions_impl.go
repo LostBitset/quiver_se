@@ -27,7 +27,6 @@ func (uprgm Microprogram) ExecuteGetPathConditionFrom(
 	}
 	transitions := uprgm.transitions[state]
 	not_taken := make([]string, 0)
-selectTransitionLoop:
 	for _, transition := range transitions {
 		if uprgm.ModelSatisfiesConstraints(model, transition.constraints) {
 			pc = append(pc, not_taken...)
@@ -39,15 +38,22 @@ selectTransitionLoop:
 					" "+
 					strconv.Itoa(int(transition.dst_state)),
 			)
+			log.Infof(
+				"[bin:path_conditions] PC: %#+v\n",
+				pc,
+			)
 			rec_fails, rec_pc := uprgm.ExecuteGetPathConditionFrom(
 				model, transition.dst_state,
 			)
 			pc = append(pc, rec_pc...)
+			log.Infof(
+				"[bin:path_conditions] Bubbled up PC: %#+v\n",
+				pc,
+			)
 			if rec_fails {
 				fails = true
-				return
 			}
-			break selectTransitionLoop
+			return
 		}
 		for _, not_taken_constraint := range transition.constraints {
 			not_taken = append(

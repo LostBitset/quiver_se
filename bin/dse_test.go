@@ -34,5 +34,5 @@ func TestDSESimple(t *testing.T) {
 	fmt.Println("INITIAL ASSIGNMENT: ")
 	fmt.Println(uprgm.UnitializedAssignment())
 	n_bugs := uprgm.RunDSE()
-	assert.Equal(t, 2, n_bugs)
+	assert.Equal(t, 1, n_bugs)
 }
