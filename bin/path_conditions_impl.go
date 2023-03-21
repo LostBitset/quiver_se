@@ -5,25 +5,35 @@ import (
 	"strings"
 )
 
-func (uprgm Microprogram) ExecuteGetPathCondition(model string) (pc []string) {
-	pc = uprgm.ExecuteGetPathConditionFrom(model, uprgm.top_state)
+func (uprgm Microprogram) ExecuteGetPathCondition(model string) (fails bool, pc []string) {
+	fails, pc = uprgm.ExecuteGetPathConditionFrom(model, uprgm.top_state)
 	return
 }
 
 func (uprgm Microprogram) ExecuteGetPathConditionFrom(
 	model string, state MicroprogramState,
 ) (
+	fails bool,
 	pc []string,
 ) {
-	transitions := uprgm.transitions[state]
 	pc = make([]string, 0)
+	fails = state == uprgm.fail_state
+	if fails {
+		return
+	}
+	transitions := uprgm.transitions[state]
 selectTransitionLoop:
 	for _, transition := range transitions {
 		if uprgm.ModelSatisfiesConstraints(model, transition.constraints) {
 			pc = append(pc, transition.constraints...)
-			pc = append(pc, uprgm.ExecuteGetPathConditionFrom(
+			rec_fails, rec_pc := uprgm.ExecuteGetPathConditionFrom(
 				model, transition.dst_state,
-			)...)
+			)
+			pc = append(pc, rec_pc...)
+			if rec_fails {
+				fails = true
+				return
+			}
 			break selectTransitionLoop
 		}
 	}
