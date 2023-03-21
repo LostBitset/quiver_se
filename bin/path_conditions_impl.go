@@ -95,31 +95,32 @@ func MicroprogramConstraintToIdLiteral(
 	return
 }
 
-func (uprgm_gen MicroprogramGenerator) UnitializedAssignment() (model string) {
+func (uprgm Microprogram) UnitializedAssignment() (model string) {
 	sort_values_uninit := map[string]string{
 		"Real": "0.0",
 		"Bool": "false",
 	}
-	model = uprgm_gen.UniformAssignmentOfSMTFreeFuns(sort_values_uninit)
+	model = uprgm.UniformAssignmentOfSMTFreeFuns(sort_values_uninit)
 	return
 }
 
-func (uprgm_gen MicroprogramGenerator) UniformAssignmentOfSMTFreeFuns(
+func (uprgm Microprogram) UniformAssignmentOfSMTFreeFuns(
 	sort_values map[string]string,
 ) (
 	model string,
 ) {
-	model = uprgm_gen.constraintgen.UniformAssignmentOfSMTFreeFuns(sort_values)
+	model = UniformAssignmentOfSMTFreeFuns(uprgm.smt_free_funs, sort_values)
 	return
 }
 
-func (cgen ConstraintGenerator) UniformAssignmentOfSMTFreeFuns(
+func UniformAssignmentOfSMTFreeFuns(
+	smt_free_funs []qse.SMTFreeFun[string, string],
 	sort_values map[string]string,
 ) (
 	model string,
 ) {
 	var sb strings.Builder
-	for _, smt_free_fun := range cgen.SMTFreeFuns() {
+	for _, smt_free_fun := range smt_free_funs {
 		if len(smt_free_fun.Args) != 0 {
 			panic("Invalid. Cannot generate a uniform assignment of parametric SMT funs.")
 		}
