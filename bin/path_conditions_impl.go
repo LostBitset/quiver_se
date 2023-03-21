@@ -99,7 +99,7 @@ func (uprgm_gen MicroprogramGenerator) UniformAssignmentOfSMTFreeFuns(
 ) (
 	model string,
 ) {
-	model = uprgm_gen.UniformAssignmentOfSMTFreeFuns(sort_values)
+	model = uprgm_gen.constraintgen.UniformAssignmentOfSMTFreeFuns(sort_values)
 	return
 }
 
