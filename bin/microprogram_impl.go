@@ -52,7 +52,7 @@ func (gen *MicroprogramGenerator) RandomMicroprogram() (uprgm Microprogram) {
 		for i, dst := range dst_list {
 			dst_states[i] = node_allocation.ShiftBy(dst)
 		}
-		new_transitions := tree.AsMicroprogramTransitions()
+		new_transitions := tree.AsMicroprogramTransitions(node_allocation)
 		uprgm_transitions[src_state] = append(uprgm_transitions[src_state], new_transitions...)
 	}
 	uprgm = Microprogram{
