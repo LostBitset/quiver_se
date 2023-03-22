@@ -12,17 +12,30 @@ func main() {
 	timeout := 3 * time.Second
 	for i := 0; i < n_samples; i++ {
 		uprgm := uprgm_gen.RandomMicroprogram()
-		dse_n_bugs_chan := make(chan int)
+		dse_bug_signal_orig := make(chan struct{})
+		dse_bug_signal := make(chan struct{})
+		dse_end_signal := make(chan struct{})
+		go uprgm.RunDSEContinuously(dse_bug_signal_orig)
 		go func() {
-			dse_n_bugs_chan <- uprgm.RunDSE()
-		}()
-		select {
-		case dse_n_bugs := <-dse_n_bugs_chan:
-			if dse_n_bugs != -1 {
-				count_dse += dse_n_bugs
+			for range dse_bug_signal_orig {
+				dse_bug_signal <- struct{}{}
 			}
-		case <-time.After(timeout):
-			fmt.Println("[bin:main] DSE timed out (this is normal).")
+			dse_end_signal <- struct{}{}
+		}()
+		dse_timeout := time.After(timeout)
+	tallyDSEBugsLoop:
+		for {
+		tallyDSEBugsSelect:
+			select {
+			case <-dse_bug_signal:
+				count_dse++
+				break tallyDSEBugsSelect
+			case <-dse_timeout:
+				fmt.Println("[bin:main] DSE timed out (this is normal).")
+				break tallyDSEBugsLoop
+			case <-dse_bug_signal:
+				break tallyDSEBugsLoop
+			}
 		}
 	}
 	fmt.Println("--- FINAL RESULTS ---")
