@@ -10,7 +10,7 @@ import (
 func (uprgm Microprogram) RunDSE() (n_bugs int) {
 	n_bugs = 0
 	bug_signal := make(chan uint32)
-	go uprgm.RunDSEContinuously(bug_signal, false, nil, false)
+	go uprgm.RunDSEContinuously(bug_signal, false, nil, false, -1)
 	for range bug_signal {
 		n_bugs++
 	}
@@ -22,6 +22,7 @@ func (uprgm Microprogram) RunDSEContinuously(
 	emit_pcs bool,
 	out_pcs *chan PathConditionResult,
 	no_transition bool,
+	max_iters int, // -1 for no limit
 ) {
 	var backing_idsrc qse.IdSource
 	idsrc := &backing_idsrc
@@ -55,8 +56,10 @@ setupAltStackAndPathLoop:
 		stack_setup_index++
 	}
 	// Main loop
+	n_iters := 0
 mainDSESearchAlternativesLoop:
-	for len(alt_stack) > 0 {
+	for (len(alt_stack) > 0) || (n_iters == max_iters) {
+		n_iters++
 		alt_stack_pop_index := len(alt_stack) - 1
 		inv_index := alt_stack[alt_stack_pop_index]
 		qse.SpliceOutReclaim(&alt_stack, alt_stack_pop_index)

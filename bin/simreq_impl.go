@@ -6,6 +6,7 @@ import (
 	"hash/fnv"
 	"strconv"
 	"strings"
+	"time"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -19,6 +20,10 @@ func ParseMicroprogramState(str string) (state MicroprogramState) {
 	state = MicroprogramState(integer)
 	return
 }
+
+const STAGGER_TIME_INTERVAL = 10 // milliseconds between aot node explorations
+
+const SIMREQ_AOT_DSE_MAX_ITERS = 10
 
 func (uprgm Microprogram) SiMReQProcessPCs(
 	in_pcs chan PathConditionResult,
@@ -62,13 +67,16 @@ addNodesForMicroprogramStatesLoop:
 	callback_nodes[uprgm.top_state] = top_node
 	callback_nodes[uprgm.fail_state] = fail_node
 	// Start goroutines for performing DSE AOT on nodes
+	stagger_time := 0
 runDSEAheadOfTimeForFailureSetLoop:
 	for state := range callback_nodes {
 		if state == uprgm.fail_state {
 			continue runDSEAheadOfTimeForFailureSetLoop
 		}
+		stagger_time += STAGGER_TIME_INTERVAL
 		state := state
 		go func() {
+			<-time.After(time.Duration(stagger_time) * time.Millisecond)
 			bug_signal_black_hole := make(chan uint32)
 			go func() {
 				for range bug_signal_black_hole {
@@ -115,7 +123,13 @@ runDSEAheadOfTimeForFailureSetLoop:
 					in_updates <- update
 				}
 			}()
-			uprgm.RunDSEContinuously(bug_signal_black_hole, true, &out_pcs_node_failure, true)
+			uprgm.RunDSEContinuously(
+				bug_signal_black_hole,
+				true,
+				&out_pcs_node_failure,
+				true,
+				SIMREQ_AOT_DSE_MAX_ITERS,
+			)
 		}()
 	}
 	// Start goroutine to handle canidate models
@@ -219,6 +233,6 @@ func (uprgm Microprogram) RunSiMReQ(bug_signal chan struct{}) {
 		}
 	}()
 	in_pcs := make(chan PathConditionResult)
-	go uprgm.RunDSEContinuously(bug_signal_values, true, &in_pcs, false)
+	go uprgm.RunDSEContinuously(bug_signal_values, true, &in_pcs, false, -1)
 	uprgm.SiMReQProcessPCs(in_pcs, bug_signal_values)
 }
