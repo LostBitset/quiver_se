@@ -59,8 +59,19 @@ addNodesForMicroprogramStatesLoop:
 	// Overwrite those for top and failure states since they have special indices on the quiver
 	callback_nodes[uprgm.top_state] = top_node
 	callback_nodes[uprgm.fail_state] = fail_node
-	// Listen for bugs in a seperate goroutine
-	// TODO TODO TODO
+	go func() {
+		defer close(in_updates)
+		defer close(bug_signal)
+		for model_unfiltered := range out_models_unfiltered {
+			canidate_model := FilterModelFromZ3(model_unfiltered)
+			fails, pc := uprgm.ExecuteGetPathCondition(canidate_model)
+			if fails {
+				bug_signal <- struct{}{}
+			} else {
+				in_pcs <- pc
+			}
+		}
+	}()
 	for pc := range in_pcs {
 		// Group the segmented path condition by segments (which represent transitions)
 		grouped_by_transition := make(map[SimpleMicroprogramTransitionDesc][]string)
@@ -113,7 +124,6 @@ addNodesForMicroprogramStatesLoop:
 			}
 		}
 	}
-	close(in_updates)
 }
 
 func SliceToSet[T comparable](slice []T) (set map[T]struct{}) {
