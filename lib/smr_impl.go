@@ -162,13 +162,16 @@ func (smr_config SMRConfig[ATOM, IDENT, SORT, MODEL, SCTX, SYS]) SMRIterationUnf
 		)
 		is_sat_ptr := sctx.IsSat()
 		if is_sat_ptr == nil {
+			log.Info("[smr/SMRConfig.SMRIteration...] Formula invalid. ")
 			finished = append(finished, i)
 			continue
 		}
 		if *is_sat_ptr {
+			log.Info("[smr/SMRConfig.SMRIteration...] Formula sat. Sending.")
 			smr_config.out_models <- *sctx.GetModel()
 			finished = append(finished, i)
 		} else {
+			log.Info("[smr/SMRConfig.SMRIteration...] Formula unsat. ")
 			mus := *sctx.ExtractMUS()
 			InsertionSortInPlace(mus)
 			DedupSortedInPlace(&mus)

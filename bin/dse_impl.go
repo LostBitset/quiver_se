@@ -33,7 +33,9 @@ func (uprgm Microprogram) RunDSEContinuously(
 		close(bug_signal)
 		return
 	}
-	*out_pcs <- imm_pc
+	if emit_pcs {
+		*out_pcs <- imm_pc
+	}
 	// The two main variables for the concolic execution algorithm:
 	alt_stack := make([]uint, 0)
 	desired_path := make([]qse.IdLiteral[string], 0)
@@ -73,9 +75,11 @@ mainDSESearchAlternativesLoop:
 		}
 		new_model := FilterModelFromZ3(*new_model_ptr)
 		fails, pc := uprgm.ExecuteGetPathCondition(new_model)
-		saved_pc := make([]string, len(pc))
-		copy(saved_pc, pc)
-		*out_pcs <- saved_pc
+		if emit_pcs {
+			saved_pc := make([]string, len(pc))
+			copy(saved_pc, pc)
+			*out_pcs <- saved_pc
+		}
 		if fails {
 			hasher := fnv.New32a()
 			hasher.Write([]byte(new_model))
