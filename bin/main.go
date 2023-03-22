@@ -108,7 +108,7 @@ func BuildEvaluationMicroprogramGenerator() (uprgm_gen MicroprogramGenerator) {
 		avg_n_transitions: 8.0,
 		p_fallible:        0.9,
 		n_entry_samples:   7,
-		n_tree_nonleaf:    5,
+		n_tree_nonleaf:    3,
 		constraintgen:     constraint_gen,
 	}
 	return
