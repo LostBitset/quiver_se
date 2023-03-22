@@ -10,14 +10,23 @@ import (
 )
 
 func (uprgm Microprogram) RunDSE() (n_bugs int) {
+	n_bugs = 0
+	bug_signal := make(chan struct{})
+	go uprgm.RunDSEContinuously(bug_signal)
+	for range bug_signal {
+		n_bugs++
+	}
+	return
+}
+
+func (uprgm Microprogram) RunDSEContinuously(bug_signal chan struct{}) {
 	var backing_idsrc qse.IdSource
 	idsrc := &backing_idsrc
-	n_bugs = 0
 	model := uprgm.UnitializedAssignment()
 	imm_failure, imm_pc := uprgm.ExecuteGetPathCondition(model)
 	if imm_failure {
 		log.Info("[bin:dse_impl] Immediate failure. ")
-		n_bugs = -1 // Don't use results when the program failed immediately
+		close(bug_signal)
 		return
 	}
 	// The two main variables for the concolic execution algorithm:
@@ -64,7 +73,7 @@ mainDSESearchAlternativesLoop:
 			hasher.Write([]byte(new_model))
 			new_model_hash := hasher.Sum32()
 			if _, ok := detected_model_hashes[new_model_hash]; !ok {
-				n_bugs++
+				bug_signal <- struct{}{}
 				detected_model_hashes[new_model_hash] = struct{}{}
 				fmt.Println("[result] [bin:dse_impl/RunDSE] Found a failure-inducing input:")
 				fmt.Println(new_model)
@@ -86,6 +95,7 @@ mainDSESearchAlternativesLoop:
 			alt_stack = append(alt_stack, index)
 		}
 	}
+	close(bug_signal)
 	return
 }
 
