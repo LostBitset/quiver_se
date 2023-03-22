@@ -7,7 +7,7 @@ import (
 
 func main() {
 	uprgm_gen := BuildEvaluationMicroprogramGenerator()
-	n_samples := 10
+	n_samples := 2
 	timeout := 3 * time.Second
 	count_simreq := EvaluateAlgorithm(
 		func(uprgm Microprogram, bug_signal chan struct{}) {

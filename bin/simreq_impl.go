@@ -78,6 +78,7 @@ addNodesForMicroprogramStatesLoop:
 		}
 	}()
 	for pc := range in_pcs {
+		log.Info("[bin:simreq] Received path condition in SiMReQProcessPCs.")
 		// Group the segmented path condition by segments (which represent transitions)
 		grouped_by_transition := make(map[SimpleMicroprogramTransitionDesc][]string)
 		current_transition_constraint := make([]string, 0)
