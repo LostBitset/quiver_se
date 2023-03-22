@@ -7,40 +7,49 @@ import (
 
 func main() {
 	uprgm_gen := BuildEvaluationMicroprogramGenerator()
-	count_dse := 0
-	n_samples := 2
+	n_samples := 10
 	timeout := 3 * time.Second
-	for i := 0; i < n_samples; i++ {
-		uprgm := uprgm_gen.RandomMicroprogram()
-		dse_bug_signal_orig := make(chan struct{})
-		dse_bug_signal := make(chan struct{})
-		dse_end_signal := make(chan struct{})
-		go uprgm.RunDSEContinuously(dse_bug_signal_orig)
-		go func() {
-			for range dse_bug_signal_orig {
-				dse_bug_signal <- struct{}{}
-			}
-			dse_end_signal <- struct{}{}
-		}()
-		dse_timeout := time.After(timeout)
-	tallyDSEBugsLoop:
-		for {
-		tallyDSEBugsSelect:
-			select {
-			case <-dse_bug_signal:
-				count_dse++
-				break tallyDSEBugsSelect
-			case <-dse_timeout:
-				fmt.Println("[bin:main] DSE timed out (this is normal).")
-				break tallyDSEBugsLoop
-			case <-dse_bug_signal:
-				break tallyDSEBugsLoop
-			}
-		}
-	}
+	count_dse := EvaluateDSE(uprgm_gen, n_samples, timeout)
 	fmt.Println("--- FINAL RESULTS ---")
 	fmt.Printf("Generated a total of %d programs.\n", n_samples)
 	fmt.Printf("DSE found %d bugs.\n", count_dse)
+}
+
+func EvaluateDSE(
+	uprgm_gen MicroprogramGenerator, n_samples int, timeout time.Duration,
+) (
+	count int,
+) {
+	count = 0
+	for i := 0; i < n_samples; i++ {
+		uprgm := uprgm_gen.RandomMicroprogram()
+		bug_signal_orig := make(chan struct{})
+		bug_signal := make(chan struct{})
+		end_signal := make(chan struct{})
+		go uprgm.RunDSEContinuously(bug_signal_orig)
+		go func() {
+			for range bug_signal_orig {
+				bug_signal <- struct{}{}
+			}
+			end_signal <- struct{}{}
+		}()
+		timeout_chan := time.After(timeout)
+	tallyBugsLoop:
+		for {
+		tallyBugsSelect:
+			select {
+			case <-bug_signal:
+				count++
+				break tallyBugsSelect
+			case <-timeout_chan:
+				fmt.Println("[bin:main] DSE timed out (this is normal).")
+				break tallyBugsLoop
+			case <-end_signal:
+				break tallyBugsLoop
+			}
+		}
+	}
+	return
 }
 
 func BuildEvaluationMicroprogramGenerator() (uprgm_gen MicroprogramGenerator) {
@@ -59,13 +68,13 @@ func BuildEvaluationMicroprogramGenerator() (uprgm_gen MicroprogramGenerator) {
 		},
 	}
 	var_sorts_distr := BakeDDistr[Sort](var_sorts)
-	constraint_gen.AddVariables(4, var_sorts_distr, 0.8)
+	constraint_gen.AddVariables(4, var_sorts_distr, 0.75)
 	uprgm_gen = MicroprogramGenerator{
-		n_states:          20,
-		p_transition:      0.65,
-		avg_n_transitions: 2.0,
-		p_fallible:        0.4,
-		n_entry_samples:   5,
+		n_states:          10,
+		p_transition:      0.8,
+		avg_n_transitions: 3.0,
+		p_fallible:        0.6,
+		n_entry_samples:   3,
 		n_tree_nonleaf:    4,
 		constraintgen:     constraint_gen,
 	}
