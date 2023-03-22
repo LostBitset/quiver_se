@@ -21,7 +21,14 @@ func (uprgm Microprogram) SiMReQProcessPCs(
 	in_pcs chan []string,
 	bug_signal chan struct{},
 ) {
+	// Setup everything necessary
+	// TODO
+	// Start SiMReQ
+	// TODO
+	// Listen for bugs
+	// TODO
 	for pc := range in_pcs {
+		// Group the segmented path condition by segments (which represent transitions)
 		grouped_by_transition := make(map[SimpleMicroprogramTransitionDesc][]string)
 		current_transition_constraint := make([]string, 0)
 	groupPcSegmentsLoop:
@@ -32,8 +39,9 @@ func (uprgm Microprogram) SiMReQProcessPCs(
 					src_state := ParseMicroprogramState(fields[1])
 					dst_state := ParseMicroprogramState(fields[2])
 					edge_desc := SimpleMicroprogramTransitionDesc{src_state, dst_state}
-					grouped_by_transition[edge_desc] = current_transition_constraint
-					current_transition_constraint = make([]string, 0)
+					new_constraint := make([]string, len(current_transition_constraint))
+					copy(new_constraint, current_transition_constraint)
+					grouped_by_transition[edge_desc] = new_constraint
 					continue groupPcSegmentsLoop
 				}
 				log.Warn("Unknown rich path condition marker.")
@@ -41,5 +49,7 @@ func (uprgm Microprogram) SiMReQProcessPCs(
 			}
 			current_transition_constraint = append(current_transition_constraint, item)
 		}
+		// Send the updates to SiMReQ
+		// TODO
 	}
 }
