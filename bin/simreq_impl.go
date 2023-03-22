@@ -6,7 +6,6 @@ import (
 	"hash/fnv"
 	"strconv"
 	"strings"
-	"time"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -20,8 +19,6 @@ func ParseMicroprogramState(str string) (state MicroprogramState) {
 	state = MicroprogramState(integer)
 	return
 }
-
-const STAGGER_TIME_INTERVAL = 10 // milliseconds between aot node explorations
 
 const SIMREQ_AOT_DSE_MAX_ITERS = 10
 
@@ -67,69 +64,34 @@ addNodesForMicroprogramStatesLoop:
 	callback_nodes[uprgm.top_state] = top_node
 	callback_nodes[uprgm.fail_state] = fail_node
 	// Start goroutines for performing DSE AOT on nodes
-	stagger_time := 0
 runDSEAheadOfTimeForFailureSetLoop:
 	for state := range callback_nodes {
 		if state == uprgm.fail_state {
 			continue runDSEAheadOfTimeForFailureSetLoop
 		}
-		stagger_time += STAGGER_TIME_INTERVAL
 		state := state
 		go func() {
-			<-time.After(time.Duration(stagger_time) * time.Millisecond)
-			bug_signal_black_hole := make(chan uint32)
-			go func() {
-				for range bug_signal_black_hole {
+			transitions := uprgm.transitions[state]
+			failure_constraint_sets := make([][]string, 0)
+		enumerateFailureTransitionsLoop:
+			for _, transition := range transitions {
+				if transition.dst_state != uprgm.fail_state {
+					continue enumerateFailureTransitionsLoop
 				}
-			}()
-			out_pcs_node_failure := make(chan PathConditionResult)
-			go func() {
-			readNodeFailurePathConditionsLoop:
-				for pc := range out_pcs_node_failure {
-					if !pc.fails {
-						continue readNodeFailurePathConditionsLoop
-					}
-					constraints := pc.pc
-					constraints_in_qse_form := make([]qse.Literal[qse.WithId_H[string]], len(constraints))
-					for i, constraint := range constraints {
-						id_literal_constraint := MicroprogramConstraintToIdLiteral(constraint, &idsrc)
-						constraints_in_qse_form[i] = qse.Literal[qse.WithId_H[string]](id_literal_constraint)
-					}
-					transition := SimpleMicroprogramTransitionDesc{
-						src: state,
-						dst: uprgm.fail_state,
-					}
-					update := qse.Augmented[
-						qse.QuiverUpdate[
-							MicroprogramState,
-							qse.PHashMap[qse.Literal[qse.WithId_H[string]], struct{}],
-							*qse.DMT[qse.WithId_H[string], qse.QuiverIndex],
-						],
-						[]qse.SMTFreeFun[string, string],
-					]{
-						Value: qse.QuiverUpdate[
-							MicroprogramState,
-							qse.PHashMap[qse.Literal[qse.WithId_H[string]], struct{}],
-							*qse.DMT[qse.WithId_H[string], qse.QuiverIndex],
-						]{
-							Src: callback_nodes[transition.src],
-							Dst: dmtq.ParameterizeIndex(callback_nodes[transition.dst]),
-							Edge: pto(SliceToPHashMapSet(
-								constraints_in_qse_form,
-							)),
-						},
-						Augment: uprgm.smt_free_funs,
-					}
-					in_updates <- update
-				}
-			}()
-			uprgm.RunDSEContinuously(
-				bug_signal_black_hole,
-				true,
-				&out_pcs_node_failure,
-				true,
-				SIMREQ_AOT_DSE_MAX_ITERS,
-			)
+				// Add the local failure constraint
+				failure_constraint_sets = append(failure_constraint_sets, transition.constraints)
+			}
+			for _, constraints := range failure_constraint_sets {
+				segmented_pc_repr := make([]string, len(constraints)+1)
+				copy(segmented_pc_repr, constraints)
+				repr_was_segment_line :=
+					"@__RAW__;;@RICHPC:was-segment " +
+						strconv.Itoa(int(state)) +
+						" " +
+						strconv.Itoa(int(uprgm.fail_state))
+				segmented_pc_repr[len(constraints)] = repr_was_segment_line
+				in_pcs <- PathConditionResult{segmented_pc_repr, false} // aren't global failures
+			}
 		}()
 	}
 	// Start goroutine to handle canidate models

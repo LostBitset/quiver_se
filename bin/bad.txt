@@ -1,0 +1,734 @@
+fatal error: concurrent map iteration and map write
+
+goroutine 211 [running]:
+LostBitset/quiver_se/lib.(*Quiver[...]).ForEachInneighbor(0x5578a0, 0x1, 0xc00009ee88)
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_impl.go:72 +0xb0
+LostBitset/quiver_se/lib.Quiver[...].EmitSimpleWalksFromToRevPrefix(0x5578a0?, 0xc000114a20?, 0x1?, 0x1?, 0xc0004a2768?, {{0x556190, 0xc0001f9770}, 0x0, {}, {}})
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:165 +0x13f
+LostBitset/quiver_se/lib.Quiver[...].EmitSimpleWalksFromToRev(0x5578a0?, 0x0?, 0x0?, 0x0)
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:149 +0xda
+LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks.func3()
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:137 +0x45
+created by LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:136 +0x32a
+
+goroutine 1 [select]:
+main.EvaluateAlgorithm(0x534ac8, {0x1f, 0x1e, 0xc0001205a0, {0xc00021e2a0, 0x4, 0x4}}, 0x1, 0xc00005e620?, {0x52a0f2, ...})
+	/home/landon/Documents/repos/__active__/quiver_se/bin/main.go:72 +0x3ef
+main.main()
+	/home/landon/Documents/repos/__active__/quiver_se/bin/main.go:34 +0x206
+
+goroutine 77 [chan receive]:
+main.Microprogram.SiMReQProcessPCs({0x1f, 0x1e, 0xc0001205a0, {0xc00021e2a0, 0x4, 0x4}}, 0xc000182840, 0xc0001827e0)
+	/home/landon/Documents/repos/__active__/quiver_se/bin/simreq_impl.go:142 +0x65c
+main.Microprogram.RunSiMReQ({0x1f, 0x1e, 0xc0001205a0, {0xc00021e2a0, 0x4, 0x4}}, 0xc000114960)
+	/home/landon/Documents/repos/__active__/quiver_se/bin/simreq_impl.go:227 +0x207
+main.main.func2({0x1f, 0x1e, 0xc0001205a0, {0xc00021e2a0, 0x4, 0x4}}, 0xc000114660?)
+	/home/landon/Documents/repos/__active__/quiver_se/bin/main.go:36 +0x45
+created by main.EvaluateAlgorithm
+	/home/landon/Documents/repos/__active__/quiver_se/bin/main.go:61 +0x225
+
+goroutine 78 [chan receive]:
+main.EvaluateAlgorithm.func1()
+	/home/landon/Documents/repos/__active__/quiver_se/bin/main.go:63 +0x54
+created by main.EvaluateAlgorithm
+	/home/landon/Documents/repos/__active__/quiver_se/bin/main.go:62 +0x291
+
+goroutine 107 [syscall]:
+syscall.Syscall6(0xc000098160?, 0xc0004e2260?, 0xc00010f91e?, 0xc00010fa40?, 0x4ce82e?, 0xc00028e310?, 0x1?)
+	/usr/lib/go/src/syscall/syscall_linux.go:91 +0x36
+os.(*Process).blockUntilWaitable(0xc00022a3c0)
+	/usr/lib/go/src/os/wait_waitid.go:32 +0x87
+os.(*Process).wait(0xc00022a3c0)
+	/usr/lib/go/src/os/exec_unix.go:22 +0x28
+os.(*Process).Wait(...)
+	/usr/lib/go/src/os/exec.go:132
+os/exec.(*Cmd).Wait(0xc000098160)
+	/usr/lib/go/src/os/exec/exec.go:890 +0x45
+os/exec.(*Cmd).Run(0x3?)
+	/usr/lib/go/src/os/exec/exec.go:590 +0x39
+os/exec.(*Cmd).Output(0xc000098160)
+	/usr/lib/go/src/os/exec/exec.go:984 +0xc7
+LostBitset/quiver_se/lib.Z3SMTLibv2Query.Run({{0xc00063e900?, 0x6a4?}})
+	/home/landon/Documents/repos/__active__/quiver_se/lib/z3smtlibv2_query_impl.go:40 +0x27a
+LostBitset/quiver_se/lib.SMTLibv2StringSystem.CheckSat({{0x4dad5b?}}, {0xc00050e000, 0x7, 0x80?}, {0xc00021e2a0, 0x4, 0x4})
+	/home/landon/Documents/repos/__active__/quiver_se/lib/smtlibv2_string_system_impl.go:50 +0x816
+main.Microprogram.SolveForInputZ3({0x1f, 0x1e, 0xc0001205a0, {0xc00021e2a0, 0x4, 0x4}}, {0xc00050e000?, 0x41766c?, 0xc00005c650?}, 0xc00010fde0)
+	/home/landon/Documents/repos/__active__/quiver_se/bin/dse_impl.go:121 +0x5d
+main.Microprogram.RunDSEContinuously({0x1f, 0x1e, 0xc0001205a0, {0xc00021e2a0, 0x4, 0x4}}, 0xc00005c7d0?, 0x1, 0xc0001ba1e8, 0x0, ...)
+	/home/landon/Documents/repos/__active__/quiver_se/bin/dse_impl.go:72 +0x73f
+created by main.Microprogram.RunSiMReQ
+	/home/landon/Documents/repos/__active__/quiver_se/bin/simreq_impl.go:226 +0x1c5
+
+goroutine 106 [chan receive]:
+main.Microprogram.RunSiMReQ.func1()
+	/home/landon/Documents/repos/__active__/quiver_se/bin/simreq_impl.go:218 +0x85
+created by main.Microprogram.RunSiMReQ
+	/home/landon/Documents/repos/__active__/quiver_se/bin/simreq_impl.go:216 +0xcb
+
+goroutine 110 [chan receive]:
+LostBitset/quiver_se/lib.SMRConfig[...].Start.func1()
+	/home/landon/Documents/repos/__active__/quiver_se/lib/smr_impl.go:106 +0x19a
+created by LostBitset/quiver_se/lib.SMRConfig[...].Start
+	/home/landon/Documents/repos/__active__/quiver_se/lib/smr_impl.go:88 +0x14a
+
+goroutine 108 [chan receive]:
+LostBitset/quiver_se/lib.DMTQWardenConfig[...].Start.func1()
+	/home/landon/Documents/repos/__active__/quiver_se/lib/dmtq_warden_impl.go:12 +0xb4
+created by LostBitset/quiver_se/lib.DMTQWardenConfig[...].Start
+	/home/landon/Documents/repos/__active__/quiver_se/lib/dmtq_warden_impl.go:10 +0xb6
+
+goroutine 109 [chan receive]:
+LostBitset/quiver_se/lib.StartSiMReQ[...].func1()
+	/home/landon/Documents/repos/__active__/quiver_se/lib/simreq_part_impl.go:68 +0x11d
+created by LostBitset/quiver_se/lib.StartSiMReQ[...]
+	/home/landon/Documents/repos/__active__/quiver_se/lib/simreq_part_impl.go:65 +0x64a
+
+goroutine 169 [IO wait]:
+internal/poll.runtime_pollWait(0x7fe54e337ce8, 0x72)
+	/usr/lib/go/src/runtime/netpoll.go:306 +0x89
+internal/poll.(*pollDesc).wait(0xc0001a0480?, 0xc0004b6800?, 0x1)
+	/usr/lib/go/src/internal/poll/fd_poll_runtime.go:84 +0x32
+internal/poll.(*pollDesc).waitRead(...)
+	/usr/lib/go/src/internal/poll/fd_poll_runtime.go:89
+internal/poll.(*FD).Read(0xc0001a0480, {0xc0004b6800, 0x200, 0x200})
+	/usr/lib/go/src/internal/poll/fd_unix.go:167 +0x299
+os.(*File).read(...)
+	/usr/lib/go/src/os/file_posix.go:31
+os.(*File).Read(0xc0001ba090, {0xc0004b6800?, 0x0?, 0xc00018ae68?})
+	/usr/lib/go/src/os/file.go:118 +0x5e
+bytes.(*Buffer).ReadFrom(0xc0001f8540, {0x555760, 0xc0001ba090})
+	/usr/lib/go/src/bytes/buffer.go:202 +0x98
+io.copyBuffer({0x555620, 0xc0001f8540}, {0x555760, 0xc0001ba090}, {0x0, 0x0, 0x0})
+	/usr/lib/go/src/io/io.go:413 +0x14b
+io.Copy(...)
+	/usr/lib/go/src/io/io.go:386
+os/exec.(*Cmd).writerDescriptor.func1()
+	/usr/lib/go/src/os/exec/exec.go:560 +0x3a
+os/exec.(*Cmd).Start.func2(0xc0001141e0?)
+	/usr/lib/go/src/os/exec/exec.go:717 +0x32
+created by os/exec.(*Cmd).Start
+	/usr/lib/go/src/os/exec/exec.go:716 +0xa33
+
+goroutine 111 [chan receive]:
+LostBitset/quiver_se/lib.SMRConfig[...].Start.func2()
+	/home/landon/Documents/repos/__active__/quiver_se/lib/smr_impl.go:117 +0x145
+created by LostBitset/quiver_se/lib.SMRConfig[...].Start
+	/home/landon/Documents/repos/__active__/quiver_se/lib/smr_impl.go:109 +0x22a
+
+goroutine 113 [runnable]:
+main.Microprogram.SiMReQProcessPCs.func1()
+	/home/landon/Documents/repos/__active__/quiver_se/bin/simreq_impl.go:121 +0x275
+created by main.Microprogram.SiMReQProcessPCs
+	/home/landon/Documents/repos/__active__/quiver_se/bin/simreq_impl.go:78 +0x553
+
+goroutine 114 [runnable]:
+main.Microprogram.SiMReQProcessPCs.func1()
+	/home/landon/Documents/repos/__active__/quiver_se/bin/simreq_impl.go:121 +0x275
+created by main.Microprogram.SiMReQProcessPCs
+	/home/landon/Documents/repos/__active__/quiver_se/bin/simreq_impl.go:78 +0x553
+
+goroutine 116 [runnable]:
+main.Microprogram.SiMReQProcessPCs.func1()
+	/home/landon/Documents/repos/__active__/quiver_se/bin/simreq_impl.go:121 +0x275
+created by main.Microprogram.SiMReQProcessPCs
+	/home/landon/Documents/repos/__active__/quiver_se/bin/simreq_impl.go:78 +0x553
+
+goroutine 117 [runnable]:
+main.Microprogram.SiMReQProcessPCs.func1()
+	/home/landon/Documents/repos/__active__/quiver_se/bin/simreq_impl.go:121 +0x275
+created by main.Microprogram.SiMReQProcessPCs
+	/home/landon/Documents/repos/__active__/quiver_se/bin/simreq_impl.go:78 +0x553
+
+goroutine 170 [IO wait]:
+internal/poll.runtime_pollWait(0x7fe54e337bf8, 0x72)
+	/usr/lib/go/src/runtime/netpoll.go:306 +0x89
+internal/poll.(*pollDesc).wait(0xc0001a0540?, 0xc0000ba000?, 0x1)
+	/usr/lib/go/src/internal/poll/fd_poll_runtime.go:84 +0x32
+internal/poll.(*pollDesc).waitRead(...)
+	/usr/lib/go/src/internal/poll/fd_poll_runtime.go:89
+internal/poll.(*FD).Read(0xc0001a0540, {0xc0000ba000, 0x8000, 0x8000})
+	/usr/lib/go/src/internal/poll/fd_unix.go:167 +0x299
+os.(*File).read(...)
+	/usr/lib/go/src/os/file_posix.go:31
+os.(*File).Read(0xc0001ba0a8, {0xc0000ba000?, 0xc0004665a0?, 0x4ddd6d?})
+	/usr/lib/go/src/os/file.go:118 +0x5e
+io.copyBuffer({0x555820, 0xc0004665a0}, {0x555760, 0xc0001ba0a8}, {0x0, 0x0, 0x0})
+	/usr/lib/go/src/io/io.go:427 +0x1b2
+io.Copy(...)
+	/usr/lib/go/src/io/io.go:386
+os/exec.(*Cmd).writerDescriptor.func1()
+	/usr/lib/go/src/os/exec/exec.go:560 +0x3a
+os/exec.(*Cmd).Start.func2(0xc000150f68?)
+	/usr/lib/go/src/os/exec/exec.go:717 +0x32
+created by os/exec.(*Cmd).Start
+	/usr/lib/go/src/os/exec/exec.go:716 +0xa33
+
+goroutine 120 [runnable]:
+main.Microprogram.SiMReQProcessPCs.func1()
+	/home/landon/Documents/repos/__active__/quiver_se/bin/simreq_impl.go:121 +0x275
+created by main.Microprogram.SiMReQProcessPCs
+	/home/landon/Documents/repos/__active__/quiver_se/bin/simreq_impl.go:78 +0x553
+
+goroutine 121 [runnable]:
+main.Microprogram.SiMReQProcessPCs.func1()
+	/home/landon/Documents/repos/__active__/quiver_se/bin/simreq_impl.go:121 +0x275
+created by main.Microprogram.SiMReQProcessPCs
+	/home/landon/Documents/repos/__active__/quiver_se/bin/simreq_impl.go:78 +0x553
+
+goroutine 123 [runnable]:
+main.Microprogram.SiMReQProcessPCs.func1()
+	/home/landon/Documents/repos/__active__/quiver_se/bin/simreq_impl.go:121 +0x275
+created by main.Microprogram.SiMReQProcessPCs
+	/home/landon/Documents/repos/__active__/quiver_se/bin/simreq_impl.go:78 +0x553
+
+goroutine 124 [runnable]:
+main.Microprogram.SiMReQProcessPCs.func1()
+	/home/landon/Documents/repos/__active__/quiver_se/bin/simreq_impl.go:121 +0x275
+created by main.Microprogram.SiMReQProcessPCs
+	/home/landon/Documents/repos/__active__/quiver_se/bin/simreq_impl.go:78 +0x553
+
+goroutine 126 [runnable]:
+main.Microprogram.SiMReQProcessPCs.func1()
+	/home/landon/Documents/repos/__active__/quiver_se/bin/simreq_impl.go:121 +0x275
+created by main.Microprogram.SiMReQProcessPCs
+	/home/landon/Documents/repos/__active__/quiver_se/bin/simreq_impl.go:78 +0x553
+
+goroutine 127 [runnable]:
+main.Microprogram.SiMReQProcessPCs.func1()
+	/home/landon/Documents/repos/__active__/quiver_se/bin/simreq_impl.go:121 +0x275
+created by main.Microprogram.SiMReQProcessPCs
+	/home/landon/Documents/repos/__active__/quiver_se/bin/simreq_impl.go:78 +0x553
+
+goroutine 130 [runnable]:
+main.Microprogram.SiMReQProcessPCs.func1()
+	/home/landon/Documents/repos/__active__/quiver_se/bin/simreq_impl.go:121 +0x275
+created by main.Microprogram.SiMReQProcessPCs
+	/home/landon/Documents/repos/__active__/quiver_se/bin/simreq_impl.go:78 +0x553
+
+goroutine 131 [runnable]:
+main.Microprogram.SiMReQProcessPCs.func1()
+	/home/landon/Documents/repos/__active__/quiver_se/bin/simreq_impl.go:121 +0x275
+created by main.Microprogram.SiMReQProcessPCs
+	/home/landon/Documents/repos/__active__/quiver_se/bin/simreq_impl.go:78 +0x553
+
+goroutine 138 [chan receive]:
+main.Microprogram.SiMReQProcessPCs.func2()
+	/home/landon/Documents/repos/__active__/quiver_se/bin/simreq_impl.go:128 +0xbe
+created by main.Microprogram.SiMReQProcessPCs
+	/home/landon/Documents/repos/__active__/quiver_se/bin/simreq_impl.go:126 +0x62a
+
+goroutine 209 [runnable]:
+LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks.func1()
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:113 +0x237
+created by LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:103 +0x205
+
+goroutine 212 [chan receive]:
+LostBitset/quiver_se/lib.DMTQWardenConfig[...].Start.func1.1()
+	/home/landon/Documents/repos/__active__/quiver_se/lib/dmtq_warden_impl.go:31 +0x1d7
+created by LostBitset/quiver_se/lib.DMTQWardenConfig[...].Start.func1
+	/home/landon/Documents/repos/__active__/quiver_se/lib/dmtq_warden_impl.go:27 +0x9c
+
+goroutine 213 [chan receive]:
+LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks.func1()
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:113 +0x237
+created by LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:103 +0x205
+
+goroutine 215 [runnable]:
+LostBitset/quiver_se/lib.Quiver[...].EmitSimpleWalksFromToRevPrefix(0x5578a0, 0xc000114ba0, 0x1, 0x1, 0xc0004abf68, {{0x556190, 0xc00019c300}, 0x0, {}, {}})
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:163 +0x94
+LostBitset/quiver_se/lib.Quiver[...].EmitSimpleWalksFromToRev(0x5578a0?, 0x0?, 0x0?, 0x0)
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:149 +0xda
+LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks.func3()
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:137 +0x45
+created by LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:136 +0x32a
+
+goroutine 216 [chan receive]:
+LostBitset/quiver_se/lib.DMTQWardenConfig[...].Start.func1.1()
+	/home/landon/Documents/repos/__active__/quiver_se/lib/dmtq_warden_impl.go:31 +0x1d7
+created by LostBitset/quiver_se/lib.DMTQWardenConfig[...].Start.func1
+	/home/landon/Documents/repos/__active__/quiver_se/lib/dmtq_warden_impl.go:27 +0x9c
+
+goroutine 225 [runnable]:
+LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks.func1()
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:113 +0x237
+created by LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:103 +0x205
+
+goroutine 227 [runnable]:
+src.elv.sh/pkg/persistent/hashmap.(*bitmapNode).assoc(0xc000331760, 0x0, 0xd04cfc58, {0x5165c0?, 0xc0003317a0}, {0x5004a0?, 0x63a320}, 0xc0003317a0?, 0x5349e0)
+	/home/landon/go/pkg/mod/src.elv.sh@v0.18.0/pkg/persistent/hashmap/hashmap.go:404 +0x166
+src.elv.sh/pkg/persistent/hashmap.(*hashMap).Assoc(0xc000332f90, {0x5165c0, 0xc0003317a0}, {0x5004a0, 0x63a320})
+	/home/landon/go/pkg/mod/src.elv.sh@v0.18.0/pkg/persistent/hashmap/hashmap.go:61 +0x103
+LostBitset/quiver_se/lib.PHashMap[...].Assoc(...)
+	/home/landon/Documents/repos/__active__/quiver_se/lib/p_hashmap_impl.go:32
+LostBitset/quiver_se/lib.Trie[...].LookupLeafByNode(0x557ae0, 0xc00019b360)
+	/home/landon/Documents/repos/__active__/quiver_se/lib/trie_impl.go:343 +0x183
+LostBitset/quiver_se/lib.Trie[...].LookupLeaf(0x557ae0, 0x5)
+	/home/landon/Documents/repos/__active__/quiver_se/lib/trie_impl.go:328 +0x1ba
+LostBitset/quiver_se/lib.Trie[...].RevLookup(...)
+	/home/landon/Documents/repos/__active__/quiver_se/lib/trie_impl.go:356
+LostBitset/quiver_se/lib.DMT[...].RevLookup(...)
+	/home/landon/Documents/repos/__active__/quiver_se/lib/dmt_impl.go:136
+LostBitset/quiver_se/lib.(*Quiver[...]).ForEachInneighbor(0x5578a0, 0x5, 0xc000458c80)
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_impl.go:74 +0x116
+LostBitset/quiver_se/lib.Quiver[...].EmitSimpleWalksFromToRevPrefix(0x0?, 0xc00011ea60?, 0x1?, 0x1?, 0xc000190958?, {{0x556190, 0xc000332de0}, 0x1, {}, {}})
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:165 +0x13f
+LostBitset/quiver_se/lib.Quiver[...].EmitSimpleWalksFromToRevPrefix.func1()
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:177 +0x266
+LostBitset/quiver_se/lib.(*Quiver[...]).ForEachInneighbor(0x5578a0, 0x1, 0xc000458e88)
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_impl.go:79 +0x15a
+LostBitset/quiver_se/lib.Quiver[...].EmitSimpleWalksFromToRevPrefix(0x5578a0?, 0xc000114f00?, 0x1?, 0x1?, 0xc0000c8768?, {{0x556190, 0xc000332180}, 0x0, {}, {}})
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:165 +0x13f
+LostBitset/quiver_se/lib.Quiver[...].EmitSimpleWalksFromToRev(0x5578a0?, 0x1?, 0xc?, 0x7900000008)
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:149 +0xda
+LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks.func3()
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:137 +0x45
+created by LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:136 +0x32a
+
+goroutine 228 [runnable]:
+LostBitset/quiver_se/lib.DMTQWardenConfig[...].Start.func1.1()
+	/home/landon/Documents/repos/__active__/quiver_se/lib/dmtq_warden_impl.go:27
+created by LostBitset/quiver_se/lib.DMTQWardenConfig[...].Start.func1
+	/home/landon/Documents/repos/__active__/quiver_se/lib/dmtq_warden_impl.go:27 +0x9c
+
+goroutine 229 [runnable]:
+LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks.func1()
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:103
+created by LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:103 +0x205
+
+goroutine 230 [runnable]:
+LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks.func2()
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:132
+created by LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:132 +0x293
+
+goroutine 231 [runnable]:
+LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks.func3()
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:136
+created by LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:136 +0x32a
+
+goroutine 232 [runnable]:
+LostBitset/quiver_se/lib.DMTQWardenConfig[...].Start.func1.1()
+	/home/landon/Documents/repos/__active__/quiver_se/lib/dmtq_warden_impl.go:27
+created by LostBitset/quiver_se/lib.DMTQWardenConfig[...].Start.func1
+	/home/landon/Documents/repos/__active__/quiver_se/lib/dmtq_warden_impl.go:27 +0x9c
+
+goroutine 233 [runnable]:
+LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks.func1()
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:103
+created by LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:103 +0x205
+
+goroutine 234 [runnable]:
+LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks.func2()
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:132
+created by LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:132 +0x293
+
+goroutine 235 [runnable]:
+LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks.func3()
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:136
+created by LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:136 +0x32a
+
+goroutine 236 [runnable]:
+LostBitset/quiver_se/lib.DMTQWardenConfig[...].Start.func1.1()
+	/home/landon/Documents/repos/__active__/quiver_se/lib/dmtq_warden_impl.go:27
+created by LostBitset/quiver_se/lib.DMTQWardenConfig[...].Start.func1
+	/home/landon/Documents/repos/__active__/quiver_se/lib/dmtq_warden_impl.go:27 +0x9c
+
+goroutine 237 [runnable]:
+LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks.func1()
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:103
+created by LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:103 +0x205
+
+goroutine 238 [runnable]:
+LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks.func2()
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:132
+created by LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:132 +0x293
+
+goroutine 239 [runnable]:
+LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks.func3()
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:136
+created by LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:136 +0x32a
+
+goroutine 240 [runnable]:
+LostBitset/quiver_se/lib.DMTQWardenConfig[...].Start.func1.1()
+	/home/landon/Documents/repos/__active__/quiver_se/lib/dmtq_warden_impl.go:27
+created by LostBitset/quiver_se/lib.DMTQWardenConfig[...].Start.func1
+	/home/landon/Documents/repos/__active__/quiver_se/lib/dmtq_warden_impl.go:27 +0x9c
+
+goroutine 241 [runnable]:
+LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks.func1()
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:103
+created by LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:103 +0x205
+
+goroutine 242 [runnable]:
+LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks.func2()
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:132
+created by LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:132 +0x293
+
+goroutine 243 [runnable]:
+LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks.func3()
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:136
+created by LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:136 +0x32a
+
+goroutine 244 [runnable]:
+LostBitset/quiver_se/lib.DMTQWardenConfig[...].Start.func1.1()
+	/home/landon/Documents/repos/__active__/quiver_se/lib/dmtq_warden_impl.go:27
+created by LostBitset/quiver_se/lib.DMTQWardenConfig[...].Start.func1
+	/home/landon/Documents/repos/__active__/quiver_se/lib/dmtq_warden_impl.go:27 +0x9c
+
+goroutine 245 [runnable]:
+LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks.func1()
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:103
+created by LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:103 +0x205
+
+goroutine 247 [chan send]:
+LostBitset/quiver_se/lib.Quiver[...].EmitSimpleWalksFromToRevPrefix(0x5578a0, 0xc0001154a0, 0x1, 0x1, 0xc0000c2768, {{0x556190, 0xc00039a090}, 0x0, {}, {}})
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:163 +0x94
+LostBitset/quiver_se/lib.Quiver[...].EmitSimpleWalksFromToRev(0x5578a0?, 0x0?, 0xc0000ba0c0?, 0x1)
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:149 +0xda
+LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks.func3()
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:137 +0x45
+created by LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:136 +0x32a
+
+goroutine 248 [chan receive]:
+LostBitset/quiver_se/lib.DMTQWardenConfig[...].Start.func1.1()
+	/home/landon/Documents/repos/__active__/quiver_se/lib/dmtq_warden_impl.go:31 +0x1d7
+created by LostBitset/quiver_se/lib.DMTQWardenConfig[...].Start.func1
+	/home/landon/Documents/repos/__active__/quiver_se/lib/dmtq_warden_impl.go:27 +0x9c
+
+goroutine 249 [runnable]:
+LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks.func1()
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:113 +0x237
+created by LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:103 +0x205
+
+goroutine 251 [runnable]:
+src.elv.sh/pkg/persistent/hashmap.(*hashMap).Assoc(0xc00039a750, {0x5165c0, 0xc000390aa0}, {0x5004a0, 0x63a320})
+	/home/landon/go/pkg/mod/src.elv.sh@v0.18.0/pkg/persistent/hashmap/hashmap.go:66 +0x12d
+LostBitset/quiver_se/lib.PHashMap[...].Assoc(...)
+	/home/landon/Documents/repos/__active__/quiver_se/lib/p_hashmap_impl.go:32
+LostBitset/quiver_se/lib.Trie[...].LookupLeafByNode(0x557ae0, 0xc00019b360)
+	/home/landon/Documents/repos/__active__/quiver_se/lib/trie_impl.go:343 +0x183
+LostBitset/quiver_se/lib.Trie[...].LookupLeaf(0x557ae0, 0x5)
+	/home/landon/Documents/repos/__active__/quiver_se/lib/trie_impl.go:328 +0x1ba
+LostBitset/quiver_se/lib.Trie[...].RevLookup(...)
+	/home/landon/Documents/repos/__active__/quiver_se/lib/trie_impl.go:356
+LostBitset/quiver_se/lib.DMT[...].RevLookup(...)
+	/home/landon/Documents/repos/__active__/quiver_se/lib/dmt_impl.go:136
+LostBitset/quiver_se/lib.(*Quiver[...]).ForEachInneighbor(0x5578a0, 0x5, 0xc000660c80)
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_impl.go:74 +0x116
+LostBitset/quiver_se/lib.Quiver[...].EmitSimpleWalksFromToRevPrefix(0x0?, 0xc00011ea60?, 0x1?, 0x1?, 0xc000190958?, {{0x556190, 0xc00039a570}, 0x1, {}, {}})
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:165 +0x13f
+LostBitset/quiver_se/lib.Quiver[...].EmitSimpleWalksFromToRevPrefix.func1()
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:177 +0x266
+LostBitset/quiver_se/lib.(*Quiver[...]).ForEachInneighbor(0x5578a0, 0x1, 0xc000660e88)
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_impl.go:79 +0x15a
+LostBitset/quiver_se/lib.Quiver[...].EmitSimpleWalksFromToRevPrefix(0x5578a0?, 0xc0001155c0?, 0x1?, 0x1?, 0xc0000d6768?, {{0x556190, 0xc00039a0f0}, 0x0, {}, {}})
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:165 +0x13f
+LostBitset/quiver_se/lib.Quiver[...].EmitSimpleWalksFromToRev(0x5578a0?, 0x203a3031206e6d75?, 0x7369206c65646f6d?, 0x61766120746f6e20)
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:149 +0xda
+LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks.func3()
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:137 +0x45
+created by LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:136 +0x32a
+
+goroutine 252 [chan receive]:
+LostBitset/quiver_se/lib.DMTQWardenConfig[...].Start.func1.1()
+	/home/landon/Documents/repos/__active__/quiver_se/lib/dmtq_warden_impl.go:31 +0x1d7
+created by LostBitset/quiver_se/lib.DMTQWardenConfig[...].Start.func1
+	/home/landon/Documents/repos/__active__/quiver_se/lib/dmtq_warden_impl.go:27 +0x9c
+
+goroutine 253 [runnable]:
+LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks.func1()
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:113 +0x237
+created by LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:103 +0x205
+
+goroutine 255 [runnable]:
+src.elv.sh/pkg/persistent/hashmap.(*bitmapNode).assoc(0x60c5a0, 0x5, 0x9c1ea1e5, {0x5165c0?, 0xc0005edac0}, {0x5004a0?, 0x63a320}, 0x5349e8?, 0x5349e0)
+	/home/landon/go/pkg/mod/src.elv.sh@v0.18.0/pkg/persistent/hashmap/hashmap.go:392 +0xa1b
+src.elv.sh/pkg/persistent/hashmap.createNode(0x5edac0?, {0x5165c0?, 0xc0005edac0}, {0x5004a0?, 0x63a320}, 0xc8714ba5, {0x5165c0?, 0xc0005edb00}, {0x5004a0, 0x63a320}, ...)
+	/home/landon/go/pkg/mod/src.elv.sh@v0.18.0/pkg/persistent/hashmap/hashmap.go:343 +0x1f5
+src.elv.sh/pkg/persistent/hashmap.(*bitmapNode).assoc(0xc0005edae0, 0x0, 0xc8714ba5, {0x5165c0?, 0xc0005edb00}, {0x5004a0?, 0x63a320}, 0xc0005edb00?, 0x5349e0)
+	/home/landon/go/pkg/mod/src.elv.sh@v0.18.0/pkg/persistent/hashmap/hashmap.go:424 +0x60e
+src.elv.sh/pkg/persistent/hashmap.(*hashMap).Assoc(0xc0005ee990, {0x5165c0, 0xc0005edb00}, {0x5004a0, 0x63a320})
+	/home/landon/go/pkg/mod/src.elv.sh@v0.18.0/pkg/persistent/hashmap/hashmap.go:61 +0x103
+LostBitset/quiver_se/lib.PHashMap[...].Assoc(...)
+	/home/landon/Documents/repos/__active__/quiver_se/lib/p_hashmap_impl.go:32
+LostBitset/quiver_se/lib.Trie[...].LookupLeafByNode(0x557ae0, 0xc00019b360)
+	/home/landon/Documents/repos/__active__/quiver_se/lib/trie_impl.go:343 +0x183
+LostBitset/quiver_se/lib.Trie[...].LookupLeaf(0x557ae0, 0x5)
+	/home/landon/Documents/repos/__active__/quiver_se/lib/trie_impl.go:328 +0x1ba
+LostBitset/quiver_se/lib.Trie[...].RevLookup(...)
+	/home/landon/Documents/repos/__active__/quiver_se/lib/trie_impl.go:356
+LostBitset/quiver_se/lib.DMT[...].RevLookup(...)
+	/home/landon/Documents/repos/__active__/quiver_se/lib/dmt_impl.go:136
+LostBitset/quiver_se/lib.(*Quiver[...]).ForEachInneighbor(0x5578a0, 0x5, 0xc0000a2c80)
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_impl.go:74 +0x116
+LostBitset/quiver_se/lib.Quiver[...].EmitSimpleWalksFromToRevPrefix(0x0?, 0xc00011ea60?, 0x1?, 0x1?, 0xc000190958?, {{0x556190, 0xc0005ee900}, 0x1, {}, {}})
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:165 +0x13f
+LostBitset/quiver_se/lib.Quiver[...].EmitSimpleWalksFromToRevPrefix.func1()
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:177 +0x266
+LostBitset/quiver_se/lib.(*Quiver[...]).ForEachInneighbor(0x5578a0, 0x1, 0xc0000a2e88)
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_impl.go:79 +0x15a
+LostBitset/quiver_se/lib.Quiver[...].EmitSimpleWalksFromToRevPrefix(0x5578a0?, 0xc0001156e0?, 0x1?, 0x1?, 0xc0000d8768?, {{0x556190, 0xc0005ee360}, 0x0, {}, {}})
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:165 +0x13f
+LostBitset/quiver_se/lib.Quiver[...].EmitSimpleWalksFromToRev(0x5578a0?, 0x206562206f742074?, 0x206465686374616d?, 0x20796c6b63697571)
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:149 +0xda
+LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks.func3()
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:137 +0x45
+created by LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:136 +0x32a
+
+goroutine 256 [runnable]:
+LostBitset/quiver_se/lib.DMTQWardenConfig[...].Start.func1.1()
+	/home/landon/Documents/repos/__active__/quiver_se/lib/dmtq_warden_impl.go:27
+created by LostBitset/quiver_se/lib.DMTQWardenConfig[...].Start.func1
+	/home/landon/Documents/repos/__active__/quiver_se/lib/dmtq_warden_impl.go:27 +0x9c
+
+goroutine 257 [runnable]:
+LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks.func1()
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:103
+created by LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:103 +0x205
+
+goroutine 258 [runnable]:
+LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks.func2()
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:132
+created by LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:132 +0x293
+
+goroutine 259 [runnable]:
+LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks.func3()
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:136
+created by LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:136 +0x32a
+
+goroutine 260 [runnable]:
+LostBitset/quiver_se/lib.DMTQWardenConfig[...].Start.func1.1()
+	/home/landon/Documents/repos/__active__/quiver_se/lib/dmtq_warden_impl.go:27
+created by LostBitset/quiver_se/lib.DMTQWardenConfig[...].Start.func1
+	/home/landon/Documents/repos/__active__/quiver_se/lib/dmtq_warden_impl.go:27 +0x9c
+
+goroutine 261 [runnable]:
+LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks.func1()
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:103
+created by LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:103 +0x205
+
+goroutine 263 [chan send]:
+LostBitset/quiver_se/lib.Quiver[...].EmitSimpleWalksFromToRevPrefix(0x5578a0, 0xc000115920, 0x1, 0x1, 0xc0000d4768, {{0x556190, 0xc00019dd70}, 0x0, {}, {}})
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:163 +0x94
+LostBitset/quiver_se/lib.Quiver[...].EmitSimpleWalksFromToRev(0x5578a0?, 0x292929305f726176?, 0x2064656d616e3a20?, 0xa2929335f6167)
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:149 +0xda
+LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks.func3()
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:137 +0x45
+created by LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:136 +0x32a
+
+goroutine 264 [chan receive]:
+LostBitset/quiver_se/lib.DMTQWardenConfig[...].Start.func1.1()
+	/home/landon/Documents/repos/__active__/quiver_se/lib/dmtq_warden_impl.go:31 +0x1d7
+created by LostBitset/quiver_se/lib.DMTQWardenConfig[...].Start.func1
+	/home/landon/Documents/repos/__active__/quiver_se/lib/dmtq_warden_impl.go:27 +0x9c
+
+goroutine 265 [runnable]:
+LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks.func1()
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:113 +0x237
+created by LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:103 +0x205
+
+goroutine 267 [runnable]:
+src.elv.sh/pkg/persistent/hashmap.(*hashMap).Iterator(0xc0001f8780?)
+	/home/landon/go/pkg/mod/src.elv.sh@v0.18.0/pkg/persistent/hashmap/hashmap.go:85 +0xe6
+LostBitset/quiver_se/lib.Trie[...].LookupLeafByNode(0x557ae0, 0xc00011e950)
+	/home/landon/Documents/repos/__active__/quiver_se/lib/trie_impl.go:340 +0xdc
+LostBitset/quiver_se/lib.Trie[...].LookupLeaf(0x557ae0, 0x1)
+	/home/landon/Documents/repos/__active__/quiver_se/lib/trie_impl.go:328 +0x1ba
+LostBitset/quiver_se/lib.Trie[...].RevLookup(...)
+	/home/landon/Documents/repos/__active__/quiver_se/lib/trie_impl.go:356
+LostBitset/quiver_se/lib.DMT[...].RevLookup(...)
+	/home/landon/Documents/repos/__active__/quiver_se/lib/dmt_impl.go:136
+LostBitset/quiver_se/lib.(*Quiver[...]).ForEachInneighbor(0x5578a0, 0x1, 0xc00045ee88)
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_impl.go:74 +0x116
+LostBitset/quiver_se/lib.Quiver[...].EmitSimpleWalksFromToRevPrefix(0x5578a0?, 0xc000115a40?, 0x1?, 0x1?, 0xc0000e6768?, {{0x556190, 0xc00019ddd0}, 0x0, {}, {}})
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:165 +0x13f
+LostBitset/quiver_se/lib.Quiver[...].EmitSimpleWalksFromToRev(0x5578a0?, 0x0?, 0x0?, 0x0)
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:149 +0xda
+LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks.func3()
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:137 +0x45
+created by LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:136 +0x32a
+
+goroutine 268 [runnable]:
+LostBitset/quiver_se/lib.DMTQWardenConfig[...].Start.func1.1()
+	/home/landon/Documents/repos/__active__/quiver_se/lib/dmtq_warden_impl.go:27
+created by LostBitset/quiver_se/lib.DMTQWardenConfig[...].Start.func1
+	/home/landon/Documents/repos/__active__/quiver_se/lib/dmtq_warden_impl.go:27 +0x9c
+
+goroutine 269 [runnable]:
+LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks.func1()
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:103
+created by LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:103 +0x205
+
+goroutine 270 [runnable]:
+LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks.func2()
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:132
+created by LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:132 +0x293
+
+goroutine 271 [chan send]:
+LostBitset/quiver_se/lib.Quiver[...].EmitSimpleWalksFromToRevPrefix(0x5578a0, 0xc000115b60, 0x1, 0x1, 0xc0000e8768, {{0x556190, 0xc00019dd40}, 0x0, {}, {}})
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:163 +0x94
+LostBitset/quiver_se/lib.Quiver[...].EmitSimpleWalksFromToRev(0x5578a0?, 0x0?, 0x0?, 0x0)
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:149 +0xda
+LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks.func3()
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:137 +0x45
+created by LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:136 +0x32a
+
+goroutine 272 [runnable]:
+LostBitset/quiver_se/lib.DMTQWardenConfig[...].Start.func1.1()
+	/home/landon/Documents/repos/__active__/quiver_se/lib/dmtq_warden_impl.go:27
+created by LostBitset/quiver_se/lib.DMTQWardenConfig[...].Start.func1
+	/home/landon/Documents/repos/__active__/quiver_se/lib/dmtq_warden_impl.go:27 +0x9c
+
+goroutine 273 [runnable]:
+LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks.func1()
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:103
+created by LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:103 +0x205
+
+goroutine 274 [runnable]:
+LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks.func2()
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:132
+created by LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:132 +0x293
+
+goroutine 275 [runnable]:
+LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks.func3()
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:136
+created by LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:136 +0x32a
+
+goroutine 276 [runnable]:
+LostBitset/quiver_se/lib.DMTQWardenConfig[...].Start.func1.1()
+	/home/landon/Documents/repos/__active__/quiver_se/lib/dmtq_warden_impl.go:27
+created by LostBitset/quiver_se/lib.DMTQWardenConfig[...].Start.func1
+	/home/landon/Documents/repos/__active__/quiver_se/lib/dmtq_warden_impl.go:27 +0x9c
+
+goroutine 277 [runnable]:
+LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks.func1()
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:103
+created by LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:103 +0x205
+
+goroutine 278 [runnable]:
+LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks.func2()
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:132
+created by LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:132 +0x293
+
+goroutine 279 [runnable]:
+LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks.func3()
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:136
+created by LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:136 +0x32a
+
+goroutine 280 [runnable]:
+LostBitset/quiver_se/lib.DMTQWardenConfig[...].Start.func1.1()
+	/home/landon/Documents/repos/__active__/quiver_se/lib/dmtq_warden_impl.go:27
+created by LostBitset/quiver_se/lib.DMTQWardenConfig[...].Start.func1
+	/home/landon/Documents/repos/__active__/quiver_se/lib/dmtq_warden_impl.go:27 +0x9c
+
+goroutine 281 [runnable]:
+LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks.func1()
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:103
+created by LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:103 +0x205
+
+goroutine 282 [runnable]:
+LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks.func2()
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:132
+created by LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:132 +0x293
+
+goroutine 283 [runnable]:
+LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks.func3()
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:136
+created by LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:136 +0x32a
+
+goroutine 284 [runnable]:
+LostBitset/quiver_se/lib.DMTQWardenConfig[...].Start.func1.1()
+	/home/landon/Documents/repos/__active__/quiver_se/lib/dmtq_warden_impl.go:27
+created by LostBitset/quiver_se/lib.DMTQWardenConfig[...].Start.func1
+	/home/landon/Documents/repos/__active__/quiver_se/lib/dmtq_warden_impl.go:27 +0x9c
+
+goroutine 285 [runnable]:
+LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks.func1()
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:103
+created by LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:103 +0x205
+
+goroutine 286 [runnable]:
+LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks.func2()
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:132
+created by LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:132 +0x293
+
+goroutine 287 [runnable]:
+LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks.func3()
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:136
+created by LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:136 +0x32a
+
+goroutine 288 [runnable]:
+LostBitset/quiver_se/lib.DMTQWardenConfig[...].Start.func1.1()
+	/home/landon/Documents/repos/__active__/quiver_se/lib/dmtq_warden_impl.go:27
+created by LostBitset/quiver_se/lib.DMTQWardenConfig[...].Start.func1
+	/home/landon/Documents/repos/__active__/quiver_se/lib/dmtq_warden_impl.go:27 +0x9c
+
+goroutine 289 [runnable]:
+LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks.func1()
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:103
+created by LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:103 +0x205
+
+goroutine 290 [runnable]:
+LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks.func2()
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:132
+created by LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:132 +0x293
+
+goroutine 291 [runnable]:
+LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks.func3()
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:136
+created by LostBitset/quiver_se/lib.(*Quiver[...]).ApplyUpdateAndEmitWalks
+	/home/landon/Documents/repos/__active__/quiver_se/lib/quiver_walks_impl.go:136 +0x32a
+
+goroutine 292 [chan receive]:
+LostBitset/quiver_se/lib.DMTQWardenConfig[...].Start.func1.1()
+	/home/landon/Documents/repos/__active__/quiver_se/lib/dmtq_warden_impl.go:31 +0x1d7
+created by LostBitset/quiver_se/lib.DMTQWardenConfig[...].Start.func1
+	/home/landon/Documents/repos/__active__/quiver_se/lib/dmtq_warden_impl.go:27 +0x9c
+exit status 2
