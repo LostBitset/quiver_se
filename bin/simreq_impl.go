@@ -1,6 +1,7 @@
 package main
 
 import (
+	qse "LostBitset/quiver_se/lib"
 	"strconv"
 	"strings"
 
@@ -22,10 +23,26 @@ func (uprgm Microprogram) SiMReQProcessPCs(
 	bug_signal chan struct{},
 ) {
 	// Setup everything necessary
-	// TODO
+	in_updates := make(chan qse.Augmented[
+		qse.QuiverUpdate[
+			int,
+			qse.PHashMap[qse.Literal[qse.WithId_H[string]], struct{}],
+			*qse.DMT[qse.WithId_H[string], qse.QuiverIndex],
+		],
+		[]qse.SMTFreeFun[string, string],
+	])
+	out_models_unfiltered := make(chan string)
+	var idsrc qse.IdSource
+	sys := qse.SMTLibv2StringSystem{idsrc}
 	// Start SiMReQ
+	dmtq, top_node, fail_node, _ := qse.StartSiMReQ[
+		int, string, string, string, string, qse.SMTLibv2StringSolvedCtx,
+	](
+		in_updates, out_models_unfiltered, sys, nil,
+	)
+	// Create all necessary nodes
 	// TODO
-	// Listen for bugs
+	// Listen for bugs in a seperate goroutine
 	// TODO
 	for pc := range in_pcs {
 		// Group the segmented path condition by segments (which represent transitions)
@@ -52,4 +69,5 @@ func (uprgm Microprogram) SiMReQProcessPCs(
 		// Send the updates to SiMReQ
 		// TODO
 	}
+	close(in_updates)
 }
