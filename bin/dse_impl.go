@@ -10,7 +10,9 @@ import (
 func (uprgm Microprogram) RunDSE() (n_bugs int) {
 	n_bugs = 0
 	bug_signal := make(chan uint32)
-	go uprgm.RunDSEContinuously(bug_signal, false, nil, false, -1)
+	go uprgm.RunDSEContinuously(
+		bug_signal, false, nil, false, -1, uprgm.top_state,
+	)
 	for range bug_signal {
 		n_bugs++
 	}
@@ -23,11 +25,14 @@ func (uprgm Microprogram) RunDSEContinuously(
 	out_pcs *chan PathConditionResult,
 	no_transition bool,
 	max_iters int, // -1 for no limit
+	top_state MicroprogramState,
 ) {
 	var backing_idsrc qse.IdSource
 	idsrc := &backing_idsrc
 	model := uprgm.UnitializedAssignment()
-	imm_failure, imm_pc := uprgm.ExecuteGetPathCondition(model, no_transition)
+	imm_failure, imm_pc := uprgm.ExecuteGetPathConditionFrom(
+		model, top_state, no_transition, PC_REC_LIMIT,
+	)
 	if imm_failure {
 		panic("[bad-input-panic] [bin:dse_impl] Immediate failure. ")
 	}
@@ -60,6 +65,7 @@ setupAltStackAndPathLoop:
 mainDSESearchAlternativesLoop:
 	for (len(alt_stack) > 0) || (n_iters == max_iters) {
 		n_iters++
+		fmt.Printf("[STATUS-DSE] %d / %d iters\n", n_iters, max_iters)
 		alt_stack_pop_index := len(alt_stack) - 1
 		inv_index := alt_stack[alt_stack_pop_index]
 		qse.SpliceOutReclaim(&alt_stack, alt_stack_pop_index)
@@ -74,7 +80,9 @@ mainDSESearchAlternativesLoop:
 			continue mainDSESearchAlternativesLoop
 		}
 		new_model := FilterModelFromZ3(*new_model_ptr)
-		fails, pc := uprgm.ExecuteGetPathCondition(new_model, no_transition)
+		fails, pc := uprgm.ExecuteGetPathConditionFrom(
+			new_model, top_state, no_transition, PC_REC_LIMIT,
+		)
 		if emit_pcs {
 			saved_pc := make([]string, len(pc))
 			copy(saved_pc, pc)
@@ -87,6 +95,9 @@ mainDSESearchAlternativesLoop:
 			if _, ok := detected_model_hashes[new_model_hash]; !ok {
 				bug_signal <- new_model_hash
 				detected_model_hashes[new_model_hash] = struct{}{}
+				if no_transition {
+					fmt.Println("[result-note] notransition=true")
+				}
 				fmt.Println("[result] [bin:dse_impl/RunDSE] Found a failure-inducing input:")
 				fmt.Println(new_model)
 			}
@@ -108,6 +119,9 @@ mainDSESearchAlternativesLoop:
 		}
 	}
 	close(bug_signal)
+	if emit_pcs {
+		close(*out_pcs)
+	}
 	return
 }
 

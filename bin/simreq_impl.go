@@ -20,7 +20,7 @@ func ParseMicroprogramState(str string) (state MicroprogramState) {
 	return
 }
 
-const SIMREQ_AOT_DSE_MAX_ITERS = 10
+const SIMREQ_JIT_DSE_MAX_ITERS = 10
 
 type SiMReQConstrainedTransition struct {
 	transition SimpleMicroprogramTransitionDesc
@@ -121,16 +121,35 @@ addNodesForMicroprogramStatesLoop:
 			if _, ok := seen_states[pc_state]; !ok {
 				seen_states[pc_state] = struct{}{}
 				edge_desc := SimpleMicroprogramTransitionDesc{pc_state, uprgm.fail_state}
-			findLocalFailureConstraints:
-				for _, transition := range uprgm.transitions[pc_state] {
-					if transition.dst_state != uprgm.fail_state {
-						continue findLocalFailureConstraints
+				bug_signal_black_hole := make(chan uint32)
+				go func() {
+					for range bug_signal_black_hole {
 					}
+				}()
+				out_local_pcs := make(chan PathConditionResult)
+				go func() {
+					defer fmt.Println("[STATUS-JITDSE] end")
+					fmt.Println("[STATUS-JITDSE] begin")
+					uprgm.RunDSEContinuously(
+						bug_signal_black_hole,
+						true,
+						&out_local_pcs,
+						true,
+						SIMREQ_JIT_DSE_MAX_ITERS,
+						pc_state,
+					)
+				}()
+			updateJITDSEPathConditionsLoop:
+				for local_pc := range out_local_pcs {
+					if !local_pc.fails {
+						continue updateJITDSEPathConditionsLoop
+					}
+					constraints := local_pc.pc
 					grouped_by_transition = append(
 						grouped_by_transition,
 						SiMReQConstrainedTransition{
 							edge_desc,
-							transition.constraints,
+							constraints,
 						},
 					)
 				}
@@ -199,6 +218,6 @@ func (uprgm Microprogram) RunSiMReQ(bug_signal chan struct{}) {
 		}
 	}()
 	in_pcs := make(chan PathConditionResult)
-	go uprgm.RunDSEContinuously(bug_signal_values, true, &in_pcs, false, -1)
+	go uprgm.RunDSEContinuously(bug_signal_values, true, &in_pcs, false, -1, uprgm.top_state)
 	uprgm.SiMReQProcessPCs(in_pcs, bug_signal_values)
 }

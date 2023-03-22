@@ -27,7 +27,9 @@ func main() {
 					bug_signal <- struct{}{}
 				}
 			}()
-			uprgm.RunDSEContinuously(bug_signal_values, false, nil, false, -1)
+			uprgm.RunDSEContinuously(
+				bug_signal_values, false, nil, false, -1, uprgm.top_state,
+			)
 		},
 		uprgm, n_samples, timeout, "dse",
 	)
