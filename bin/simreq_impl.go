@@ -128,9 +128,9 @@ addNodesForMicroprogramStatesLoop:
 				},
 				Augment: uprgm.smt_free_funs,
 			}
-			fmt.Printf("src: %#+v\n", update.Value.Src)
+			/*fmt.Printf("src: %#+v\n", update.Value.Src)
 			fmt.Printf("dst: %#+v\n", update.Value.Dst)
-			fmt.Printf("edge: %#+v\n", update.Value.Edge.ToStdlibMap())
+			fmt.Printf("edge: %#+v\n", update.Value.Edge.ToStdlibMap())*/
 			in_updates <- update
 		}
 	}

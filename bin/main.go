@@ -3,9 +3,12 @@ package main
 import (
 	"fmt"
 	"time"
+
+	"github.com/sirupsen/logrus"
 )
 
 func main() {
+	logrus.SetLevel(logrus.WarnLevel)
 	uprgm_gen := BuildEvaluationMicroprogramGenerator()
 	uprgm := uprgm_gen.RandomMicroprogram()
 	n_samples := 1
