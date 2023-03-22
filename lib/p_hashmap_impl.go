@@ -17,7 +17,7 @@ func HashableHashFunc(k any) (fixed_digest uint32) {
 	return
 }
 
-func NewPHashMap[K hashable, V any]() (pm PHashMap[K, V]) {
+func NewPHashMap[K Hashable, V any]() (pm PHashMap[K, V]) {
 	pm = PHashMap[K, V]{
 		hashmap.New(ComparableEqualFunc, HashableHashFunc),
 		0,
@@ -75,7 +75,7 @@ func (pm PHashMap[K, V]) ToStdlibMap() (m map[K]V) {
 	return
 }
 
-func StdlibMapToPHashMap[K hashable, V any](m map[K]V) (pm PHashMap[K, V]) {
+func StdlibMapToPHashMap[K Hashable, V any](m map[K]V) (pm PHashMap[K, V]) {
 	pm = NewPHashMap[K, V]()
 	for k, v := range m {
 		pm = pm.Assoc(k, v)

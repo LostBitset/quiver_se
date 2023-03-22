@@ -93,12 +93,12 @@ func DigestEqual(a digest_t, b digest_t) (equal bool) {
 	return
 }
 
-func BufferingLiteral[NODE hashable](value NODE) (lit Literal[NODE]) {
+func BufferingLiteral[NODE Hashable](value NODE) (lit Literal[NODE]) {
 	lit = Literal[NODE]{value, true}
 	return
 }
 
-func InvertingLiteral[NODE hashable](value NODE) (lit Literal[NODE]) {
+func InvertingLiteral[NODE Hashable](value NODE) (lit Literal[NODE]) {
 	lit = Literal[NODE]{value, false}
 	return
 }
@@ -111,7 +111,7 @@ func (lit Literal[NODE]) Invert() (inverted Literal[NODE]) {
 	return
 }
 
-func NewDMT[NODE hashable, LEAF hashable]() (t DMT[NODE, LEAF]) {
+func NewDMT[NODE Hashable, LEAF Hashable]() (t DMT[NODE, LEAF]) {
 	root_value_pm := NewPHashMap[Literal[NODE], struct{}]()
 	t = DMT[NODE, LEAF]{
 		Trie[Literal[NODE], LEAF, digest_t]{
@@ -314,7 +314,7 @@ func (t *DMT[NODE, LEAF]) ShiftChildren(node *TrieValueNode[Literal[NODE], LEAF,
 	}
 }
 
-func IsInvertedEdge[NODE hashable](maybe_buf PHashMap[Literal[NODE], struct{}], maybe_inv PHashMap[Literal[NODE], struct{}]) (match bool) {
+func IsInvertedEdge[NODE Hashable](maybe_buf PHashMap[Literal[NODE], struct{}], maybe_inv PHashMap[Literal[NODE], struct{}]) (match bool) {
 	maybe_inv_copy := maybe_inv.Clone()
 	for itr := maybe_buf.inner.Iterator(); itr.HasElem(); itr.Next() {
 		key_any, _ := itr.Elem()

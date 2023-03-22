@@ -10,8 +10,8 @@ type unsafe_relaxed_hashable interface {
 	Hash32() (fixed_digest uint32)
 }
 
-// This is the version of hashable to use
-type hashable interface {
+// This is the version of Hashable to use
+type Hashable interface {
 	unsafe_relaxed_hashable
 	comparable
 }
@@ -20,11 +20,11 @@ type uint32_H struct {
 	uint32
 }
 
-type Literal[NODE hashable] struct {
+type Literal[NODE Hashable] struct {
 	Value NODE
 	Eq    bool
 }
 
-type DMT[NODE hashable, LEAF hashable] struct {
+type DMT[NODE Hashable, LEAF Hashable] struct {
 	trie Trie[Literal[NODE], LEAF, digest_t]
 }

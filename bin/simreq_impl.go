@@ -88,3 +88,16 @@ addNodesForMicroprogramStatesLoop:
 	}
 	close(in_updates)
 }
+
+func SliceToSet[T comparable](slice []T) (set map[T]struct{}) {
+	set = make(map[T]struct{})
+	for _, elem := range slice {
+		set[elem] = struct{}{}
+	}
+	return
+}
+
+func SliceToPHashMapSet[T qse.Hashable](slice []T) (set qse.PHashMap[T, struct{}]) {
+	set = qse.StdlibMapToPHashMap(SliceToSet(slice))
+	return
+}

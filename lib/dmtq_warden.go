@@ -1,6 +1,6 @@
 package qse
 
-type DMTQWardenConfig[N any, ATOM hashable, AUG any] struct {
+type DMTQWardenConfig[N any, ATOM Hashable, AUG any] struct {
 	in_updates chan Augmented[
 		QuiverUpdate[N, PHashMap[Literal[ATOM], struct{}], *DMT[ATOM, QuiverIndex]],
 		AUG,

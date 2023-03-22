@@ -2,7 +2,7 @@ package qse
 
 // A system which provides basic interfaces to an SMT solver
 type SMTSystem[
-	EXPR hashable,
+	EXPR Hashable,
 	IDENT any,
 	SORT any,
 	MODEL any,
