@@ -22,6 +22,11 @@ func ParseMicroprogramState(str string) (state MicroprogramState) {
 
 const SIMREQ_AOT_DSE_MAX_ITERS = 10
 
+type SiMReQConstrainedTransition struct {
+	transition SimpleMicroprogramTransitionDesc
+	constraint []string
+}
+
 func (uprgm Microprogram) SiMReQProcessPCs(
 	in_pcs chan PathConditionResult,
 	bug_signal chan uint32,
@@ -63,37 +68,6 @@ addNodesForMicroprogramStatesLoop:
 	// Overwrite those for top and failure states since they have special indices on the quiver
 	callback_nodes[uprgm.top_state] = top_node
 	callback_nodes[uprgm.fail_state] = fail_node
-	// Start goroutines for performing DSE AOT on nodes
-runDSEAheadOfTimeForFailureSetLoop:
-	for state := range callback_nodes {
-		if state == uprgm.fail_state {
-			continue runDSEAheadOfTimeForFailureSetLoop
-		}
-		state := state
-		go func() {
-			transitions := uprgm.transitions[state]
-			failure_constraint_sets := make([][]string, 0)
-		enumerateFailureTransitionsLoop:
-			for _, transition := range transitions {
-				if transition.dst_state != uprgm.fail_state {
-					continue enumerateFailureTransitionsLoop
-				}
-				// Add the local failure constraint
-				failure_constraint_sets = append(failure_constraint_sets, transition.constraints)
-			}
-			for _, constraints := range failure_constraint_sets {
-				segmented_pc_repr := make([]string, len(constraints)+1)
-				copy(segmented_pc_repr, constraints)
-				repr_was_segment_line :=
-					"@__RAW__;;@RICHPC:was-segment " +
-						strconv.Itoa(int(state)) +
-						" " +
-						strconv.Itoa(int(uprgm.fail_state))
-				segmented_pc_repr[len(constraints)] = repr_was_segment_line
-				in_pcs <- PathConditionResult{segmented_pc_repr, false} // aren't global failures
-			}
-		}()
-	}
 	// Start goroutine to handle canidate models
 	go func() {
 		defer close(bug_signal)
@@ -111,11 +85,15 @@ runDSEAheadOfTimeForFailureSetLoop:
 			}
 		}
 	}()
+	seen_states := make(map[MicroprogramState]struct{})
+	seen_states[uprgm.top_state] = struct{}{}
+	seen_states[uprgm.fail_state] = struct{}{}
 	for pc := range in_pcs {
 		log.Info("[bin:simreq] Received path condition in SiMReQProcessPCs.")
 		// Group the segmented path condition by segments (which represent transitions)
-		grouped_by_transition := make(map[SimpleMicroprogramTransitionDesc][]string)
+		grouped_by_transition := make([]SiMReQConstrainedTransition, 0)
 		current_transition_constraint := make([]string, 0)
+		pc_states := make([]MicroprogramState, 0)
 	groupPcSegmentsLoop:
 		for _, item := range pc.pc {
 			if strings.HasPrefix(item, "@__RAW__;;@RICHPC:") {
@@ -124,9 +102,13 @@ runDSEAheadOfTimeForFailureSetLoop:
 					src_state := ParseMicroprogramState(fields[1])
 					dst_state := ParseMicroprogramState(fields[2])
 					edge_desc := SimpleMicroprogramTransitionDesc{src_state, dst_state}
+					pc_states = append(pc_states, dst_state)
 					new_constraint := make([]string, len(current_transition_constraint))
 					copy(new_constraint, current_transition_constraint)
-					grouped_by_transition[edge_desc] = new_constraint
+					grouped_by_transition = append(
+						grouped_by_transition,
+						SiMReQConstrainedTransition{edge_desc, new_constraint},
+					)
 					continue groupPcSegmentsLoop
 				}
 				log.Warn("Unknown rich path condition marker.")
@@ -134,8 +116,30 @@ runDSEAheadOfTimeForFailureSetLoop:
 			}
 			current_transition_constraint = append(current_transition_constraint, item)
 		}
+		// Loop through new nodes and find failures
+		for _, pc_state := range pc_states {
+			if _, ok := seen_states[pc_state]; !ok {
+				seen_states[pc_state] = struct{}{}
+				edge_desc := SimpleMicroprogramTransitionDesc{pc_state, uprgm.fail_state}
+			findLocalFailureConstraints:
+				for _, transition := range uprgm.transitions[pc_state] {
+					if transition.dst_state != uprgm.fail_state {
+						continue findLocalFailureConstraints
+					}
+					grouped_by_transition = append(
+						grouped_by_transition,
+						SiMReQConstrainedTransition{
+							edge_desc,
+							transition.constraints,
+						},
+					)
+				}
+			}
+		}
 		// Send the updates to SiMReQ
-		for transition, constraints := range grouped_by_transition {
+		for _, constrained_transition := range grouped_by_transition {
+			transition, constraints :=
+				constrained_transition.transition, constrained_transition.constraint
 			constraints_in_qse_form := make([]qse.Literal[qse.WithId_H[string]], len(constraints))
 			for i, constraint := range constraints {
 				id_literal_constraint := MicroprogramConstraintToIdLiteral(constraint, &idsrc)
