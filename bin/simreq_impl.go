@@ -2,6 +2,7 @@ package main
 
 import (
 	qse "LostBitset/quiver_se/lib"
+	"hash/fnv"
 	"strconv"
 	"strings"
 
@@ -20,7 +21,7 @@ func ParseMicroprogramState(str string) (state MicroprogramState) {
 
 func (uprgm Microprogram) SiMReQProcessPCs(
 	in_pcs chan []string,
-	bug_signal chan struct{},
+	bug_signal chan uint32,
 ) {
 	// Setup everything necessary
 	in_updates := make(chan qse.Augmented[
@@ -66,7 +67,9 @@ addNodesForMicroprogramStatesLoop:
 			canidate_model := FilterModelFromZ3(model_unfiltered)
 			fails, pc := uprgm.ExecuteGetPathCondition(canidate_model)
 			if fails {
-				bug_signal <- struct{}{}
+				hasher := fnv.New32a()
+				hasher.Write([]byte(canidate_model))
+				bug_signal <- hasher.Sum32()
 			} else {
 				in_pcs <- pc
 			}
@@ -137,4 +140,20 @@ func SliceToSet[T comparable](slice []T) (set map[T]struct{}) {
 func SliceToPHashMapSet[T qse.Hashable](slice []T) (set qse.PHashMap[T, struct{}]) {
 	set = qse.StdlibMapToPHashMap(SliceToSet(slice))
 	return
+}
+
+func (uprgm Microprogram) RunSiMReQ(bug_signal chan struct{}) {
+	bug_signal_values := make(chan uint32)
+	go func() {
+		seen_model_hashes := make(map[uint32]struct{})
+		for model_hash := range bug_signal_values {
+			if _, ok := seen_model_hashes[model_hash]; !ok {
+				seen_model_hashes[model_hash] = struct{}{}
+				bug_signal <- struct{}{}
+			}
+		}
+	}()
+	in_pcs := make(chan []string)
+	go uprgm.RunDSEContinuously(bug_signal_values, true, &in_pcs)
+	uprgm.SiMReQProcessPCs(in_pcs, bug_signal_values)
 }

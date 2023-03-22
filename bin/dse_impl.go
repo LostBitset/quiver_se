@@ -11,15 +11,19 @@ import (
 
 func (uprgm Microprogram) RunDSE() (n_bugs int) {
 	n_bugs = 0
-	bug_signal := make(chan struct{})
-	go uprgm.RunDSEContinuously(bug_signal)
+	bug_signal := make(chan uint32)
+	go uprgm.RunDSEContinuously(bug_signal, false, nil)
 	for range bug_signal {
 		n_bugs++
 	}
 	return
 }
 
-func (uprgm Microprogram) RunDSEContinuously(bug_signal chan struct{}) {
+func (uprgm Microprogram) RunDSEContinuously(
+	bug_signal chan uint32,
+	emit_pcs bool,
+	out_pcs *chan []string,
+) {
 	var backing_idsrc qse.IdSource
 	idsrc := &backing_idsrc
 	model := uprgm.UnitializedAssignment()
@@ -29,6 +33,7 @@ func (uprgm Microprogram) RunDSEContinuously(bug_signal chan struct{}) {
 		close(bug_signal)
 		return
 	}
+	*out_pcs <- imm_pc
 	// The two main variables for the concolic execution algorithm:
 	alt_stack := make([]uint, 0)
 	desired_path := make([]qse.IdLiteral[string], 0)
@@ -68,12 +73,15 @@ mainDSESearchAlternativesLoop:
 		}
 		new_model := FilterModelFromZ3(*new_model_ptr)
 		fails, pc := uprgm.ExecuteGetPathCondition(new_model)
+		saved_pc := make([]string, len(pc))
+		copy(saved_pc, pc)
+		*out_pcs <- saved_pc
 		if fails {
 			hasher := fnv.New32a()
 			hasher.Write([]byte(new_model))
 			new_model_hash := hasher.Sum32()
 			if _, ok := detected_model_hashes[new_model_hash]; !ok {
-				bug_signal <- struct{}{}
+				bug_signal <- new_model_hash
 				detected_model_hashes[new_model_hash] = struct{}{}
 				fmt.Println("[result] [bin:dse_impl/RunDSE] Found a failure-inducing input:")
 				fmt.Println(new_model)
