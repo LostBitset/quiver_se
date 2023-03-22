@@ -84,7 +84,34 @@ addNodesForMicroprogramStatesLoop:
 			current_transition_constraint = append(current_transition_constraint, item)
 		}
 		// Send the updates to SiMReQ
-		// TODO TODO TODO
+		for transition, constraints := range grouped_by_transition {
+			constraints_in_qse_form := make([]qse.Literal[qse.WithId_H[string]], len(constraints))
+			for i, constraint := range constraints {
+				id_literal_constraint := MicroprogramConstraintToIdLiteral(constraint, &idsrc)
+				constraints_in_qse_form[i] = qse.Literal[qse.WithId_H[string]](id_literal_constraint)
+			}
+			in_updates <- qse.Augmented[
+				qse.QuiverUpdate[
+					MicroprogramState,
+					qse.PHashMap[qse.Literal[qse.WithId_H[string]], struct{}],
+					*qse.DMT[qse.WithId_H[string], qse.QuiverIndex],
+				],
+				[]qse.SMTFreeFun[string, string],
+			]{
+				Value: qse.QuiverUpdate[
+					MicroprogramState,
+					qse.PHashMap[qse.Literal[qse.WithId_H[string]], struct{}],
+					*qse.DMT[qse.WithId_H[string], qse.QuiverIndex],
+				]{
+					Src: callback_nodes[transition.src],
+					Dst: dmtq.ParameterizeIndex(callback_nodes[transition.dst]),
+					Edge: pto(SliceToPHashMapSet(
+						constraints_in_qse_form,
+					)),
+				},
+				Augment: uprgm.smt_free_funs,
+			}
+		}
 	}
 	close(in_updates)
 }
