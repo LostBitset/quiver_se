@@ -27,6 +27,7 @@ func (warden_config DMTQWardenConfig[N, ATOM, AUG]) Start() {
 			go func() {
 				defer wg.Done()
 				log.Info("[dmtq_warden/go1/go1] Listening for (raw) quiver walks. ")
+				num_walks_sent := 0
 				for walk := range out_walks_specific {
 					warden_config.out_walks <- Augmented[
 						QuiverWalk[N, PHashMap[Literal[ATOM], struct{}]],
@@ -34,7 +35,9 @@ func (warden_config DMTQWardenConfig[N, ATOM, AUG]) Start() {
 					]{
 						walk, augment,
 					}
+					num_walks_sent++
 				}
+				log.Infof("[dmtq_warden/go1/go1] Sent a total of %d walks. ", num_walks_sent)
 				log.Info("[dmtq_warden/go1/go1] Sent all (augmented) quiver walks. ")
 			}()
 		}

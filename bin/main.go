@@ -7,30 +7,50 @@ import (
 
 func main() {
 	uprgm_gen := BuildEvaluationMicroprogramGenerator()
-	n_samples := 2
-	timeout := 3 * time.Second
+	uprgm := uprgm_gen.RandomMicroprogram()
+	n_samples := 1
+	timeout := 5 * time.Second
+	count_dse := EvaluateAlgorithm(
+		func(uprgm Microprogram, bug_signal chan struct{}) {
+			bug_signal_values := make(chan uint32)
+			go func() {
+				defer func() {
+					if r := recover(); r != nil {
+						fmt.Println("[main recovered]")
+					}
+				}()
+				defer close(bug_signal)
+				for range bug_signal_values {
+					bug_signal <- struct{}{}
+				}
+			}()
+			uprgm.RunDSEContinuously(bug_signal_values, false, nil)
+		},
+		uprgm, n_samples, timeout, "dse",
+	)
 	count_simreq := EvaluateAlgorithm(
 		func(uprgm Microprogram, bug_signal chan struct{}) {
 			uprgm.RunSiMReQ(bug_signal)
 		},
-		uprgm_gen, n_samples, timeout,
+		uprgm, n_samples, timeout, "simreq",
 	)
 	fmt.Println("--- FINAL RESULTS ---")
 	fmt.Printf("Generated a total of %d programs.\n", n_samples)
+	fmt.Printf("DSE    found %d bugs.\n", count_dse)
 	fmt.Printf("SiMReQ found %d bugs.\n", count_simreq)
 }
 
 func EvaluateAlgorithm(
 	algorithm func(Microprogram, chan struct{}),
-	uprgm_gen MicroprogramGenerator,
+	uprgm Microprogram,
 	n_samples int,
 	timeout time.Duration,
+	name string,
 ) (
 	count int,
 ) {
 	count = 0
 	for i := 0; i < n_samples; i++ {
-		uprgm := uprgm_gen.RandomMicroprogram()
 		bug_signal_orig := make(chan struct{})
 		bug_signal := make(chan struct{})
 		end_signal := make(chan struct{})
@@ -47,6 +67,7 @@ func EvaluateAlgorithm(
 		tallyBugsSelect:
 			select {
 			case <-bug_signal:
+				fmt.Println("__FOUND_A_BUG__" + name)
 				count++
 				break tallyBugsSelect
 			case <-timeout_chan:

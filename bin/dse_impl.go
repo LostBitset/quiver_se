@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"hash/fnv"
 	"strings"
-
-	log "github.com/sirupsen/logrus"
 )
 
 func (uprgm Microprogram) RunDSE() (n_bugs int) {
@@ -29,9 +27,7 @@ func (uprgm Microprogram) RunDSEContinuously(
 	model := uprgm.UnitializedAssignment()
 	imm_failure, imm_pc := uprgm.ExecuteGetPathCondition(model)
 	if imm_failure {
-		log.Info("[bin:dse_impl] Immediate failure. ")
-		close(bug_signal)
-		return
+		panic("[bad-input-panic] [bin:dse_impl] Immediate failure. ")
 	}
 	if emit_pcs {
 		*out_pcs <- imm_pc
