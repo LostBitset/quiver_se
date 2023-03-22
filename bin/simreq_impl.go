@@ -25,7 +25,7 @@ func (uprgm Microprogram) SiMReQProcessPCs(
 	// Setup everything necessary
 	in_updates := make(chan qse.Augmented[
 		qse.QuiverUpdate[
-			int,
+			MicroprogramState,
 			qse.PHashMap[qse.Literal[qse.WithId_H[string]], struct{}],
 			*qse.DMT[qse.WithId_H[string], qse.QuiverIndex],
 		],
@@ -33,17 +33,34 @@ func (uprgm Microprogram) SiMReQProcessPCs(
 	])
 	out_models_unfiltered := make(chan string)
 	var idsrc qse.IdSource
-	sys := qse.SMTLibv2StringSystem{idsrc}
+	sys := qse.SMTLibv2StringSystem{Idsrc: idsrc}
 	// Start SiMReQ
 	dmtq, top_node, fail_node, _ := qse.StartSiMReQ[
-		int, string, string, string, string, qse.SMTLibv2StringSolvedCtx,
+		MicroprogramState, string, string, string, string, qse.SMTLibv2StringSolvedCtx,
 	](
 		in_updates, out_models_unfiltered, sys, nil,
 	)
-	// Create all necessary nodes
-	// TODO
+	// Create all necessary nodes (for each state/callback)
+	callback_nodes := make(map[MicroprogramState]qse.QuiverIndex)
+addNodesForMicroprogramStatesLoop:
+	for state := range uprgm.transitions {
+		if state == uprgm.top_state {
+			// Top state gets special treatment
+			continue addNodesForMicroprogramStatesLoop
+		}
+		if state == uprgm.fail_state {
+			// Fail state gets special treatment
+			continue addNodesForMicroprogramStatesLoop
+		}
+		update_dmt := qse.NewDMT[qse.WithId_H[string], qse.QuiverIndex]()
+		added_node_index := dmtq.InsertNode(state, &update_dmt)
+		callback_nodes[state] = added_node_index
+	}
+	// Overwrite those for top and failure states since they have special indices on the quiver
+	callback_nodes[uprgm.top_state] = top_node
+	callback_nodes[uprgm.fail_state] = fail_node
 	// Listen for bugs in a seperate goroutine
-	// TODO
+	// TODO TODO TODO
 	for pc := range in_pcs {
 		// Group the segmented path condition by segments (which represent transitions)
 		grouped_by_transition := make(map[SimpleMicroprogramTransitionDesc][]string)
@@ -67,7 +84,7 @@ func (uprgm Microprogram) SiMReQProcessPCs(
 			current_transition_constraint = append(current_transition_constraint, item)
 		}
 		// Send the updates to SiMReQ
-		// TODO
+		// TODO TODO TODO
 	}
 	close(in_updates)
 }
