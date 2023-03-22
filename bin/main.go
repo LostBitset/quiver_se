@@ -49,6 +49,7 @@ func EvaluateAlgorithm(
 ) (
 	count int,
 ) {
+	fmt.Println("[REPORT] [EVALUATING] " + name)
 	count = 0
 	for i := 0; i < n_samples; i++ {
 		bug_signal_orig := make(chan struct{})
