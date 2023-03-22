@@ -10,7 +10,7 @@ import (
 func (uprgm Microprogram) RunDSE() (n_bugs int) {
 	n_bugs = 0
 	bug_signal := make(chan uint32)
-	go uprgm.RunDSEContinuously(bug_signal, false, nil)
+	go uprgm.RunDSEContinuously(bug_signal, false, nil, false)
 	for range bug_signal {
 		n_bugs++
 	}
@@ -21,11 +21,12 @@ func (uprgm Microprogram) RunDSEContinuously(
 	bug_signal chan uint32,
 	emit_pcs bool,
 	out_pcs *chan []string,
+	no_transition bool,
 ) {
 	var backing_idsrc qse.IdSource
 	idsrc := &backing_idsrc
 	model := uprgm.UnitializedAssignment()
-	imm_failure, imm_pc := uprgm.ExecuteGetPathCondition(model)
+	imm_failure, imm_pc := uprgm.ExecuteGetPathCondition(model, no_transition)
 	if imm_failure {
 		panic("[bad-input-panic] [bin:dse_impl] Immediate failure. ")
 	}
@@ -70,7 +71,7 @@ mainDSESearchAlternativesLoop:
 			continue mainDSESearchAlternativesLoop
 		}
 		new_model := FilterModelFromZ3(*new_model_ptr)
-		fails, pc := uprgm.ExecuteGetPathCondition(new_model)
+		fails, pc := uprgm.ExecuteGetPathCondition(new_model, no_transition)
 		if emit_pcs {
 			saved_pc := make([]string, len(pc))
 			copy(saved_pc, pc)

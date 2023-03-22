@@ -17,7 +17,7 @@ func TestPathConditions(t *testing.T) {
 	for i := 0; i < TEST_ITERATIONS_PC; i++ {
 		uprgm := uprgm_gen.RandomMicroprogram()
 		initial_model := uprgm.UnitializedAssignment()
-		fails, pc := uprgm.ExecuteGetPathCondition(initial_model)
+		fails, pc := uprgm.ExecuteGetPathCondition(initial_model, false)
 		fmt.Printf("Computed path condition of length %d.\n", len(pc))
 		if fails {
 			fmt.Println("Path condition led to failure.")
@@ -56,7 +56,7 @@ func TestSpecificPathCondition(t *testing.T) {
 	(define-fun x () Real    7.0)
 	(define-fun y () Real    0.0)
 	`
-	_, pc := uprgm.ExecuteGetPathCondition(test_model)
+	_, pc := uprgm.ExecuteGetPathCondition(test_model, false)
 	assert.Equal(t, 7, len(pc))
 }
 
@@ -86,7 +86,7 @@ func TestSpecificFailureCheck(t *testing.T) {
 	(define-fun x () Real    7.0)
 	(define-fun y () Real    0.0)
 	`
-	fails, _ := uprgm.ExecuteGetPathCondition(test_model)
+	fails, _ := uprgm.ExecuteGetPathCondition(test_model, false)
 	assert.False(t, fails)
 }
 

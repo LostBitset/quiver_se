@@ -9,14 +9,21 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func (uprgm Microprogram) ExecuteGetPathCondition(model string) (fails bool, pc []string) {
+const PC_REC_LIMIT = 15000
+
+func (uprgm Microprogram) ExecuteGetPathCondition(
+	model string, no_transition bool,
+) (
+	fails bool,
+	pc []string,
+) {
 	fmt.Println("[REPORT] [EVAL-INFO] EXECUTION")
-	fails, pc = uprgm.ExecuteGetPathConditionFrom(model, uprgm.top_state)
+	fails, pc = uprgm.ExecuteGetPathConditionFrom(model, uprgm.top_state, no_transition, PC_REC_LIMIT)
 	return
 }
 
 func (uprgm Microprogram) ExecuteGetPathConditionFrom(
-	model string, state MicroprogramState,
+	model string, state MicroprogramState, no_transition bool, rec_budget int,
 ) (
 	fails bool,
 	pc []string,
@@ -27,25 +34,35 @@ func (uprgm Microprogram) ExecuteGetPathConditionFrom(
 	if fails {
 		return
 	}
+	if rec_budget == 0 {
+		return
+	}
 	transitions := uprgm.transitions[state]
 	not_taken := make([]string, 0)
 	for _, transition := range transitions {
 		if uprgm.ModelSatisfiesConstraints(model, transition.constraints) {
 			pc = append(pc, not_taken...)
 			pc = append(pc, transition.constraints...)
-			pc = append(
-				pc,
-				"@__RAW__;;@RICHPC:was-segment "+
-					strconv.Itoa(int(state))+
-					" "+
-					strconv.Itoa(int(transition.dst_state)),
-			)
+			if !no_transition {
+				pc = append(
+					pc,
+					"@__RAW__;;@RICHPC:was-segment "+
+						strconv.Itoa(int(state))+
+						" "+
+						strconv.Itoa(int(transition.dst_state)),
+				)
+			}
 			log.Infof(
 				"[bin:path_conditions] PC: %#+v\n",
 				pc,
 			)
+			if no_transition {
+				// no rec_pc but we still need to check failure ourselves
+				fails = transition.dst_state == uprgm.fail_state
+				return
+			}
 			rec_fails, rec_pc := uprgm.ExecuteGetPathConditionFrom(
-				model, transition.dst_state,
+				model, transition.dst_state, no_transition, rec_budget-1,
 			)
 			pc = append(pc, rec_pc...)
 			log.Infof(

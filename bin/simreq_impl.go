@@ -67,7 +67,7 @@ addNodesForMicroprogramStatesLoop:
 			canidate_model := FilterModelFromZ3(model_unfiltered)
 			fmt.Println("[bin:simreq] SMR FOUND CANIDATE MODEL:")
 			fmt.Println(canidate_model)
-			fails, pc := uprgm.ExecuteGetPathCondition(canidate_model)
+			fails, pc := uprgm.ExecuteGetPathCondition(canidate_model, false)
 			if fails {
 				hasher := fnv.New32a()
 				hasher.Write([]byte(canidate_model))
@@ -161,6 +161,6 @@ func (uprgm Microprogram) RunSiMReQ(bug_signal chan struct{}) {
 		}
 	}()
 	in_pcs := make(chan []string)
-	go uprgm.RunDSEContinuously(bug_signal_values, true, &in_pcs)
+	go uprgm.RunDSEContinuously(bug_signal_values, true, &in_pcs, false)
 	uprgm.SiMReQProcessPCs(in_pcs, bug_signal_values)
 }

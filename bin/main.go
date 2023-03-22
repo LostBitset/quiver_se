@@ -12,7 +12,7 @@ func main() {
 	uprgm_gen := BuildEvaluationMicroprogramGenerator()
 	uprgm := uprgm_gen.RandomMicroprogram()
 	n_samples := 1
-	timeout := 5 * time.Second
+	timeout := 3 * time.Second
 	count_dse := EvaluateAlgorithm(
 		func(uprgm Microprogram, bug_signal chan struct{}) {
 			bug_signal_values := make(chan uint32)
@@ -27,7 +27,7 @@ func main() {
 					bug_signal <- struct{}{}
 				}
 			}()
-			uprgm.RunDSEContinuously(bug_signal_values, false, nil)
+			uprgm.RunDSEContinuously(bug_signal_values, false, nil, false)
 		},
 		uprgm, n_samples, timeout, "dse",
 	)
@@ -106,7 +106,7 @@ func BuildEvaluationMicroprogramGenerator() (uprgm_gen MicroprogramGenerator) {
 		n_states:          30,
 		p_transition:      0.8,
 		avg_n_transitions: 8.0,
-		p_fallible:        0.8,
+		p_fallible:        0.9,
 		n_entry_samples:   7,
 		n_tree_nonleaf:    5,
 		constraintgen:     constraint_gen,
