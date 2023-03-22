@@ -2,6 +2,7 @@ package main
 
 import (
 	qse "LostBitset/quiver_se/lib"
+	"fmt"
 	"strconv"
 	"strings"
 
@@ -9,6 +10,7 @@ import (
 )
 
 func (uprgm Microprogram) ExecuteGetPathCondition(model string) (fails bool, pc []string) {
+	fmt.Println("[REPORT] [EVAL-INFO] EXECUTION")
 	fails, pc = uprgm.ExecuteGetPathConditionFrom(model, uprgm.top_state)
 	return
 }

@@ -67,11 +67,11 @@ func EvaluateAlgorithm(
 		tallyBugsSelect:
 			select {
 			case <-bug_signal:
-				fmt.Println("__FOUND_A_BUG__" + name)
+				fmt.Println("[REPORT] __FOUND_A_BUG__" + name)
 				count++
 				break tallyBugsSelect
 			case <-timeout_chan:
-				fmt.Println("[bin:main] DSE timed out (this is normal).")
+				fmt.Println("[bin:main] Timed out (this is normal).")
 				break tallyBugsLoop
 			case <-end_signal:
 				break tallyBugsLoop
@@ -99,12 +99,12 @@ func BuildEvaluationMicroprogramGenerator() (uprgm_gen MicroprogramGenerator) {
 	var_sorts_distr := BakeDDistr[Sort](var_sorts)
 	constraint_gen.AddVariables(4, var_sorts_distr, 0.75)
 	uprgm_gen = MicroprogramGenerator{
-		n_states:          10,
+		n_states:          30,
 		p_transition:      0.8,
-		avg_n_transitions: 3.0,
-		p_fallible:        0.6,
-		n_entry_samples:   3,
-		n_tree_nonleaf:    4,
+		avg_n_transitions: 8.0,
+		p_fallible:        0.8,
+		n_entry_samples:   7,
+		n_tree_nonleaf:    5,
 		constraintgen:     constraint_gen,
 	}
 	return
