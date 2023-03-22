@@ -269,7 +269,7 @@ func (t *DMT[NODE, LEAF]) MergeIdenticalLeaves(leaves []*TrieLeafNode[Literal[NO
 	for i := 1; i < len(leaves); i++ {
 		unwanted_leaf := leaves[i]
 		parent := unwanted_leaf.parent
-		var index int
+		index := -1
 		for i, option := range parent.children {
 		findLeafTypeSwitch:
 			switch c := option.(type) {
@@ -285,7 +285,9 @@ func (t *DMT[NODE, LEAF]) MergeIdenticalLeaves(leaves []*TrieLeafNode[Literal[NO
 				break findLeafTypeSwitch
 			}
 		}
-		SpliceOutReclaim(&parent.children, index)
+		if index != -1 {
+			SpliceOutReclaim(&parent.children, index)
+		}
 	}
 }
 
@@ -356,6 +358,10 @@ func DedupSortedInPlace(arr *[]int) {
 
 func SpliceOutReclaim[T any](arr *[]T, index int) {
 	var zero T
+	if len(*arr) == 1 {
+		*arr = make([]T, 0)
+		return
+	}
 	copy((*arr)[index:], (*arr)[(index+1):])
 	(*arr)[len(*arr)-1] = zero
 	*arr = (*arr)[:(len(*arr) - 1)]

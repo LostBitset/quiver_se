@@ -62,10 +62,11 @@ addNodesForMicroprogramStatesLoop:
 	callback_nodes[uprgm.top_state] = top_node
 	callback_nodes[uprgm.fail_state] = fail_node
 	go func() {
-		defer close(in_updates)
 		defer close(bug_signal)
 		for model_unfiltered := range out_models_unfiltered {
 			canidate_model := FilterModelFromZ3(model_unfiltered)
+			fmt.Println("[bin:simreq] SMR FOUND CANIDATE MODEL:")
+			fmt.Println(canidate_model)
 			fails, pc := uprgm.ExecuteGetPathCondition(canidate_model)
 			if fails {
 				hasher := fnv.New32a()
@@ -126,7 +127,9 @@ addNodesForMicroprogramStatesLoop:
 				},
 				Augment: uprgm.smt_free_funs,
 			}
-			fmt.Println(update)
+			fmt.Printf("src: %#+v\n", update.Value.Src)
+			fmt.Printf("dst: %#+v\n", update.Value.Dst)
+			fmt.Printf("edge: %#+v\n", update.Value.Edge.ToStdlibMap())
 			in_updates <- update
 		}
 	}
