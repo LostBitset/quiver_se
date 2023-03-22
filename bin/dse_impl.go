@@ -20,7 +20,7 @@ func (uprgm Microprogram) RunDSE() (n_bugs int) {
 func (uprgm Microprogram) RunDSEContinuously(
 	bug_signal chan uint32,
 	emit_pcs bool,
-	out_pcs *chan []string,
+	out_pcs *chan PathConditionResult,
 	no_transition bool,
 ) {
 	var backing_idsrc qse.IdSource
@@ -31,7 +31,7 @@ func (uprgm Microprogram) RunDSEContinuously(
 		panic("[bad-input-panic] [bin:dse_impl] Immediate failure. ")
 	}
 	if emit_pcs {
-		*out_pcs <- imm_pc
+		*out_pcs <- PathConditionResult{imm_pc, imm_failure}
 	}
 	// The two main variables for the concolic execution algorithm:
 	alt_stack := make([]uint, 0)
@@ -75,7 +75,7 @@ mainDSESearchAlternativesLoop:
 		if emit_pcs {
 			saved_pc := make([]string, len(pc))
 			copy(saved_pc, pc)
-			*out_pcs <- saved_pc
+			*out_pcs <- PathConditionResult{saved_pc, fails}
 		}
 		if fails {
 			hasher := fnv.New32a()

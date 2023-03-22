@@ -21,7 +21,7 @@ func ParseMicroprogramState(str string) (state MicroprogramState) {
 }
 
 func (uprgm Microprogram) SiMReQProcessPCs(
-	in_pcs chan []string,
+	in_pcs chan PathConditionResult,
 	bug_signal chan uint32,
 ) {
 	// Setup everything necessary
@@ -61,6 +61,64 @@ addNodesForMicroprogramStatesLoop:
 	// Overwrite those for top and failure states since they have special indices on the quiver
 	callback_nodes[uprgm.top_state] = top_node
 	callback_nodes[uprgm.fail_state] = fail_node
+	// Start goroutines for performing DSE AOT on nodes
+runDSEAheadOfTimeForFailureSetLoop:
+	for state := range callback_nodes {
+		if state == uprgm.fail_state {
+			continue runDSEAheadOfTimeForFailureSetLoop
+		}
+		state := state
+		go func() {
+			bug_signal_black_hole := make(chan uint32)
+			go func() {
+				for range bug_signal_black_hole {
+				}
+			}()
+			out_pcs_node_failure := make(chan PathConditionResult)
+			go func() {
+			readNodeFailurePathConditionsLoop:
+				for pc := range out_pcs_node_failure {
+					if !pc.fails {
+						continue readNodeFailurePathConditionsLoop
+					}
+					constraints := pc.pc
+					constraints_in_qse_form := make([]qse.Literal[qse.WithId_H[string]], len(constraints))
+					for i, constraint := range constraints {
+						id_literal_constraint := MicroprogramConstraintToIdLiteral(constraint, &idsrc)
+						constraints_in_qse_form[i] = qse.Literal[qse.WithId_H[string]](id_literal_constraint)
+					}
+					transition := SimpleMicroprogramTransitionDesc{
+						src: state,
+						dst: uprgm.fail_state,
+					}
+					update := qse.Augmented[
+						qse.QuiverUpdate[
+							MicroprogramState,
+							qse.PHashMap[qse.Literal[qse.WithId_H[string]], struct{}],
+							*qse.DMT[qse.WithId_H[string], qse.QuiverIndex],
+						],
+						[]qse.SMTFreeFun[string, string],
+					]{
+						Value: qse.QuiverUpdate[
+							MicroprogramState,
+							qse.PHashMap[qse.Literal[qse.WithId_H[string]], struct{}],
+							*qse.DMT[qse.WithId_H[string], qse.QuiverIndex],
+						]{
+							Src: callback_nodes[transition.src],
+							Dst: dmtq.ParameterizeIndex(callback_nodes[transition.dst]),
+							Edge: pto(SliceToPHashMapSet(
+								constraints_in_qse_form,
+							)),
+						},
+						Augment: uprgm.smt_free_funs,
+					}
+					in_updates <- update
+				}
+			}()
+			uprgm.RunDSEContinuously(bug_signal_black_hole, true, &out_pcs_node_failure, true)
+		}()
+	}
+	// Start goroutine to handle canidate models
 	go func() {
 		defer close(bug_signal)
 		for model_unfiltered := range out_models_unfiltered {
@@ -73,7 +131,7 @@ addNodesForMicroprogramStatesLoop:
 				hasher.Write([]byte(canidate_model))
 				bug_signal <- hasher.Sum32()
 			} else {
-				in_pcs <- pc
+				in_pcs <- PathConditionResult{pc, fails}
 			}
 		}
 	}()
@@ -83,7 +141,7 @@ addNodesForMicroprogramStatesLoop:
 		grouped_by_transition := make(map[SimpleMicroprogramTransitionDesc][]string)
 		current_transition_constraint := make([]string, 0)
 	groupPcSegmentsLoop:
-		for _, item := range pc {
+		for _, item := range pc.pc {
 			if strings.HasPrefix(item, "@__RAW__;;@RICHPC:") {
 				if strings.HasPrefix(item, "@__RAW__;;@RICHPC:was-segment ") {
 					fields := strings.Fields(item)
@@ -160,7 +218,7 @@ func (uprgm Microprogram) RunSiMReQ(bug_signal chan struct{}) {
 			}
 		}
 	}()
-	in_pcs := make(chan []string)
+	in_pcs := make(chan PathConditionResult)
 	go uprgm.RunDSEContinuously(bug_signal_values, true, &in_pcs, false)
 	uprgm.SiMReQProcessPCs(in_pcs, bug_signal_values)
 }
