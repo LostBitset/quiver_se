@@ -127,10 +127,14 @@ func (g ConstraintGenerator) AddVariable(sort_distr DDistr[Sort], rep int) {
 
 func (g ConstraintGenerator) Variables() (vars []Val) {
 	vars = make([]Val, 0)
+	seen_vars := make(map[string]struct{})
 	for _, val_subset := range g.vals {
 		for _, val := range val_subset {
 			if strings.HasPrefix(val.name, VARIABLE_PREFIX) {
-				vars = append(vars, val)
+				if _, ok := seen_vars[val.name]; !ok {
+					seen_vars[val.name] = struct{}{}
+					vars = append(vars, val)
+				}
 			}
 		}
 	}

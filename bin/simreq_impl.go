@@ -2,6 +2,7 @@ package main
 
 import (
 	qse "LostBitset/quiver_se/lib"
+	"fmt"
 	"hash/fnv"
 	"strconv"
 	"strings"
@@ -104,7 +105,7 @@ addNodesForMicroprogramStatesLoop:
 				id_literal_constraint := MicroprogramConstraintToIdLiteral(constraint, &idsrc)
 				constraints_in_qse_form[i] = qse.Literal[qse.WithId_H[string]](id_literal_constraint)
 			}
-			in_updates <- qse.Augmented[
+			update := qse.Augmented[
 				qse.QuiverUpdate[
 					MicroprogramState,
 					qse.PHashMap[qse.Literal[qse.WithId_H[string]], struct{}],
@@ -125,6 +126,8 @@ addNodesForMicroprogramStatesLoop:
 				},
 				Augment: uprgm.smt_free_funs,
 			}
+			fmt.Println(update)
+			in_updates <- update
 		}
 	}
 }
