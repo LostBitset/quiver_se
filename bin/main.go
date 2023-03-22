@@ -9,14 +9,22 @@ func main() {
 	uprgm_gen := BuildEvaluationMicroprogramGenerator()
 	n_samples := 10
 	timeout := 3 * time.Second
-	count_dse := EvaluateDSE(uprgm_gen, n_samples, timeout)
+	count_dse := EvaluateAlgorithm(
+		func(uprgm Microprogram, bug_signal chan struct{}) {
+			uprgm.RunDSEContinuously(bug_signal)
+		},
+		uprgm_gen, n_samples, timeout,
+	)
 	fmt.Println("--- FINAL RESULTS ---")
 	fmt.Printf("Generated a total of %d programs.\n", n_samples)
 	fmt.Printf("DSE found %d bugs.\n", count_dse)
 }
 
-func EvaluateDSE(
-	uprgm_gen MicroprogramGenerator, n_samples int, timeout time.Duration,
+func EvaluateAlgorithm(
+	algorithm func(Microprogram, chan struct{}),
+	uprgm_gen MicroprogramGenerator,
+	n_samples int,
+	timeout time.Duration,
 ) (
 	count int,
 ) {
@@ -26,7 +34,7 @@ func EvaluateDSE(
 		bug_signal_orig := make(chan struct{})
 		bug_signal := make(chan struct{})
 		end_signal := make(chan struct{})
-		go uprgm.RunDSEContinuously(bug_signal_orig)
+		go algorithm(uprgm, bug_signal_orig)
 		go func() {
 			for range bug_signal_orig {
 				bug_signal <- struct{}{}
