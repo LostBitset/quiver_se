@@ -99,13 +99,16 @@ func MicroprogramConstraintToIdLiteral(
 	id_literal qse.IdLiteral[string],
 ) {
 	constraint := constraint_raw
-	inverted := strings.HasPrefix(constraint, "@__INVERTED__")
+	inverted := false
+	for strings.HasPrefix(constraint, "@__INVERTED__") {
+		constraint, _ = strings.CutPrefix(constraint, "@__INVERTED__")
+		inverted = !inverted
+	}
 	var id_literal_raw qse.Literal[qse.WithId_H[string]]
 	if inverted {
-		underlying_constraint, _ := strings.CutPrefix(constraint, "@__INVERTED__")
 		id_literal_raw = qse.InvertingLiteral(
 			qse.WithId_H[string]{
-				Value: underlying_constraint,
+				Value: constraint,
 				Id:    idsrc.Gen(),
 			},
 		)
