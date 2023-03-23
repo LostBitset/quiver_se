@@ -1,6 +1,6 @@
 import itertools
 import subprocess
-import sys
+import os
 
 def run_once():
     cmd = "go run ."
@@ -50,11 +50,12 @@ for i in itertools.count():
         total_bugs[alg] += r["bugs"][alg]
         total_queries[alg] += r["queries"][alg]
         total_execs[alg] += r["executions"][alg]
-    print("(bug)\tDSE\tSiMReQ")
-    print(f"FOUND\t{r['bugs']['dse']:.3f}\t{r['bugs']['simreq']:.3f}")
-    print("(tot)\tDSE\tSiMReQ")
-    print(f"BUGS\t{total_bugs['dse']:.3f}\t{total_bugs['simreq']:.3f}")
-    print(f"QRIS\t{total_queries['dse']:.3f}\t{total_queries['simreq']:.3f}")
-    print(f"EXCS\t{total_execs['dse']:.3f}\t{total_execs['simreq']:.3f}")
+    os.system("clear")
+    print("(bug)\t\tDSE\tSiMReQ")
+    print(f"BUGS FOUND\t{r['bugs']['dse']}\t{r['bugs']['simreq']}")
+    print("(tot)\t\tDSE\tSiMReQ")
+    print(f"BUGS FOUND\t{total_bugs['dse']}\t{total_bugs['simreq']}")
+    print(f"SMT QUERIES\t{total_queries['dse']}\t{total_queries['simreq']}")
+    #print(f"EXCS\t{total_execs['dse']}\t{total_execs['simreq']}")
     print("--- --- ---")
 
