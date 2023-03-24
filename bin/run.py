@@ -89,7 +89,7 @@ class EvaluationProxy:
         self.data = EvaluationData(algnames)
         csv_writer.write_heading([ full_name for (_, full_name) in algnames ])
     
-    def run_once(self):
+    def run_once(self, display: bool = False):
         cmd = "go run ."
         output = None
         try:
@@ -102,14 +102,15 @@ class EvaluationProxy:
         if "__FOUND_A_BUG__" in output:
             list_form = self.data.parse_eval_output(output)
             self.csv_writer.write([ str(i) for i in list_form ])
-            self.data.display()
+            if display:
+                self.data.display()
     
-    def run_forever(self):
+    def run_forever(self, **kwargs):
         while True:
-            self.run_once()
+            self.run_once(**kwargs)
 
 if __name__ == "__main__":
     ep = EvaluationProxy(
         CsvWriter(f"eval_log-{int(time.time()*50)}.csv")
     )
-    ep.run_forever()
+    ep.run_forever(display=True)
