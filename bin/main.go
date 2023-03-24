@@ -12,7 +12,7 @@ func main() {
 	uprgm_gen := BuildEvaluationMicroprogramGenerator()
 	uprgm := uprgm_gen.RandomMicroprogram()
 	n_samples := 1
-	timeout := 3 * time.Second
+	timeout := 5 * time.Second
 	EvaluateAlgorithm(
 		func(uprgm Microprogram, bug_signal chan struct{}) {
 			bug_signal_values := make(chan uint32)
