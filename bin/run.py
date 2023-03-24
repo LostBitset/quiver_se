@@ -51,9 +51,9 @@ for i in itertools.count():
         total_queries[alg] += r["queries"][alg]
         total_execs[alg] += r["executions"][alg]
     os.system("clear")
-    print("(bug)\t\tDSE\tSiMReQ")
+    print("(last run)\tDSE\tSiMReQ")
     print(f"BUGS FOUND\t{r['bugs']['dse']}\t{r['bugs']['simreq']}")
-    print("(tot)\t\tDSE\tSiMReQ")
+    print("(total so far)\tDSE\tSiMReQ")
     print(f"BUGS FOUND\t{total_bugs['dse']}\t{total_bugs['simreq']}")
     print(f"SMT QUERIES\t{total_queries['dse']}\t{total_queries['simreq']}")
     #print(f"EXCS\t{total_execs['dse']}\t{total_execs['simreq']}")
