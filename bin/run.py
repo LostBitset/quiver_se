@@ -1,61 +1,73 @@
-import itertools
 import subprocess
-import os
+import typing as t
 
-def run_once():
-    cmd = "go run ."
-    output = None
-    try:
-        output_bytes = subprocess.check_output(cmd, shell=True)
-        output = output_bytes.decode("utf-8")
-    except subprocess.CalledProcessError as e:
-        output = e.output.decode("utf-8")
+class CsvWriter:
+    class TwoHeadingsException(BaseException): pass
+    class NoHeadingException(BaseException): pass
 
-    if "exit status 2" in output:
-        return None
+    def __init__(self, filename):
+        self.filename = filename
+        self.has_heading = False
+    
+    def write_heading(self, heading: t.List[string]):
+        if self.has_heading:
+            raise TwoHeadingsException
+        self.write_unchecked(heading)
+    
+    def write(self, data: t.List[string]):
+        if not self.has_heading:
+            raise NoHeadingException
+        self.write_unchecked(data)
 
-    n_bugs = {"dse": 0, "simreq": 0}
-    n_sq = {"dse": 0, "simreq": 0}
-    n_exec = {"dse": 0, "simreq": 0}
-    target = None
-    for line in output.split("\n"):
-        if not line.startswith("[REPORT]"):
-            continue
-        evaluating = "[REPORT] [EVALUATING]"
-        if line.startswith(evaluating):
-            target = line[len(evaluating)+1:]
-        elif "__FOUND_A_BUG__dse" in line:
-            n_bugs["dse"] += 1
-        elif "__FOUND_A_BUG__simreq" in line:
-            n_bugs["simreq"] += 1
-        elif "[EVAL-INFO] SOLVERQUERY" in line:
-            n_sq[target] += 1
-        elif "[EVAL-INFO] EXECUTION" in line:
-            n_exec[target] += 1
-    if n_bugs['dse'] == n_bugs['simreq']:
-        if n_bugs['dse'] == 0:
+    def write_unchecked(self, data: t.List[string])
+        line = ",".join(data) + "\n"
+        with open(self.filename, "a") as f:
+            f.write(line)
+
+class EvaluationData:
+    # algnames: i.e. [("dse", "DSE"), ("simreq:simple", "SiMReQ (Simple)"), ...]
+    def __init__(self, algnames: t.List[(string, string)]):
+        self.counts = [] # i.e. [{"dse": 1, "simreq": 2}, ...]
+        self.algnames = algnames
+        self.algname_map = { k: v for (k, v) in algnames }
+    
+    def parse_eval_output(self, output: string) -> t.List[int]:
+        count = {}
+        watch_prefix = "[REPORT] __FOUND_A_BUG__"
+        for line in output.split("\n"):
+            if not line.startswith(watch_prefix):
+                continue
+            algname = line[watch_prefix:]
+            if algname in count:
+                count[algname] = 0
+            count[algname] += 1
+        self.counts.append(count)
+        return [ count[internal_name] for (internal_name, _) in self.algnames ]
+    
+    def display(self):
+        ... # TODO
+
+class EvaluationProxy:
+    DEFAULT_ALGNAMES = [
+        ("dse", "DSE"),
+        ("simreq:simple", "SiMReQ (Simple)"),
+        ("simreq:jitdse", "SiMReQ (JIT DSE)"),
+    ]
+
+    def __init__(self, csv_writer: CsvWriter, algnames = self.__class__.DEFAULT_ALGNAMES):
+        self.csv_writer = csv_writer
+        self.data = EvaulationData(algnames)
+        csv_writer.write_heading([ full_name for (_, full_name) in algnames ])
+    
+    def run_once(self):
+        cmd = "go run ."
+        output = None
+        try:
+            output_bytes = subprocess.check_output(cmd, shell=True)
+            output = output_bytes.decode("utf-8")
+        except subprocess.CalledProcessError as e:
+            output = e.output.decode("utf-8")
+        if "exit status 2" in output:
             return None
-    return {"bugs": n_bugs, "queries": n_sq, "executions": n_exec}
-
-total_bugs = {"dse": 0, "simreq": 0}
-total_queries = {"dse": 0, "simreq": 0}
-total_execs = {"dse": 0, "simreq": 0}
-n_samples = 0
-for i in itertools.count():
-    r = run_once()
-    if r == None:
-        continue
-    n_samples += 1
-    for alg in ["dse", "simreq"]:
-        total_bugs[alg] += r["bugs"][alg]
-        total_queries[alg] += r["queries"][alg]
-        total_execs[alg] += r["executions"][alg]
-    os.system("clear")
-    print("(last run)\tDSE\tSiMReQ")
-    print(f"BUGS FOUND\t{r['bugs']['dse']}\t{r['bugs']['simreq']}")
-    print("(total so far)\tDSE\tSiMReQ")
-    print(f"BUGS FOUND\t{total_bugs['dse']}\t{total_bugs['simreq']}")
-    print(f"SMT QUERIES\t{total_queries['dse']}\t{total_queries['simreq']}")
-    #print(f"EXCS\t{total_execs['dse']}\t{total_execs['simreq']}")
-    print("--- --- ---")
-
+        list_form = self.data.parse_eval_output(output)
+        self.csv_writer.write([ str(i) for i in list_form ])

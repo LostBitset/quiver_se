@@ -30,6 +30,7 @@ type SiMReQConstrainedTransition struct {
 func (uprgm Microprogram) SiMReQProcessPCs(
 	in_pcs chan PathConditionResult,
 	bug_signal chan uint32,
+	jit_dse bool,
 ) {
 	// Setup everything necessary
 	in_updates := make(chan qse.Augmented[
@@ -117,41 +118,43 @@ addNodesForMicroprogramStatesLoop:
 			current_transition_constraint = append(current_transition_constraint, item)
 		}
 		// Loop through new nodes and find failures
-		for _, pc_state := range pc_states {
-			if _, ok := seen_states[pc_state]; !ok {
-				seen_states[pc_state] = struct{}{}
-				edge_desc := SimpleMicroprogramTransitionDesc{pc_state, uprgm.fail_state}
-				bug_signal_black_hole := make(chan uint32)
-				go func() {
-					for range bug_signal_black_hole {
+		if jit_dse {
+			for _, pc_state := range pc_states {
+				if _, ok := seen_states[pc_state]; !ok {
+					seen_states[pc_state] = struct{}{}
+					edge_desc := SimpleMicroprogramTransitionDesc{pc_state, uprgm.fail_state}
+					bug_signal_black_hole := make(chan uint32)
+					go func() {
+						for range bug_signal_black_hole {
+						}
+					}()
+					out_local_pcs := make(chan PathConditionResult)
+					go func() {
+						defer fmt.Println("[STATUS-JITDSE] end")
+						fmt.Println("[STATUS-JITDSE] begin")
+						uprgm.RunDSEContinuously(
+							bug_signal_black_hole,
+							true,
+							&out_local_pcs,
+							true,
+							SIMREQ_JIT_DSE_MAX_ITERS,
+							pc_state,
+						)
+					}()
+				updateJITDSEPathConditionsLoop:
+					for local_pc := range out_local_pcs {
+						if !local_pc.fails {
+							continue updateJITDSEPathConditionsLoop
+						}
+						constraints := local_pc.pc
+						grouped_by_transition = append(
+							grouped_by_transition,
+							SiMReQConstrainedTransition{
+								edge_desc,
+								constraints,
+							},
+						)
 					}
-				}()
-				out_local_pcs := make(chan PathConditionResult)
-				go func() {
-					defer fmt.Println("[STATUS-JITDSE] end")
-					fmt.Println("[STATUS-JITDSE] begin")
-					uprgm.RunDSEContinuously(
-						bug_signal_black_hole,
-						true,
-						&out_local_pcs,
-						true,
-						SIMREQ_JIT_DSE_MAX_ITERS,
-						pc_state,
-					)
-				}()
-			updateJITDSEPathConditionsLoop:
-				for local_pc := range out_local_pcs {
-					if !local_pc.fails {
-						continue updateJITDSEPathConditionsLoop
-					}
-					constraints := local_pc.pc
-					grouped_by_transition = append(
-						grouped_by_transition,
-						SiMReQConstrainedTransition{
-							edge_desc,
-							constraints,
-						},
-					)
 				}
 			}
 		}
@@ -206,7 +209,7 @@ func SliceToPHashMapSet[T qse.Hashable](slice []T) (set qse.PHashMap[T, struct{}
 	return
 }
 
-func (uprgm Microprogram) RunSiMReQ(bug_signal chan struct{}) {
+func (uprgm Microprogram) RunSiMReQ(bug_signal chan struct{}, jit_dse bool) {
 	bug_signal_values := make(chan uint32)
 	go func() {
 		seen_model_hashes := make(map[uint32]struct{})
@@ -219,5 +222,5 @@ func (uprgm Microprogram) RunSiMReQ(bug_signal chan struct{}) {
 	}()
 	in_pcs := make(chan PathConditionResult)
 	go uprgm.RunDSEContinuously(bug_signal_values, true, &in_pcs, false, -1, uprgm.top_state)
-	uprgm.SiMReQProcessPCs(in_pcs, bug_signal_values)
+	uprgm.SiMReQProcessPCs(in_pcs, bug_signal_values, jit_dse)
 }

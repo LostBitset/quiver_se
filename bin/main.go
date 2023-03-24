@@ -13,7 +13,7 @@ func main() {
 	uprgm := uprgm_gen.RandomMicroprogram()
 	n_samples := 1
 	timeout := 3 * time.Second
-	count_dse := EvaluateAlgorithm(
+	EvaluateAlgorithm(
 		func(uprgm Microprogram, bug_signal chan struct{}) {
 			bug_signal_values := make(chan uint32)
 			go func() {
@@ -33,16 +33,18 @@ func main() {
 		},
 		uprgm, n_samples, timeout, "dse",
 	)
-	count_simreq := EvaluateAlgorithm(
+	EvaluateAlgorithm(
 		func(uprgm Microprogram, bug_signal chan struct{}) {
-			uprgm.RunSiMReQ(bug_signal)
+			uprgm.RunSiMReQ(bug_signal, false)
 		},
-		uprgm, n_samples, timeout, "simreq",
+		uprgm, n_samples, timeout, "simreq:simple",
 	)
-	fmt.Println("--- FINAL RESULTS ---")
-	fmt.Printf("Generated a total of %d programs.\n", n_samples)
-	fmt.Printf("DSE    found %d bugs.\n", count_dse)
-	fmt.Printf("SiMReQ found %d bugs.\n", count_simreq)
+	EvaluateAlgorithm(
+		func(uprgm Microprogram, bug_signal chan struct{}) {
+			uprgm.RunSiMReQ(bug_signal, true)
+		},
+		uprgm, n_samples, timeout, "simreq:jitdse",
+	)
 }
 
 func EvaluateAlgorithm(
