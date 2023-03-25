@@ -109,7 +109,7 @@ func BuildEvaluationMicroprogramGenerator() (uprgm_gen MicroprogramGenerator) {
 	uprgm_gen = MicroprogramGenerator{
 		n_states:          30,
 		p_transition:      0.8,
-		avg_n_transitions: 8.0,
+		avg_n_transitions: 40.0,
 		p_fallible:        0.9,
 		n_entry_samples:   7,
 		n_tree_nonleaf:    3,
