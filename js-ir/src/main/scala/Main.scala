@@ -43,13 +43,13 @@ given IrStringIsType: IrType[IrString]                                    with {
 case class Shadow[+R : IrType, +S : ShadowVBound[R]](value: R, shadow: S)
 given ShadowIsType[R : IrType, S : ShadowVBound[R]]: IrType[Shadow[R, S]] with {}
 
-type ShadowVBound = [R] =>> [S] =>> ShadowV[S, R]
-trait ShadowV[+S, -R : IrType]:
+type ShadowVBound = [R] =>> [S] =>> ShadowV[R, S]
+trait ShadowV[-R : IrType, +S]:
   def basicForm(value: R): S
 
 given IrToShadow[R : IrType, S : ShadowVBound[R]]: Conversion[R, Shadow[R, S]]   =
   (from: R) =>
-    Shadow(from, summon[ShadowV[S, R]].basicForm(from))
+    Shadow(from, summon[ShadowV[R, S]].basicForm(from))
 
 given IrFromShadow[R : IrType, S : ShadowVBound[R]]: Conversion[Shadow[R, S], R] =
   _.value
