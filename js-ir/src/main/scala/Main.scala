@@ -10,8 +10,10 @@ type IrAny = IrWrapped[?]
 case class IrWrapped[T : IrType](value: T)
 
 enum IrStmt[+R : IrType]:
-  case Expr[V](expr: IrExpr[V])          extends IrStmt[Nothing]
-  case Retn[R : IrType](expr: IrExpr[R]) extends IrStmt[R]
+  case Expr[V](expr: IrExpr[V])               extends IrStmt[Nothing]
+  case Decl(name: String)                     extends IrStmt[Nothing]
+  case Bind[V](expr: IrExpr[V], name: String) extends IrStmt[Nothing]
+  case Retn[R : IrType](expr: IrExpr[R])      extends IrStmt[R]
 
 type IrBody[+R] = List[IrStmt[R]]
 
