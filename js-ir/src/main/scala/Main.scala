@@ -19,7 +19,11 @@ trait IrType[A]
 
 given BottomIsType: IrType[Nothing]                     with {}
 
-class IrFunc[+R](body: IrBody[R], args: List[String])
+enum IrFunc[+R : IrType]:
+  case Constr[R : IrType](body: IrBody[R], args: List[String]) extends IrFunc[R]
+  case Lambda[R : IrType](body: IrBody[R], args: List[String]) extends IrFunc[R]
+  case Builtin(name: String)                                   extends IrFunc[Nothing]
+
 given IrFuncIsType[R]: IrType[IrFunc[R]]                with {}
 
 class IrArray(backing: List[IrAny])
