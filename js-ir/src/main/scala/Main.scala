@@ -17,7 +17,7 @@ type IrBody[+R] = List[IrStmt[R]]
 
 trait IrType[A]
 
-given BottomIsType: IrType[Nothing]                     with {}
+given BottomIsType: IrType[Nothing]                                       with {}
 
 enum IrFunc[+R : IrType]:
   case Constr[R : IrType](body: IrBody[R], args: List[String]) extends IrFunc[R]
