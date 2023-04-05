@@ -45,10 +45,9 @@ type ShadowVBound = [R] =>> [S] =>> ShadowV[S, R]
 trait ShadowV[+S, -R : IrType]:
   def basicForm(value: R): S
 
-given IrToShadow[R : IrType, S : ShadowVBound[R]]: Conversion[R, Shadow[R, S]]   with
-  def apply(from: R): Shadow[R, S] =
+given IrToShadow[R : IrType, S : ShadowVBound[R]]: Conversion[R, Shadow[R, S]]   =
+  (from: R) =>
     Shadow(from, summon[ShadowV[S, R]].basicForm(from))
 
-given IrFromShadow[R : IrType, S : ShadowVBound[R]]: Conversion[Shadow[R, S], R] with
-  def apply(from: Shadow[R, S]): R =
-    from.value
+given IrFromShadow[R : IrType, S : ShadowVBound[R]]: Conversion[Shadow[R, S], R] =
+  _.value
