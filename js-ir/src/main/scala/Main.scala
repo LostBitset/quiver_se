@@ -24,19 +24,27 @@ enum IrFunc[+R : IrType]:
   case Lambda[R : IrType](body: IrBody[R], args: List[String]) extends IrFunc[R]
   case Builtin(name: String)                                   extends IrFunc[Nothing]
 
-given IrFuncIsType[R]: IrType[IrFunc[R]]                with {}
+given IrFuncIsType[R]: IrType[IrFunc[R]]                                  with {}
 
 class IrArray(backing: List[IrAny])
-given IrArrayIsType: IrType[IrArray]                    with {}
+given IrArrayIsType: IrType[IrArray]                                      with {}
 
 class IrNumber(n: Int | Double)
-given IrNumberIsType: IrType[IrNumber]                  with {}
+given IrNumberIsType: IrType[IrNumber]                                    with {}
 
 class IrBool(b: Boolean)
-given IrBoolIsType: IrType[IrBool]                      with {}
+given IrBoolIsType: IrType[IrBool]                                        with {}
 
 class IrString(s: String)
-given IrStringIsType: IrType[IrString]                  with {}
+given IrStringIsType: IrType[IrString]                                    with {}
 
-class Shadow[+R : IrType, +S](value: R, shadow: S)
-given ShadowIsType[R : IrType, S]: IrType[Shadow[R, S]] with {}
+class Shadow[+R : IrType, +S : ShadowVBound[R]](value: R, shadow: S)
+given ShadowIsType[R : IrType, S : ShadowVBound[R]]: IrType[Shadow[R, S]] with {}
+
+type ShadowVBound = [R] =>> [S] =>> ShadowV[S, R]
+trait ShadowV[+S, -R : IrType]:
+  def basicForm(value: R): S
+
+given IrToShadow[R : IrType, S : ShadowVBound[R]]: Conversion[R, Shadow[R, S]] with
+  def apply(from: R): Shadow[R, S] =
+    Shadow(from, summon[ShadowV[S, R]].basicForm(from))
