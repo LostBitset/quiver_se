@@ -1,14 +1,17 @@
 @main def hello: Unit =
   println("Nothing here yet. ")
 
-trait IrType[V]:
-  def resolveMethod[R](method: String): IrFunc[R]
+class IrValue[T <: IrType](c: IrConstruct[T])
 
-enum IrExpr[+V]:
-  case Const[V : IrType](value: V)                            extends IrExpr[V]
-  case Var[V: IrType](value: String)                          extends IrExpr[V]
-  case Call[R : IrType](fn: IrFunc[R], args: List[IrExpr[?]]) extends IrExpr[R]
+enum IrConstruct[+T <: IrType]:
+  case Const(value: T)                extends IrConstruct[T]
+  case Array(elems: List[IrValue[?]]) extends IrConstruct[IrArray]
 
-type IrFunc[+R] = IrExpr[IrLambda[R]]
+enum IrExpr[+R <: IrType]:
+  case Value[R <: IrType](repr: IrValue[R]) extends IrExpr[R]
+  case FCall[R <: IrType](func: IrExpr[IrFunc[R]], args: List[IrValue[?]]) extends IrExpr[R]
 
-class IrLambda[+R : IrType]
+sealed trait IrType
+
+class IrFunc[+R] extends IrType
+class IrArray    extends IrType
