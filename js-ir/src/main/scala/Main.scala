@@ -14,4 +14,5 @@ enum SeirExpr:
   case Prop(obj: SeirExpr, property: SeirIdent)
   case Call(f: SeirExpr, args: List[SeirExpr])
   case Hidden(str: String)
-
+  case Capture(expr: SeirExpr)
+  case ArgRef(pos: Int)
