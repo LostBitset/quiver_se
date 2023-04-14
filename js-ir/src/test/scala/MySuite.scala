@@ -6,7 +6,6 @@ class TestSuite extends munit.FunSuite:
     assertEquals(1 + 1, 2)
   }
 
-
   test("parses tokens") {
     val text = """
     |(scope

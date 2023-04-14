@@ -16,3 +16,5 @@ enum SeirExpr:
   case Hidden(str: String)
   case Capture(expr: SeirExpr)
   case ArgRef(pos: Int)
+
+class SeirParser(val text: String)
