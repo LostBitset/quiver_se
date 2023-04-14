@@ -1,4 +1,4 @@
-@main def hello: Unit =
+@main def main: Unit =
   println("Nothing here yet. ")
 
 case class SeirVal(repr: Any)
