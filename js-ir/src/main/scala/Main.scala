@@ -17,4 +17,29 @@ enum SeirExpr:
   case Capture(expr: SeirExpr)
   case ArgRef(pos: Int)
 
-class SeirParser(val text: String)
+enum SeirTok:
+  case LParen
+  case RParen
+  case LBrace
+  case RBrace
+  case IdentLike(text: String)
+  case CallHead
+  case Capture(text: String)
+
+class SeirParser(val text: String):
+
+  def takeToken(): SeirTok =
+    text(0) match:
+      case '(' => SeirTok.LParen
+      case ')' => SeirTok.RParen
+      case '{' => SeirTok.LBrace
+      case '}' => SeirTok.RBrace
+      case '.' => SeirTok.CallHead(takeUntil(" )"))
+      case '<' => SeirTok.Capture(takeUntil(">"))
+      case ch =>
+        if ch.isWhitespace then
+          drop(1)
+          takeToken()
+        else
+          SeirTok.IdentLike(takeUntil(" )"))
+
