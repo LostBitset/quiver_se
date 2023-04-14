@@ -34,7 +34,7 @@ class TestSuite extends munit.FunSuite:
             )
           ),
           SeirExpr.Call(
-            "if",
+            SeirExpr.Var("if"),
             List(
               SeirExpr.Call(
                 SeirExpr.Var("="),
