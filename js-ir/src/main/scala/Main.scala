@@ -28,13 +28,30 @@ enum SeirTok:
   case EOF
 
 class SeirParser(var text: String):
+  
+  def stealthTake: Option[Tuple[Char, () => Char]] =
+    text match:
+      case h :: t => {
+        (h, () => {
+          text = t
+          h
+        })
+      }
+      case _ => None
 
-  def take: Option[Char] = text match:
-    case h :: t => {
-      text = t
-      h
-    }
-    case _ => None
+  def take: Option[Char] =
+    stealthTake.map({
+      case (_, take) => take()
+    })
+  
+  def takeUntil(search: String): String =
+    stealthTake match
+      case Some((ch, take)) =>
+        if search contains ch then
+          ""
+        else
+          take() :: takeUntil(search)
+      case None => ""
 
   def takeToken: SeirTok =
     take match:
