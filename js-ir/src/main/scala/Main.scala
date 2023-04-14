@@ -25,21 +25,30 @@ enum SeirTok:
   case IdentLike(text: String)
   case CallHead
   case Capture(text: String)
+  case EOF
 
-class SeirParser(val text: String):
+class SeirParser(var text: String):
 
-  def takeToken(): SeirTok =
-    text(0) match:
-      case '(' => SeirTok.LParen
-      case ')' => SeirTok.RParen
-      case '{' => SeirTok.LBrace
-      case '}' => SeirTok.RBrace
-      case '.' => SeirTok.CallHead(takeUntil(" )"))
-      case '<' => SeirTok.Capture(takeUntil(">"))
-      case ch =>
-        if ch.isWhitespace then
-          drop(1)
-          takeToken()
-        else
-          SeirTok.IdentLike(takeUntil(" )"))
+  def take: Option[Char] = text match:
+    case h :: t => {
+      text = t
+      h
+    }
+    case _ => None
 
+  def takeToken: SeirTok =
+    take match:
+      case Some(ch) => ch match:
+        case '(' => SeirTok.LParen
+        case ')' => SeirTok.RParen
+        case '{' => SeirTok.LBrace
+        case '}' => SeirTok.RBrace
+        case '.' => SeirTok.CallHead(takeUntil(" )"))
+        case '<' => SeirTok.Capture(takeUntil(">"))
+        case ch =>
+          if ch.isWhitespace then
+            takeToken
+          else
+            SeirTok.IdentLike(takeUntil(" )"))
+      case None =>
+        SeirTok.EOF

@@ -18,7 +18,7 @@ class TestSuite extends munit.FunSuite:
     |    (hidden <console.log("false")>)))
     """.stripMargin
     val parser = SeirParser(text)
-    val parsed = parser.takeExpr()
+    val parsed = parser.takeExpr
     assertEquals(
       parsed,
       SeirExpr.Scope(
