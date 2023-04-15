@@ -41,6 +41,33 @@ class TestSuite extends munit.FunSuite:
     assertEquals(parser.takeToken, SeirTok.EOF)
   } // */
 
+  test("parses nested expressions at the token level") {
+    val parser =  SeirParser("(.- (.+ a b) (.inc a))")
+    assertEquals(parser.takeToken, SeirTok.LParen)
+    assertEquals(parser.takeToken, SeirTok.CallHead)
+    assertEquals(parser.takeToken, SeirTok.IdentLike("-"))
+    assertEquals(parser.takeToken, SeirTok.LParen)
+    assertEquals(parser.takeToken, SeirTok.CallHead)
+    assertEquals(parser.takeToken, SeirTok.IdentLike("+"))
+    assertEquals(parser.takeToken, SeirTok.IdentLike("a"))
+    assertEquals(parser.takeToken, SeirTok.IdentLike("b"))
+    assertEquals(parser.takeToken, SeirTok.RParen)
+    assertEquals(parser.takeToken, SeirTok.LParen)
+    assertEquals(parser.takeToken, SeirTok.CallHead)
+    assertEquals(parser.takeToken, SeirTok.IdentLike("inc"))
+    assertEquals(parser.takeToken, SeirTok.IdentLike("a"))
+    assertEquals(parser.takeToken, SeirTok.RParen)
+    assertEquals(parser.takeToken, SeirTok.RParen)
+    assertEquals(parser.takeToken, SeirTok.EOF)
+  } // */
+
+  test ("parses empty string at the token level") {
+    assertEquals(
+      SeirParser("").takeToken,
+      SeirTok.EOF
+    )
+  }
+
   /*test("parses expressions") {
     val text = """
     |(scope
