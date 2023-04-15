@@ -13,7 +13,6 @@ enum SeirExpr:
   case Decl(name: SeirIdent)
   case Def(name: SeirIdent, to: SeirExpr)
   case Var(name: SeirIdent)
-  case Prop(obj: SeirExpr, property: SeirIdent)
   case Call(f: SeirExpr, args: List[SeirExpr])
   case Hidden(str: String)
   case Capture(expr: SeirExpr)
@@ -104,7 +103,7 @@ class SeirParser(var text: String):
         takeToken match
           case SeirTok.IdentLike(head) =>
             head match
-              case 
+              case "def"
           case SeirTok.CallHead => ???
           case bad => mkFailure(s"unexpected head \"$bad\"")
       case bad => mkFailure(s"unexpected start of expr \"$bad\"")
