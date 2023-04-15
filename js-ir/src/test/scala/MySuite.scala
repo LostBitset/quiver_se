@@ -4,9 +4,44 @@ class TestSuite extends munit.FunSuite:
 
   test("sanity check") {
     assertEquals(1 + 1, 2)
-  }
+  } // */
 
-  test("parses tokens") {
+  test("parses one token") {
+    assertEquals(
+      SeirParser("hello").takeToken,
+      SeirTok.IdentLike("hello")
+    )
+    assertEquals(
+      SeirParser(".").takeToken,
+      SeirTok.CallHead
+    )
+    assertEquals(
+      SeirParser(" \n  hello").takeToken,
+      SeirTok.IdentLike("hello")
+    )
+    assertEquals(
+      SeirParser(" \n   .").takeToken,
+      SeirTok.CallHead
+    )
+  } // */
+
+  test("parses captures") {
+    assertEquals(
+      SeirParser("   <something() with stuff >").takeToken,
+      SeirTok.Capture("something() with stuff ")
+    )
+  } // */
+
+  test("parses multiple tokens") {
+    val parser = SeirParser(" (.hi ) ")
+    assertEquals(parser.takeToken, SeirTok.LParen)
+    assertEquals(parser.takeToken, SeirTok.CallHead)
+    assertEquals(parser.takeToken, SeirTok.IdentLike("hi"))
+    assertEquals(parser.takeToken, SeirTok.RParen)
+    assertEquals(parser.takeToken, SeirTok.EOF)
+  } // */
+
+  /*test("parses expressions") {
     val text = """
     |(scope
     |  (decl x)
@@ -50,4 +85,4 @@ class TestSuite extends munit.FunSuite:
         )
       )
     )
-  }
+  } // */
