@@ -88,6 +88,8 @@ class SeirParser(var text: String):
       new SeirParseError(text)
     )
   
+  def takeExprSequence: Try[List[SeirExpr]] = ???
+  
   def takeExpr: Try[SeirExpr] =
     takeToken match
       case SeirTok.IdentLike(text) =>
@@ -103,7 +105,32 @@ class SeirParser(var text: String):
         takeToken match
           case SeirTok.IdentLike(head) =>
             head match
-              case "def"
+              case "scope" =>
+                takeExprSequence match
+                  case Success(seq) => Success(
+                    SeirExpr.Scope(seq)
+                  )
+                  case Failure(f) => Failure(f)
+              case "decl" =>
+                takeToken match
+                  case SeirTok.IdentLike(name) => Success(
+                    SeirExpr.Decl(name)
+                  )
+                  case bad =>
+                    mkFailure("unexpected name for decl \"$bad\"")
+              case "def" =>
+                takeToken match
+                  case SeirTok.IdentLike(name) =>
+                    takeExpr match
+                      case Success(expr) => Success(
+                        SeirExpr.Def(name, expr)
+                      )
+                      case Failure(f) => Failure(f)
+                  case bad =>
+                    mkFailure(s"unexpected name for def \"$bad\"")
+              case "hidden" => ???
+              case bad =>
+                mkFailure(s"unexpected ident-like head \"$bad\"")
           case SeirTok.CallHead => ???
           case bad => mkFailure(s"unexpected head \"$bad\"")
       case bad => mkFailure(s"unexpected start of expr \"$bad\"")
