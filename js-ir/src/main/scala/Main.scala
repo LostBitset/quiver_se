@@ -29,7 +29,7 @@ enum SeirTok:
 
 // Extractor object to allow matching strings
 // by their head and tail.
-object ++:: {
+object ~~:: {
   def unapply(str: String): Option[(Char, String)] =
     str.headOption.map { (_, str.tail) }
 }
@@ -38,7 +38,7 @@ class SeirParser(var text: String):
   
   def stealthTake: Option[(Char, () => Char)] =
     text match
-      case h ++:: t => Some(
+      case h ~~:: t => Some(
         (h, () => {
           text = t
           h
