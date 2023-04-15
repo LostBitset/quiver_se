@@ -27,6 +27,8 @@ enum SeirTok:
   case Capture(text: String)
   case EOF
 
+// Extractor object to allow matching strings
+// by their head and tail.
 object ++:: {
   def unapply(str: String): Option[(Char, String)] =
     str.headOption.map { (_, str.tail) }
