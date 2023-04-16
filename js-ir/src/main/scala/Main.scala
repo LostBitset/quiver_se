@@ -80,9 +80,9 @@ class SeirParser(var text: String):
           if ch.isWhitespace then
             takeToken
           else
-            SeirTok.IdentLike(
+            SeirTok.IdentLike((
               ch.toString() ++ takeUntil(" )")
-            )
+            ).strip)
       case None =>
         SeirTok.EOF
   

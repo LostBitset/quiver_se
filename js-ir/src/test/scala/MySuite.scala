@@ -68,7 +68,7 @@ class TestSuite extends munit.FunSuite:
     )
   }
 
-  /*test("parses expressions") {
+  test("parses expressions") {
     val text = """
     |(scope
     |  (decl x)
@@ -80,7 +80,7 @@ class TestSuite extends munit.FunSuite:
     |    (hidden <console.log("false")>)))
     """.stripMargin
     val parser = SeirParser(text)
-    val parsed = parser.takeExpr
+    val parsed = parser.takeExpr.get
     assertEquals(
       parsed,
       SeirExpr.Scope(
