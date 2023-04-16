@@ -1,9 +1,6 @@
 import scala.util._
 import scala.reflect.Typeable
 
-@main def main: Unit =
-  println("Nothing here yet. ")
-
 case class SeirVal(repr: Any, shadows: Map[String, Any] = Map())
 
 type SeirIdent = String

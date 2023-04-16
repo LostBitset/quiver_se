@@ -1,5 +1,3 @@
-// import scala.util._
-
 case class SeirPrelude(exprs: List[SeirExpr]):
     def transform(src: SeirExpr): SeirExpr =
         SeirExpr.Scope(
