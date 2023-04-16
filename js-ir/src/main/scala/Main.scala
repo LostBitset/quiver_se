@@ -25,7 +25,9 @@ enum SeirTok:
   case RBrace
   case IdentLike(text: String)
   case CallHead
-  case Capture(text: String)
+  case Hidden(text: String)
+  case Sigil
+  case SigilArgRef
   case EOF
 
 class SeirParseError(private val msg: String)
@@ -80,7 +82,7 @@ class SeirParser(var text: String):
           take match
             case None => SeirTok.EOF
             case _ => ()
-          SeirTok.Capture(text)
+          SeirTok.Hidden(text)
         case ch =>
           if ch.isWhitespace then
             takeToken
@@ -153,7 +155,7 @@ class SeirParser(var text: String):
                     mkFailure(s"unexpected name for def \"$bad\"")
               case "hidden" =>
                 takeToken match
-                  case SeirTok.Capture(text) => takeTokenRequire(
+                  case SeirTok.Hidden(text) => takeTokenRequire(
                     SeirTok.RParen,
                     SeirExpr.Hidden(text)
                   )

@@ -28,7 +28,7 @@ class TestSuite extends munit.FunSuite:
   test("parses captures") {
     assertEquals(
       SeirParser("   <something() with stuff >").takeToken,
-      SeirTok.Capture("something() with stuff ")
+      SeirTok.Hidden("something() with stuff ")
     )
   } // */
 
@@ -73,8 +73,9 @@ class TestSuite extends munit.FunSuite:
     |(scope
     |  (decl x)
     |  (decl y)
+    |  (def inc ~(.+ ~1 {int 1}))
     |  (def x {int 1})
-    |  (def y (.+ x x))
+    |  (def y (.inc x))
     |  (.if (.= y {int 3})
     |    (hidden <console.log("true")>)
     |    (hidden <console.log("false")>)))
