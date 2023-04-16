@@ -99,7 +99,9 @@ class SeirParser(var text: String):
 
   def takeRemainingExprs: Try[List[SeirExpr]] =
     takeExpr match
-      case Success(expr) => ???
+      case Success(expr) =>
+        takeRemainingExprs
+          .map(expr :: _)
       case Failure(exn) =>
         if exn.isInstanceOf[SeirParseUnmatchedParenError] then
           Success(List())
