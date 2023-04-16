@@ -102,7 +102,7 @@ class TestSuite extends munit.FunSuite:
                 SeirExpr.Var("="),
                 List(
                   SeirExpr.Var("y"),
-                  SeirExpr.Re(SeirVal(1))
+                  SeirExpr.Re(SeirVal(3))
                 )
               ),
               SeirExpr.Hidden("console.log(\"true\")"),

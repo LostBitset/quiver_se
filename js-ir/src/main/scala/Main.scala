@@ -75,7 +75,12 @@ class SeirParser(var text: String):
         case '{' => SeirTok.LBrace
         case '}' => SeirTok.RBrace
         case '.' => SeirTok.CallHead
-        case '<' => SeirTok.Capture(takeUntil(">"))
+        case '<' =>
+          val text = takeUntil(">")
+          take match
+            case None => SeirTok.EOF
+            case _ => ()
+          SeirTok.Capture(text)
         case ch =>
           if ch.isWhitespace then
             takeToken
