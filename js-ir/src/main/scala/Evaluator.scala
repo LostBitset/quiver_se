@@ -6,16 +6,19 @@ case class SeirPrelude(exprs: List[SeirExpr]):
             exprs ++ List(src)
         )
 
-case class SeirEvaluator(src: SeirExpr, vars: Map[String, SeirVal] = Map())
+case class ShadowOpSpec(shadow: String, op: String)
+
+case class ShadowHandles(handles: Map[ShadowOpSpec, List[SeirVal] => Any])
+
+case class SeirEvaluator(
+    src: SeirExpr,
+    vars: Map[String, SeirVal] = Map(),
+    shadowHandles: ShadowHandles = ShadowHandles(Map())
+):
+    def eval: SeirVal = ???
 
 given Conversion[SeirExpr, SeirEvaluator] =
     expr => SeirEvaluator(
-        summon[SeirPrelude].transform(expr)
+        summon[SeirPrelude].transform(expr),
+        shadowHandles = summon[ShadowHandles]
     )
-
-given SeirPrelude = SeirPrelude(List(
-    SeirExpr.Decl("+"),
-    SeirExpr.Def("+", SeirExpr.Re(SeirVal(
-        (a: Int, b: Int) => a + b
-    )))
-))
