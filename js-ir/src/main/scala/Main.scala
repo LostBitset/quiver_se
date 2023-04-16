@@ -81,7 +81,7 @@ class SeirParser(var text: String):
             takeToken
           else
             SeirTok.IdentLike((
-              ch.toString() ++ takeUntil(" )")
+              ch.toString() ++ takeUntil(" )}")
             ).strip)
       case None =>
         SeirTok.EOF
@@ -95,7 +95,7 @@ class SeirParser(var text: String):
     takeToken match
       case `tok` => Success(x)
       case bad =>
-        mkFailure(s"required token \"$tok\", got \"bad\"")
+        mkFailure(s"required token \"$tok\", got \"$bad\"")
 
   def takeRemainingExprs: Try[List[SeirExpr]] =
     takeExpr match
