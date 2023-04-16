@@ -185,6 +185,15 @@ class SeirParser(var text: String):
                   case _ => mkFailure(s"call requires function")
               )
           case bad => mkFailure(s"unexpected head \"$bad\"")
+      case SeirTok.Sigil =>
+        takeExpr
+          .map(SeirExpr.Capture.apply)
+      case SeirTok.SigilArgRef(text) =>
+        text.toIntOption match
+          case Some(int) => Success(
+            SeirExpr.ArgRef(int)
+          )
+          case None => mkFailure(s"arg ref must be integer, not \"$text\"")
       case SeirTok.RParen =>
         Failure(SeirParseUnmatchedParenError())
       case bad => mkFailure(s"unexpected start of expr \"$bad\"")
