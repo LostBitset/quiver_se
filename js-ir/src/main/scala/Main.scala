@@ -36,6 +36,9 @@ class SeirParseError(private val msg: String)
 class SeirParseUnmatchedParenError()
   extends SeirParseError("unmatched right paren")
 
+class SeirParseEOFError()
+  extends SeirParseError("unexpected eof")
+
 // Extractor object to allow matching strings
 // by their head and tail.
 object ~~:: {
@@ -116,16 +119,20 @@ class SeirParser(var text: String):
       case bad =>
         mkFailure(s"required token \"$tok\", got \"$bad\"")
 
-  def takeRemainingExprs: Try[List[SeirExpr]] =
+  def takeExprsUntil[E <: SeirParseError]: Try[List[SeirExpr]] =
     takeExpr match
       case Success(expr) =>
-        takeRemainingExprs
+        takeExprsUntil[E]
           .map(expr :: _)
       case Failure(exn) =>
-        if exn.isInstanceOf[SeirParseUnmatchedParenError] then
+        if exn.isInstanceOf[E] then
           Success(List())
         else
           Failure(exn)
+  
+  def takeRemainingExprs = takeExprsUntil[SeirParseUnmatchedParenError]
+
+  def takeAllExprs = takeExprsUntil[SeirParseEOFError]
   
   def takeExpr: Try[SeirExpr] =
     takeToken match
@@ -196,6 +203,8 @@ class SeirParser(var text: String):
           case None => mkFailure(s"arg ref must be integer, not \"$text\"")
       case SeirTok.RParen =>
         Failure(SeirParseUnmatchedParenError())
+      case SeirTok.EOF =>
+        Failure(SeirParseEOFError())
       case bad => mkFailure(s"unexpected start of expr \"$bad\"")
 
 object SeirParser:
