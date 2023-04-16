@@ -28,8 +28,11 @@ enum SeirTok:
   case Capture(text: String)
   case EOF
 
-final case class SeirParseError(private val msg: String)
+class SeirParseError(private val msg: String)
   extends Exception(msg)
+
+class SeirParseUnmatchedParenError()
+  extends SeirParseError("unmatched right paren")
 
 // Extractor object to allow matching strings
 // by their head and tail.
@@ -94,7 +97,14 @@ class SeirParser(var text: String):
       case bad =>
         mkFailure(s"required token \"$tok\", got \"bad\"")
 
-  def takeRemainingExprs: Try[List[SeirExpr]] = ???
+  def takeRemainingExprs: Try[List[SeirExpr]] =
+    takeExpr match
+      case Success(expr) => ???
+      case Failure(exn) =>
+        if exn.isInstanceOf[SeirParseUnmatchedParenError] then
+          Success(List())
+        else
+          Failure(exn)
   
   def takeExpr: Try[SeirExpr] =
     takeToken match
@@ -156,6 +166,8 @@ class SeirParser(var text: String):
                   case _ => mkFailure(s"call requires function")
               )
           case bad => mkFailure(s"unexpected head \"$bad\"")
+      case SeirTok.RParen =>
+        Failure(SeirParseUnmatchedParenError())
       case bad => mkFailure(s"unexpected start of expr \"$bad\"")
 
 object SeirParser:
