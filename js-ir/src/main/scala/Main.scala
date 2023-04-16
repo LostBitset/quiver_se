@@ -88,7 +88,13 @@ class SeirParser(var text: String):
       new SeirParseError(text)
     )
   
-  def takeExprSequence: Try[List[SeirExpr]] = ???
+  def takeTokenRequire[A](tok: SeirTok, x: A): Try[A] =
+    takeToken match
+      case `tok` => Success(x)
+      case bad =>
+        mkFailure(s"required token \"$tok\", got \"bad\"")
+
+  def takeRemainingExprs: Try[List[SeirExpr]] = ???
   
   def takeExpr: Try[SeirExpr] =
     takeToken match
@@ -98,7 +104,9 @@ class SeirParser(var text: String):
         takeToken match
           case SeirTok.IdentLike(ctorName) =>
             SeirParser.ctors.get(ctorName) match
-              case Some(ctor) => ctor(this)
+              case Some(ctor) =>
+                  ctor(this)
+                    .flatMap(x => takeTokenRequire(SeirTok.RBrace, x))
               case None => mkFailure(s"unknown ctor \"$ctorName\"")
           case _ => mkFailure("construction must start with identifier")
       case SeirTok.LParen =>
@@ -106,14 +114,14 @@ class SeirParser(var text: String):
           case SeirTok.IdentLike(head) =>
             head match
               case "scope" =>
-                takeExprSequence match
-                  case Success(seq) => Success(
+                takeRemainingExprs
+                  .flatMap(seq => Success(
                     SeirExpr.Scope(seq)
-                  )
-                  case Failure(f) => Failure(f)
+                  ))
               case "decl" =>
                 takeToken match
-                  case SeirTok.IdentLike(name) => Success(
+                  case SeirTok.IdentLike(name) => takeTokenRequire(
+                    SeirTok.RParen,
                     SeirExpr.Decl(name)
                   )
                   case bad =>
@@ -121,23 +129,32 @@ class SeirParser(var text: String):
               case "def" =>
                 takeToken match
                   case SeirTok.IdentLike(name) =>
-                    takeExpr match
-                      case Success(expr) =>
-                        takeSpecificToken(SeirTok.RParen)
-                        Success(SeirExpr.Def(name, expr))
-                      case Failure(f) => Failure(f)
+                    takeExpr
+                      .flatMap(expr => takeTokenRequire(
+                        SeirTok.RParen,
+                        SeirExpr.Def(name, expr)
+                      ))
                   case bad =>
                     mkFailure(s"unexpected name for def \"$bad\"")
               case "hidden" =>
                 takeToken match
-                  case SeirTok.Capture(text) => Success(
+                  case SeirTok.Capture(text) => takeTokenRequire(
+                    SeirTok.RParen,
                     SeirExpr.Hidden(text)
                   )
                   case bad =>
-                    mkFailure(s"unexpected token after hidden")
+                    mkFailure(s"unexpected token after head hidden \"$bad\"")
               case bad =>
                 mkFailure(s"unexpected ident-like head \"$bad\"")
-          case SeirTok.CallHead => ???
+          case SeirTok.CallHead =>
+            takeRemainingExprs
+              .flatMap(
+                seq => seq match
+                  case f :: args => Success(
+                    SeirExpr.Call(f, args)
+                  )
+                  case _ => mkFailure(s"call requires function")
+              )
           case bad => mkFailure(s"unexpected head \"$bad\"")
       case bad => mkFailure(s"unexpected start of expr \"$bad\"")
 
