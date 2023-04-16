@@ -3,7 +3,7 @@ import scala.util._
 @main def main: Unit =
   println("Nothing here yet. ")
 
-case class SeirVal(repr: Any)
+case class SeirVal(repr: Any, shadows: Map[String, Any] = Map())
 
 type SeirIdent = String
 
