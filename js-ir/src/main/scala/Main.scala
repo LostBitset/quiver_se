@@ -116,9 +116,7 @@ class SeirParser(var text: String):
         takeToken match
           case SeirTok.IdentLike(ctorName) =>
             SeirParser.ctors.get(ctorName) match
-              case Some(ctor) =>
-                  ctor(this)
-                    .flatMap(x => takeTokenRequire(SeirTok.RBrace, x))
+              case Some(ctor) => ctor(this)
               case None => mkFailure(s"unknown ctor \"$ctorName\"")
           case _ => mkFailure("construction must start with identifier")
       case SeirTok.LParen =>
@@ -174,3 +172,20 @@ class SeirParser(var text: String):
 
 object SeirParser:
   private var ctors: Map[String, SeirParser => Try[SeirExpr]] = Map()
+
+  def register(ctorName: String, ctor: SeirParser => Try[SeirExpr]): Unit =
+    ctors += (ctorName, ctor)
+
+  SeirParser.register("int", p =>
+    p.takeToken match
+      case SeirTok.IdentLike(text) =>
+        text.toIntOption match
+          case Some(int) => p.takeTokenRequire(
+            SeirTok.RBrace,
+            SeirExpr.Re(SeirVal(int))
+          )
+          case None =>
+            p.mkFailure(s"int ctor expected integer, got \"$text\"")
+      case bad =>
+        p.mkFailure(s"int ctor got unexpected \"$bad\"")
+  )
