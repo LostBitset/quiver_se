@@ -27,7 +27,7 @@ enum SeirTok:
   case CallHead
   case Hidden(text: String)
   case Sigil
-  case SigilArgRef
+  case SigilArgRef(text: String)
   case EOF
 
 class SeirParseError(private val msg: String)
@@ -60,10 +60,13 @@ class SeirParser(var text: String):
       case (_, take) => take()
     })
   
+  // Treats any whitespace as spaces
   def takeUntil(search: String): String =
     stealthTake match
       case Some((ch, take)) =>
         if search contains ch then
+          ""
+        else if (search contains ' ') && ch.isWhitespace then
           ""
         else
           take().toString ++ takeUntil(search)
@@ -83,6 +86,15 @@ class SeirParser(var text: String):
             case None => SeirTok.EOF
             case _ => ()
           SeirTok.Hidden(text)
+        case '~' =>
+          stealthTake match
+            case Some(('#', take)) =>
+              take()
+              SeirTok.SigilArgRef(
+                takeUntil(" )}").strip
+              )
+            case Some(_) => SeirTok.Sigil
+            case None => SeirTok.EOF
         case ch =>
           if ch.isWhitespace then
             takeToken

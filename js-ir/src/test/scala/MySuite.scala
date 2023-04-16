@@ -73,7 +73,7 @@ class TestSuite extends munit.FunSuite:
     |(scope
     |  (decl x)
     |  (decl y)
-    |  (def inc ~(.+ ~1 {int 1}))
+    |  (def inc ~(.+ ~#1 {int 1}))
     |  (def x {int 1})
     |  (def y (.inc x))
     |  (.if (.= y {int 3})
