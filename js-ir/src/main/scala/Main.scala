@@ -1,4 +1,5 @@
 import scala.util._
+import scala.reflect.Typeable
 
 @main def main: Unit =
   println("Nothing here yet. ")
@@ -119,16 +120,15 @@ class SeirParser(var text: String):
       case bad =>
         mkFailure(s"required token \"$tok\", got \"$bad\"")
 
-  def takeExprsUntil[E <: SeirParseError]: Try[List[SeirExpr]] =
+  def takeExprsUntil[E <: SeirParseError](using Typeable[E]): Try[List[SeirExpr]] =
     takeExpr match
       case Success(expr) =>
         takeExprsUntil[E]
           .map(expr :: _)
       case Failure(exn) =>
-        if exn.isInstanceOf[E] then
-          Success(List())
-        else
-          Failure(exn)
+        exn match
+          case _: E => Success(List())
+          case _ => Failure(exn)
   
   def takeRemainingExprs = takeExprsUntil[SeirParseUnmatchedParenError]
 
