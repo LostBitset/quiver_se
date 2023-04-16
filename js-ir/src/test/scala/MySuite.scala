@@ -73,6 +73,7 @@ class TestSuite extends munit.FunSuite:
     |(scope
     |  (decl x)
     |  (decl y)
+    |  (decl inc)
     |  (def inc ~(.+ ~#1 {int 1}))
     |  (def x {int 1})
     |  (def y (.inc x))
@@ -88,12 +89,22 @@ class TestSuite extends munit.FunSuite:
         List(
           SeirExpr.Decl("x"),
           SeirExpr.Decl("y"),
+          SeirExpr.Decl("inc"),
+          SeirExpr.Def("inc", SeirExpr.Capture(
+            SeirExpr.Call(
+              SeirExpr.Var("+"),
+              List(
+                SeirExpr.ArgRef(1),
+                SeirExpr.Re(SeirVal(1))
+              )
+            )
+          )),
           SeirExpr.Def("x", SeirExpr.Re(SeirVal(1))),
           SeirExpr.Def(
             "y",
             SeirExpr.Call(
-              SeirExpr.Var("+"),
-              List(SeirExpr.Var("x"), SeirExpr.Var("x"))
+              SeirExpr.Var("inc"),
+              List(SeirExpr.Var("x"))
             )
           ),
           SeirExpr.Call(
