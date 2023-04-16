@@ -122,13 +122,19 @@ class SeirParser(var text: String):
                 takeToken match
                   case SeirTok.IdentLike(name) =>
                     takeExpr match
-                      case Success(expr) => Success(
-                        SeirExpr.Def(name, expr)
-                      )
+                      case Success(expr) =>
+                        takeSpecificToken(SeirTok.RParen)
+                        Success(SeirExpr.Def(name, expr))
                       case Failure(f) => Failure(f)
                   case bad =>
                     mkFailure(s"unexpected name for def \"$bad\"")
-              case "hidden" => ???
+              case "hidden" =>
+                takeToken match
+                  case SeirTok.Capture(text) => Success(
+                    SeirExpr.Hidden(text)
+                  )
+                  case bad =>
+                    mkFailure(s"unexpected token after hidden")
               case bad =>
                 mkFailure(s"unexpected ident-like head \"$bad\"")
           case SeirTok.CallHead => ???
