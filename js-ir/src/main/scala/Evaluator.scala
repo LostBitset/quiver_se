@@ -17,7 +17,17 @@ case class SeirEvaluator(
     shadowHandles: ShadowHandles = summon[ShadowHandles]
 ):
     def eval(expr: SeirExpr, arguments: List[SeirVal] = List()): SeirVal =
-        ???
+        expr match
+            case SeirExpr.Re(value) =>
+            case SeirExpr.Scope(of) =>
+            case SeirExpr.Decl(name) =>
+            case SeirExpr.Def(name, to) =>
+            case SeirExpr.Var(name) =>
+            case SeirExpr.Call(f, args) =>
+            case SeirExpr.Hidden(str) =>
+            case SeirExpr.Capture(expr) =>
+            case SeirExpr.ArgRef(pos) =>
+        
     
     def apply(call: SeirExpr.Call): SeirVal =
         call match
