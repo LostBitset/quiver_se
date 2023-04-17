@@ -13,7 +13,7 @@ case class ShadowHandles(handles: Map[ShadowOpSpec, List[SeirVal] => Any])
 case class QuotedCapture(expr: SeirExpr)
 
 case class SeirEvaluator(
-    var vars: Map[String, SeirVal] = Map(),
+    var env: SeirEnv = SeirEnv(),
     shadowHandles: ShadowHandles = summon[ShadowHandles]
 ):
     def eval(expr: SeirExpr, arguments: List[SeirVal] = List()): SeirVal =
