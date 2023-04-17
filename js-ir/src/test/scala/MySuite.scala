@@ -223,7 +223,7 @@ class TestSuite extends munit.FunSuite:
     val text = """
     |(scope
     |  (def x {int 5})
-    |  (.+ x 1))
+    |  (.+ x {int 1}))
     """.stripMargin
     val parser = SeirParser(text)
     val expr = parser.takeExpr.get
