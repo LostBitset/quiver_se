@@ -1,4 +1,4 @@
-case class TiedMap[H[+_]](inner: Map[H[Any], Any] = Map[H[Any], Any]()):
+case class TiedMap[H[+_]](private val inner: Map[H[Any], Any] = Map[H[Any], Any]()):
     def +[A](kv: (H[A], A)): TiedMap[H] =
         TiedMap(inner + kv)
     

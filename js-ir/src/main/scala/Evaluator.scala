@@ -10,7 +10,7 @@ case class ShadowOpSpec[+A](shadow: String, op: ShadowOp[A])
 
 enum ShadowOp[+A]:
     case Named(name: String) extends ShadowOp[List[Any] => Any]
-    case Promote extends ShadowOp[Any => Any]
+    case Promote extends ShadowOp[Any => Option[Any]]
 
 case class ShadowHandles(handles: TiedMap[ShadowOpSpec]):
     def extract(shadow: String)(value: SeirVal): Option[Any] =
@@ -19,7 +19,7 @@ case class ShadowHandles(handles: TiedMap[ShadowOpSpec]):
             case None =>
                 handles
                     .get(ShadowOpSpec(shadow, ShadowOp.Promote))
-                    .map(_(value.repr))
+                    .flatMap(_(value.repr))
 
 case class HiddenProc(proc: String => SeirVal):
     def apply(text: String): SeirVal =
