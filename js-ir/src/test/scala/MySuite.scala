@@ -199,3 +199,22 @@ class TestSuite extends munit.FunSuite:
     assert(!env.isDefined("m"))
     assert(!env.isDefined("y"))
   } // */
+
+  test("evaluation") {
+    val text = """
+    |(scope
+    |  (decl x)
+    |  (decl y)
+    |  (decl inc)
+    |  (def inc ~(.+ ~#0 {int 1}))
+    |  (def x {int 5})
+    |  (def y (.inc x))
+    |  (scope x y))
+    """.stripMargin
+    val parser = SeirParser(text)
+    val expr = parser.takeExpr.get
+    assertEquals(
+      evalSeir(expr),
+      SeirVal(6)
+    )
+  }
