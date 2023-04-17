@@ -4,19 +4,29 @@ case class SeirPrelude(exprs: List[SeirExpr]):
             exprs ++ List(src)
         )
 
+type SeirFnRepr = PartialFunction[List[SeirVal], SeirVal]
+
 case class ShadowOpSpec(shadow: String, op: String)
 
 case class ShadowHandles(handles: Map[ShadowOpSpec, List[SeirVal] => Any])
 
 case class SeirEvaluator(
-    src: SeirExpr,
     vars: Map[String, SeirVal] = Map(),
-    shadowHandles: ShadowHandles = ShadowHandles(Map())
+    shadowHandles: ShadowHandles = summon[ShadowHandles]
 ):
-    def eval: SeirVal = ???
+    def eval(expr: SeirExpr): SeirVal =
+        ???
+    
+    def apply(call: SeirExpr.Call): SeirVal =
+        call match
+            case SeirExpr.Call(f, args) =>
+                (
+                    eval(f)
+                        .repr
+                        .asInstanceOf[SeirFnRepr]
+                )(args.map(eval))
 
-given Conversion[SeirExpr, SeirEvaluator] =
-    expr => SeirEvaluator(
-        summon[SeirPrelude].transform(expr),
-        shadowHandles = summon[ShadowHandles]
+def evalSeir(expr: SeirExpr): SeirVal =
+    SeirEvaluator().eval(
+        summon[SeirPrelude].transform(expr)
     )
