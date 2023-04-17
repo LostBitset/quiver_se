@@ -248,21 +248,29 @@ class TestSuite extends munit.FunSuite:
     )
   } // */
 
-  /* test("evaluation with shadows indirectly") {
+  test("evaluation with shadows indirectly") {
     val text = """
     |(scope
     |  (decl inc)
     |  (def inc ~(.+ ~#0 {int 1}))
-    |  (def x {int 5})
-    |  (.inc x))
+    |  (def x (scope X))
+    |  (scope x (.inc x)))
     """.stripMargin
     val parser = SeirParser(text)
-    val expr = parser.takeExpr.get
+    val exprNoContext = parser.takeExpr.get
+    val customPrelude = SeirPrelude(List(
+      SeirExpr.Decl("X"),
+      SeirExpr.Def("X", SeirExpr.Re(SeirVal(
+        5,
+        Map("smt" -> "X")
+      )))
+    ))
+    val expr = customPrelude.transform(exprNoContext)
     assertEquals(
       evalSeir(expr),
       SeirVal(
         6,
-        Map("smt" -> "(+ 5 1)")
+        Map("smt" -> "(+ X 1)")
       )
     )
   } // */
