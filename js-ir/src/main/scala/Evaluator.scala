@@ -77,11 +77,11 @@ case class SeirEvaluator(
     
     def apply(f: SeirVal, args: List[SeirVal]): SeirVal =
         val base = applyDropShadows(f, args)
-        base.shadows.get("@@varname") match
+        f.shadows.get("@@varname") match
             case Some(name: String) =>
-                val rewrittenShadows = base
-                    .shadows
-                    .keys
+                val rewrittenShadows = args
+                    .map(_.shadows.keys)
+                    .reduce(_ ++ _)
                     .filterNot(_.startsWith("@@"))
                     .flatMap(
                         shadow => shadowHandles.handles.get(
