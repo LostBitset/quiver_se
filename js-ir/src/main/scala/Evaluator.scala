@@ -41,21 +41,24 @@ case class SeirEvaluator(
                 SeirVal(())
             case SeirExpr.Var(name) =>
                 env(name)
-            case SeirExpr.Call(f, argValues) =>
-                val args = argValues.map(rec)
-                rec(f).repr match
-                    case QuotedCapture(expr) =>
-                        eval(expr, args)
-                    case other =>
-                        (
-                            other.asInstanceOf[SeirFnRepr]
-                        )(args)
+            case SeirExpr.Call(f, args) =>
+                val argValues = args.map(rec)
+                val fValue = rec(f).repr 
             case SeirExpr.Hidden(str) =>
                 summon[HiddenProc](str)
             case SeirExpr.Capture(expr) =>
                 SeirVal(QuotedCapture(expr))
             case SeirExpr.ArgRef(pos) =>
                 arguments(pos)
+            
+    def apply(f: SeirVal, args: List[SeirVal]): SeirVal =
+        f match
+            case QuotedCapture(expr) =>
+                eval(expr, args)
+            case fnRepr: SeirFnRepr =>
+                fnRepr(args)
+            case bad => throw java.lang.IllegalArgumentException(bad.toString)
+        
 
 def evalSeir(expr: SeirExpr): SeirVal =
     SeirEvaluator().eval(
