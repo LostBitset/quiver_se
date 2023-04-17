@@ -1,1 +1,1 @@
-given ShadowHandles = ShadowHandles(Map())
+given ShadowHandles = ShadowHandles(TiedMap[ShadowOpSpec]())

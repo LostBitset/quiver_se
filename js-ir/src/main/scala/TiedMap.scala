@@ -1,4 +1,4 @@
-case class TiedMap[H[_]](inner: Map[H[?], ?]):
+case class TiedMap[H[+_]](inner: Map[H[Any], Any] = Map[H[Any], Any]()):
     def +[A](kv: (H[A], A)): TiedMap[H] =
         TiedMap(inner + kv)
     
