@@ -43,7 +43,8 @@ case class SeirEvaluator(
                 env(name)
             case SeirExpr.Call(f, args) =>
                 val argValues = args.map(rec)
-                val fValue = rec(f).repr 
+                val fValue = rec(f)
+                apply(fValue, argValues)
             case SeirExpr.Hidden(str) =>
                 summon[HiddenProc](str)
             case SeirExpr.Capture(expr) =>
@@ -52,7 +53,7 @@ case class SeirEvaluator(
                 arguments(pos)
             
     def apply(f: SeirVal, args: List[SeirVal]): SeirVal =
-        f match
+        f.repr match
             case QuotedCapture(expr) =>
                 eval(expr, args)
             case fnRepr: SeirFnRepr =>
