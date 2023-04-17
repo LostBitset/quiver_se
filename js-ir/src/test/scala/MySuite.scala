@@ -145,3 +145,57 @@ class TestSuite extends munit.FunSuite:
       ))
     )
   } // */
+
+  test("env works properly 1/2") {
+    var env = SeirEnv()
+    env.enterScope
+    env.declare("test")
+    env.enterScope
+    env.enterScope
+    env.define("test", SeirVal("hello"))
+    env.leaveScope
+    assert(env.isDefined("test"))
+    assertEquals(
+      env("test"),
+      SeirVal("hello")
+    )
+    env.leaveScope
+    env.leaveScope
+    env.enterScope
+    assert(!env.isDefined("test"))
+    env.enterScope
+  } // */
+
+  test("env works properly 2/2") {
+    var env = SeirEnv()
+    env.enterScope
+    env.declare("f")
+    env.enterScope
+    env.define("f", SeirVal(false))
+    env.leaveScope
+    env.enterScope
+    env.declare("m")
+    env.define("m", SeirVal(42))
+    env.declare("y")
+    env.define("y", SeirVal("something"))
+    assert(env.isDefined("f"))
+    assert(env.isDefined("m"))
+    assert(env.isDefined("y"))
+    assertEquals(
+      env("f"),
+      SeirVal(false)
+    )
+    assertEquals(
+      env("m"),
+      SeirVal(42)
+    )
+    assertEquals(
+      env("y"),
+      SeirVal("something")
+    )
+    env.leaveScope
+    env.leaveScope
+    assert(!env.isDefined("f"))
+    assert(!env.isDefined("m"))
+    assert(!env.isDefined("y"))
+  }

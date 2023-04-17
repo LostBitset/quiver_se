@@ -10,9 +10,12 @@ class SeirEnv(
         stack.addOne(MutSet.empty)
     
     def leaveScope: Unit =
-        stack.dropRightInPlace(1).last.foreach({
-            vars(_).dropRightInPlace(1)
+        stack.last.foreach(dropped => {
+            vars(dropped).dropRightInPlace(1)
+            if vars(dropped).isEmpty then
+                vars.remove(dropped)
         })
+        stack.dropRightInPlace(1)
 
     def declare(key: String): Unit =
         stack.last.add(key)
@@ -20,7 +23,16 @@ class SeirEnv(
     // Linear time for now, but this shouldn't really be a problem
     def define(key: String, value: SeirVal): Unit =
         val lastIndex = vars.size - 1
-        vars(key).patchInPlace(lastIndex, List(value), 1)
+        if !(vars contains key) then
+            vars
+                .put(key, MutList(value))
+        else
+            vars(key)
+                .patchInPlace(lastIndex, List(value), 1)
 
     def apply(key: String): SeirVal =
         vars(key).last
+
+    def isDefined(key: String): Boolean =
+        vars contains key
+    
