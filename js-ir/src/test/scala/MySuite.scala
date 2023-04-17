@@ -123,3 +123,25 @@ class TestSuite extends munit.FunSuite:
       )
     )
   } // */
+
+  test("prelude transform works") {
+    val prelude = SeirPrelude(List(
+      SeirExpr.Decl("a"),
+      SeirExpr.Decl("b")
+    ))
+    val transformed = prelude.transform(
+      SeirExpr.Scope(List(
+        SeirExpr.Decl("w")
+      ))
+    )
+    assertEquals(
+      transformed,
+      SeirExpr.Scope(List(
+        SeirExpr.Decl("a"),
+        SeirExpr.Decl("b"),
+        SeirExpr.Scope(List(
+          SeirExpr.Decl("w")
+        ))
+      ))
+    )
+  }
