@@ -56,10 +56,8 @@ case class SeirEvaluator(
         f.repr match
             case QuotedCapture(expr) =>
                 eval(expr, args)
-            case fnRepr: SeirFnRepr =>
-                fnRepr(args)
-            case bad => throw java.lang.IllegalArgumentException(bad.toString)
-        
+            case other =>
+                other.asInstanceOf[SeirFnRepr](args)
 
 def evalSeir(expr: SeirExpr): SeirVal =
     SeirEvaluator().eval(
