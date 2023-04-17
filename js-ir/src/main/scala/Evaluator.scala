@@ -10,6 +10,10 @@ case class ShadowOpSpec(shadow: String, op: String)
 
 case class ShadowHandles(handles: Map[ShadowOpSpec, List[SeirVal] => Any])
 
+case class HiddenProc(proc: String => SeirVal):
+    def apply(text: String): SeirVal =
+        proc(text)
+
 case class QuotedCapture(expr: SeirExpr)
 
 case class SeirEvaluator(
@@ -28,7 +32,8 @@ case class SeirEvaluator(
                 SeirVal(())
             case SeirExpr.Var(name) => env(name)
             case call: SeirExpr.Call => apply(call)
-            case SeirExpr.Hidden(str) => ???
+            case SeirExpr.Hidden(str) =>
+                summon[HiddenProc](str)
             case SeirExpr.Capture(expr) => SeirVal(QuotedCapture(expr))
             case SeirExpr.ArgRef(pos) => arguments(pos)
     
