@@ -21,39 +21,41 @@ case class SeirEvaluator(
     shadowHandles: ShadowHandles = summon[ShadowHandles]
 ):
     def eval(expr: SeirExpr, arguments: List[SeirVal] = List()): SeirVal =
+        lazy val rec = { eval(_, arguments) }
         expr match
             case SeirExpr.Re(value) =>
                 value
             case SeirExpr.Scope(of) =>
-                ???
+                env.enterScope
+                var lastSlot = SeirVal(())
+                of.foreach(expr => {
+                    lastSlot = rec(expr)
+                })
+                env.leaveScope
+                lastSlot
             case SeirExpr.Decl(name) =>
                 env.declare(name)
                 SeirVal(())
             case SeirExpr.Def(name, to) =>
-                env.define(name, eval(to))
+                env.define(name, rec(to))
                 SeirVal(())
             case SeirExpr.Var(name) =>
                 env(name)
-            case call: SeirExpr.Call =>
-                apply(call)
-            case SeirExpr.Hidden(str) =>
-                summon[HiddenProc](str)
-            case SeirExpr.Capture(expr) =>
-                SeirVal(QuotedCapture(expr))
-            case SeirExpr.ArgRef(pos) =>
-                arguments(pos)
-    
-    def apply(call: SeirExpr.Call): SeirVal =
-        call match
             case SeirExpr.Call(f, argValues) =>
-                val args = argValues.map(eval(_))
-                eval(f).repr match
+                val args = argValues.map(rec)
+                rec(f).repr match
                     case QuotedCapture(expr) =>
                         eval(expr, args)
                     case other =>
                         (
                             other.asInstanceOf[SeirFnRepr]
                         )(args)
+            case SeirExpr.Hidden(str) =>
+                summon[HiddenProc](str)
+            case SeirExpr.Capture(expr) =>
+                SeirVal(QuotedCapture(expr))
+            case SeirExpr.ArgRef(pos) =>
+                arguments(pos)
 
 def evalSeir(expr: SeirExpr): SeirVal =
     SeirEvaluator().eval(
