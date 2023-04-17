@@ -16,19 +16,20 @@ case class SeirEvaluator(
     vars: Map[String, SeirVal] = Map(),
     shadowHandles: ShadowHandles = summon[ShadowHandles]
 ):
-    def eval(expr: SeirExpr): SeirVal =
+    def eval(expr: SeirExpr, arguments: List[SeirVal] = List()): SeirVal =
         ???
     
     def apply(call: SeirExpr.Call): SeirVal =
         call match
-            case SeirExpr.Call(f, args) =>
+            case SeirExpr.Call(f, argValues) =>
+                val args = argValues.map(eval(_))
                 eval(f).repr match
                     case QuotedCapture(expr) =>
-                        ???
+                        eval(expr, args)
                     case other =>
                         (
                             other.asInstanceOf[SeirFnRepr]
-                        )(args.map(eval))
+                        )(args)
 
 def evalSeir(expr: SeirExpr): SeirVal =
     SeirEvaluator().eval(
