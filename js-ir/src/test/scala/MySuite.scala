@@ -234,7 +234,7 @@ class TestSuite extends munit.FunSuite:
         Map("smt" -> "(+ 5 1)")
       )
     )
-  }
+  } // */
 
   test("evaluation with shadows indirectly") {
     val text = """
@@ -253,4 +253,4 @@ class TestSuite extends munit.FunSuite:
         Map("smt" -> "(+ 5 1)")
       )
     )
-  }
+  } // */
