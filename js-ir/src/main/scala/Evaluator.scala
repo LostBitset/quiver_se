@@ -13,21 +13,20 @@ case class ShadowHandles(handles: Map[ShadowOpSpec, List[SeirVal] => Any])
 case class QuotedCapture(expr: SeirExpr)
 
 case class SeirEvaluator(
-    vars: Map[String, SeirVal] = Map(),
+    var vars: Map[String, SeirVal] = Map(),
     shadowHandles: ShadowHandles = summon[ShadowHandles]
 ):
     def eval(expr: SeirExpr, arguments: List[SeirVal] = List()): SeirVal =
         expr match
-            case SeirExpr.Re(value) =>
-            case SeirExpr.Scope(of) =>
-            case SeirExpr.Decl(name) =>
-            case SeirExpr.Def(name, to) =>
-            case SeirExpr.Var(name) =>
-            case SeirExpr.Call(f, args) =>
-            case SeirExpr.Hidden(str) =>
-            case SeirExpr.Capture(expr) =>
-            case SeirExpr.ArgRef(pos) =>
-        
+            case SeirExpr.Re(value) => value
+            case SeirExpr.Scope(of) => ???
+            case SeirExpr.Decl(name) => ???
+            case SeirExpr.Def(name, to) => ???
+            case SeirExpr.Var(name) => ???
+            case call: SeirExpr.Call => apply(call)
+            case SeirExpr.Hidden(str) => ???
+            case SeirExpr.Capture(expr) => SeirVal(QuotedCapture(expr))
+            case SeirExpr.ArgRef(pos) => arguments(pos)
     
     def apply(call: SeirExpr.Call): SeirVal =
         call match
