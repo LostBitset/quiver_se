@@ -215,6 +215,6 @@ class TestSuite extends munit.FunSuite:
     val expr = parser.takeExpr.get
     assertEquals(
       evalSeir(expr),
-      SeirVal(6)
+      SeirVal(6, Map("@@varname" -> "y"))
     )
   }
