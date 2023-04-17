@@ -22,20 +22,26 @@ case class SeirEvaluator(
 ):
     def eval(expr: SeirExpr, arguments: List[SeirVal] = List()): SeirVal =
         expr match
-            case SeirExpr.Re(value) => value
-            case SeirExpr.Scope(of) => ???
+            case SeirExpr.Re(value) =>
+                value
+            case SeirExpr.Scope(of) =>
+                ???
             case SeirExpr.Decl(name) =>
                 env.declare(name)
                 SeirVal(())
             case SeirExpr.Def(name, to) =>
                 env.define(name, eval(to))
                 SeirVal(())
-            case SeirExpr.Var(name) => env(name)
-            case call: SeirExpr.Call => apply(call)
+            case SeirExpr.Var(name) =>
+                env(name)
+            case call: SeirExpr.Call =>
+                apply(call)
             case SeirExpr.Hidden(str) =>
                 summon[HiddenProc](str)
-            case SeirExpr.Capture(expr) => SeirVal(QuotedCapture(expr))
-            case SeirExpr.ArgRef(pos) => arguments(pos)
+            case SeirExpr.Capture(expr) =>
+                SeirVal(QuotedCapture(expr))
+            case SeirExpr.ArgRef(pos) =>
+                arguments(pos)
     
     def apply(call: SeirExpr.Call): SeirVal =
         call match
