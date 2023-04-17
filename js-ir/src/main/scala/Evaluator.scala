@@ -10,6 +10,8 @@ case class ShadowOpSpec(shadow: String, op: String)
 
 case class ShadowHandles(handles: Map[ShadowOpSpec, List[SeirVal] => Any])
 
+case class QuotedCapture(expr: SeirExpr)
+
 case class SeirEvaluator(
     vars: Map[String, SeirVal] = Map(),
     shadowHandles: ShadowHandles = summon[ShadowHandles]
@@ -20,11 +22,13 @@ case class SeirEvaluator(
     def apply(call: SeirExpr.Call): SeirVal =
         call match
             case SeirExpr.Call(f, args) =>
-                (
-                    eval(f)
-                        .repr
-                        .asInstanceOf[SeirFnRepr]
-                )(args.map(eval))
+                eval(f).repr match
+                    case QuotedCapture(expr) =>
+                        ???
+                    case other =>
+                        (
+                            other.asInstanceOf[SeirFnRepr]
+                        )(args.map(eval))
 
 def evalSeir(expr: SeirExpr): SeirVal =
     SeirEvaluator().eval(
