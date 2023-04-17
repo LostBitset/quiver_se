@@ -219,6 +219,11 @@ class TestSuite extends munit.FunSuite:
     )
   }
 
+  test("simple shadow extraction") {
+    val extracted = summon[ShadowHandles].extract("smt")(SeirVal(7))
+    assertEquals(extracted, Some("7"))
+  } // */
+
   test("evaluation with shadows directly") {
     val text = """
     |(scope

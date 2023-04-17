@@ -15,7 +15,8 @@ enum ShadowOp[+A]:
 case class ShadowHandles(handles: TiedMap[ShadowOpSpec]):
     def extract(shadow: String)(value: SeirVal): Option[Any] =
         value.shadows.get(shadow) match
-            case Some(value) => Some(value)
+            case Some(value) =>
+                Some(value)
             case None =>
                 handles
                     .get(ShadowOpSpec(shadow, ShadowOp.Promote))
@@ -81,7 +82,7 @@ case class SeirEvaluator(
                 val rewrittenShadows = base
                     .shadows
                     .keys
-                    .filter(_.startsWith("@@"))
+                    .filterNot(_.startsWith("@@"))
                     .flatMap(
                         shadow => shadowHandles.handles.get(
                             ShadowOpSpec(shadow, ShadowOp.Named(name))
