@@ -6,11 +6,16 @@ case class SeirPrelude(exprs: List[SeirExpr]):
 
 type SeirFnRepr = PartialFunction[List[SeirVal], SeirVal]
 
-case class ShadowOpSpec(shadow: String, op: String | Promote)
+case class ShadowOpSpec[+A](shadow: String, op: ShadowOp[A])
 
-case class Promote()
+enum ShadowOp[+A]:
+    case Named(name: String) extends ShadowOp[List[Any] => Any]
+    case Promote() extends ShadowOp[Any => Any]
+    case Fallback() extends ShadowOp[Any]
 
-case class ShadowHandles(handles: Map[ShadowOpSpec, List[SeirVal] => Any])
+case class ShadowHandles(handles: TiedMap[ShadowOpSpec]):
+    def extract(shadow: String)(value: Any): Any =
+        handles.get(shadow)
 
 case class HiddenProc(proc: String => SeirVal):
     def apply(text: String): SeirVal =
@@ -67,7 +72,7 @@ case class SeirEvaluator(
     
     def apply(f: SeirVal, args: List[SeirVal]): SeirVal =
         val base = applyDropShadows(f, args)
-        base.shadows.get("@@name") match
+        base.shadows.get("@@varname") match
             case Some(name: String) =>
                 val rewrittenShadows = base
                     .shadows
@@ -75,14 +80,18 @@ case class SeirEvaluator(
                     .filter(_.startsWith("@@"))
                     .flatMap(
                         shadow => shadowHandles.handles.get(
-                            ShadowOpSpec(shadow, name)
+                            ShadowOpSpec(shadow, ShadowOp.Named(name))
                         )
-                            .map(shadow -> _(promotedArgs))
+                            .map(shadow -> _(
+                                args.map(
+                                    shadowHandles.extract(shadow)
+                                )
+                            ))
                     )
                     .toMap
                 SeirVal(base.repr, base.shadows ++ rewrittenShadows)
             case Some(bad) =>
-                throw IllegalArgumentException(s"expected @@name -> <String>, got \"$bad\"")
+                throw IllegalArgumentException(s"expected @@varname -> <String>, got \"$bad\"")
             case None =>
                 base
 
