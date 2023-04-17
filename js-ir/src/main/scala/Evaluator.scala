@@ -6,7 +6,9 @@ case class SeirPrelude(exprs: List[SeirExpr]):
 
 type SeirFnRepr = PartialFunction[List[SeirVal], SeirVal]
 
-case class ShadowOpSpec(shadow: String, op: String)
+case class ShadowOpSpec(shadow: String, op: String | Promote)
+
+case class Promote()
 
 case class ShadowHandles(handles: Map[ShadowOpSpec, List[SeirVal] => Any])
 
