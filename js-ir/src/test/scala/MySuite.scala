@@ -217,7 +217,30 @@ class TestSuite extends munit.FunSuite:
       evalSeir(expr),
       SeirVal(6, Map("@@varname" -> "y"))
     )
-  }
+  } // */
+
+  test("evaluation with nested functions") {
+    val text = """
+    |(scope
+    |  (decl ap2)
+    |  (decl one)
+    |  (decl inc)
+    |  (def ap2 ~(.~#0 ~#1 ~#2))
+    |  (def one {int 1})
+    |  (def inc
+    |    ~(.ap2
+    |      ~(.+ ~#0 ~#1)
+    |      ~#0
+    |      one))
+    |  (.inc (.inc one)))
+    """.stripMargin
+    val parser = SeirParser(text)
+    val expr = parser.takeExpr.get
+    assertEquals(
+      evalSeir(expr).repr,
+      3
+    )
+  } // */
 
   test("simple shadow extraction") {
     val extracted = summon[ShadowHandles].extract("smt")(SeirVal(7))
