@@ -11,6 +11,10 @@ given ShadowHandles = ShadowHandles(
             val spaceSep = args.map(_.shadow).asInstanceOf[List[String]].mkString(" ")
             s"(+ ${spaceSep})"
         })
+        + (ShadowOpSpec("smt", ShadowOp.Named("int=")), (args, ctx) => {
+            val spaceSep = args.map(_.shadow).asInstanceOf[List[Int]].mkString(" ")
+            s"(= ${spaceSep})"
+        })
         + (ShadowOpSpec("smt", ShadowOp.Named("if")), (args, ctx) => {
             val cVal = args(0).repr.asInstanceOf[Boolean]
             val cSym = args(0).shadow.asInstanceOf[String]

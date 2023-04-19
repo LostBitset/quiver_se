@@ -13,4 +13,9 @@ given SeirPrelude = SeirPrelude(List(
     SeirExpr.Def("true", SeirExpr.Re(SeirVal(true))),
     SeirExpr.Decl("false"),
     SeirExpr.Def("false", SeirExpr.Re(SeirVal(false))),
+    SeirExpr.Decl("int="),
+    SeirExpr.Def("int=", SeirExpr.Re(SeirVal({
+        case List(SeirVal(a : Int, _), SeirVal(b: Int, _)) =>
+            SeirVal(a == b)
+    } : SeirFnRepr)))
 ))
