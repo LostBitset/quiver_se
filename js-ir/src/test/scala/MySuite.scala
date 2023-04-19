@@ -1,3 +1,5 @@
+import scala.collection.mutable.{ListBuffer => MutList}
+
 class TestSuite extends munit.FunSuite:
 
   test("sanity check") {
@@ -309,4 +311,42 @@ class TestSuite extends munit.FunSuite:
         .get
     assertEquals(evalSeir(exprT).repr, 1)
     assertEquals(evalSeir(exprF).repr, 4)
+  } // */
+
+  test("path conditions") {
+    val text = """
+    |(scope
+    |  (.if X
+    |    (.if Y
+    |      {int 2}
+    |      {int 3})
+    |    {int 2}))
+    """.stripMargin
+    val parser = SeirParser(text)
+    val exprNoContext = parser.takeExpr.get
+    val customPrelude = SeirPrelude(List(
+      SeirExpr.Decl("X"),
+      SeirExpr.Def("X", SeirExpr.Re(SeirVal(
+        true,
+        Map("smt" -> "X")
+      ))),
+      SeirExpr.Decl("Y"),
+      SeirExpr.Def("Y", SeirExpr.Re(SeirVal(
+        false,
+        Map("smt" -> "Y")
+      )))
+    ))
+    val expr = customPrelude.transform(exprNoContext)
+    val evaluator = SeirEvaluator()
+    evaluator.evalSeir(expr)
+    assertEquals(
+      evaluator
+        .shadowCtx
+        .map
+        .get("path-cond")
+        .get
+        .asInstanceOf[MutList[String]]
+        .toList,
+      List("(not Y)", "X")
+    )
   } // */

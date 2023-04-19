@@ -65,7 +65,7 @@ case class SeirEvaluator(
             case SeirExpr.Call(f, args) =>
                 val argValues = args.map(rec)
                 val fValue = rec(f)
-                apply(fValue, argValues)
+                ap(fValue, argValues)
             case SeirExpr.Hidden(str) =>
                 summon[HiddenProc](str)
             case SeirExpr.Capture(expr) =>
@@ -80,7 +80,7 @@ case class SeirEvaluator(
             case other =>
                 other.asInstanceOf[SeirFnRepr](args)
     
-    def apply(f: SeirVal, args: List[SeirVal]): SeirVal =
+    def ap(f: SeirVal, args: List[SeirVal]): SeirVal =
         val base = applyDropShadows(f, args)
         f.shadows.get("@@varname") match
             case Some(name: String) =>
@@ -100,7 +100,7 @@ case class SeirEvaluator(
                                             shadowHandles.extract(shadow)(x)
                                                 .map(shadowVal =>
                                                     ShadowPersp(
-                                                        args(i),
+                                                        args(i).repr,
                                                         shadowVal
                                                     )
                                                 )
@@ -114,9 +114,12 @@ case class SeirEvaluator(
                 throw IllegalArgumentException(s"expected @@varname -> <String>, got \"$bad\"")
             case None =>
                 base
+    
+    def evalSeir(expr: SeirExpr): SeirVal =
+        eval(
+            summon[SeirPrelude].transform(expr)
+        )
 
 
 def evalSeir(expr: SeirExpr): SeirVal =
-    SeirEvaluator().eval(
-        summon[SeirPrelude].transform(expr)
-    )
+    SeirEvaluator().evalSeir(expr)
