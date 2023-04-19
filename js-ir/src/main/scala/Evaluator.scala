@@ -6,10 +6,12 @@ case class SeirPrelude(exprs: List[SeirExpr]):
 
 type SeirFnRepr = PartialFunction[List[SeirVal], SeirVal]
 
+case class ShadowCtx(var map: Map[String, Any] = Map())
+
 case class ShadowOpSpec[+A](shadow: String, op: ShadowOp[A])
 
 enum ShadowOp[+A]:
-    case Named(name: String) extends ShadowOp[List[Any] => Any]
+    case Named(name: String) extends ShadowOp[(List[Any], ShadowCtx) => Any]
     case Promote extends ShadowOp[Any => Option[Any]]
 
 case class ShadowHandles(handles: TiedMap[ShadowOpSpec]):
@@ -30,6 +32,7 @@ case class QuotedCapture(expr: SeirExpr)
 
 case class SeirEvaluator(
     var env: SeirEnv = SeirEnv(),
+    var shadowCtx: ShadowCtx = ShadowCtx(),
     shadowHandles: ShadowHandles = summon[ShadowHandles]
 ):
     def eval(expr: SeirExpr, arguments: List[SeirVal] = List()): SeirVal =
@@ -90,7 +93,8 @@ case class SeirEvaluator(
                             .map(shadow -> _(
                                 args.flatMap(
                                     shadowHandles.extract(shadow)
-                                )
+                                ),
+                                shadowCtx,
                             ))
                     )
                     .toMap

@@ -5,7 +5,7 @@ given ShadowHandles = ShadowHandles(
                 case int: Int => Some(int.toString)
                 case _ => None
         })
-        + (ShadowOpSpec("smt", ShadowOp.Named("+")), args => {
+        + (ShadowOpSpec("smt", ShadowOp.Named("+")), (args, ctx) => {
             val spaceSep = args.asInstanceOf[List[String]].mkString(" ")
             s"(+ ${spaceSep})"
         })
