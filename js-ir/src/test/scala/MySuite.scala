@@ -297,3 +297,16 @@ class TestSuite extends munit.FunSuite:
       )
     )
   } // */
+
+  test("evaluation with if") {
+    val exprT =
+      SeirParser("(.if true {int 1} {int 4})")
+        .takeExpr
+        .get
+    val exprF =
+      SeirParser("(.if false {int 1} {int 4})")
+        .takeExpr
+        .get
+    assertEquals(evalSeir(exprT).repr, 1)
+    assertEquals(evalSeir(exprF).repr, 4)
+  } // */
