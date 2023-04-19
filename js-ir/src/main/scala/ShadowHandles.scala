@@ -6,7 +6,7 @@ given ShadowHandles = ShadowHandles(
                 case _ => None
         })
         + (ShadowOpSpec("smt", ShadowOp.Named("+")), (args, ctx) => {
-            val spaceSep = args.asInstanceOf[List[String]].mkString(" ")
+            val spaceSep = args.map(_.shadow).asInstanceOf[List[String]].mkString(" ")
             s"(+ ${spaceSep})"
         })
 )
