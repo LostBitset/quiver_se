@@ -50,7 +50,7 @@ def decodePathCondItem(s: String): PathCondItem =
             case _ =>
                 throw UntranslatablePathConditionString(s)
     after.tail match
-        case ':' ~~:: constraint =>
+        case ';' ~~:: constraint =>
             PathCondItem(constraint, followed_value)
         case _ =>
             throw UntranslatablePathConditionString(s)
