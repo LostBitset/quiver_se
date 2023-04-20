@@ -21,7 +21,9 @@ def extractSPC(evaluator: SeirEvaluator): SegmentedPathCond =
     SegmentedPathCond(
         splitGroups(pc, SeirCallbackRef.Top)(item =>
             if item.startsWith(SMT_EVTRXN_MAGIC) then
-                Some(item.drop(SMT_EVTRXN_MAGIC.length))
+                Some(SeirCallbackRef.ForEvent(
+                    item.drop(SMT_EVTRXN_MAGIC.length)
+                ))
             else
                 None
         )
@@ -34,8 +36,24 @@ def extractSPC(evaluator: SeirEvaluator): SegmentedPathCond =
             })
     )
 
+class UntranslatablePathConditionString(s: String)
+    extends Exception(s"Must be condition magic: $s")
+
 def decodePathCondItem(s: String): PathCondItem =
-    
+    if !s.startsWith(SMT_COND_MAGIC) then
+        throw UntranslatablePathConditionString(s)
+    val after = s.drop(SMT_COND_MAGIC.length)
+    val followed_value =
+        after.head match
+            case 't' => true
+            case 'f' => false
+            case _ =>
+                throw UntranslatablePathConditionString(s)
+    after.tail match
+        case ':' ~~:: constraint =>
+            PathCondItem(constraint, followed_value)
+        case _ =>
+            throw UntranslatablePathConditionString(s)
 
 // -- begin nh
 def splitGroups[A, B](list: List[A], start: B)(f: A => Option[B]): List[(B, List[A])] = {
