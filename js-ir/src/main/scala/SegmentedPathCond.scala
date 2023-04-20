@@ -1,4 +1,5 @@
 import scala.collection.mutable.{ListBuffer => MutList}
+import scala.annotation.tailrec
 
 case class SegmentedPathCond(segments: List[PathCondSegment])
 
@@ -18,8 +19,31 @@ def extractSPC(evaluator: SeirEvaluator): SegmentedPathCond =
             .asInstanceOf[MutList[String]]
             .toList
     PathCondSegment(
-        segmentPC(pc, SeirCallbackRef.Top)
+        segmentPC(pc, SeirCallbackRef.Top, List())
     )
 
-def segmentPC(pc: List[String], entryCallback: SeirCallbackRef): List[PathCondSegment] =
+@tailrec
+def segmentPC(
+    pc: List[String], entryCallback: SeirCallbackRef, pfx: List[PathCondSegment]
+): List[PathCondSegment] =
+    pc match
+        case h :: t =>
+            if h.startsWith(SMT_EVTRXN_MAGIC) then
+                segmentPC(
+                    t,
+                    SeirCallbackRef.ForEvent(
+                        h.drop(SMT_EVTRXN_MAGIC.length)
+                    ),
+                    pfx
+                )
+            else
+                segmentPC(
+                    t,
+                    entryCallback,
+                    (
+                        PathCondSegment
+                    ) :: pfx,
+                )
+        case Nil => pfx
+    
     

@@ -1,5 +1,8 @@
 import scala.collection.mutable.{ListBuffer => MutList}
 
+val SMT_EVTRXN_MAGIC = "@@MAGIC:event-transition="
+val SMT_COND_MAGIC = "@@MAGIC:condition="
+
 given ShadowHandles = ShadowHandles(
     TiedMap[ShadowOpSpec]()
         + (ShadowOpSpec("smt", ShadowOp.Promote), repr => {
@@ -12,7 +15,7 @@ given ShadowHandles = ShadowHandles(
                 ctx.map += ("path-cond", MutList.empty[String])
             ctx.map("path-cond")
                 .asInstanceOf[MutList[String]]
-                .addOne(s"@@MAGIC:event-transition=$event")
+                .addOne(SMT_EVTRXN_MAGIC ++ event)
         })
         + (ShadowOpSpec("smt", ShadowOp.Named("+")), (args, ctx) => {
             val spaceSep = args.map(_.shadow).asInstanceOf[List[String]].mkString(" ")
@@ -28,10 +31,10 @@ given ShadowHandles = ShadowHandles(
                     val cVal = cond.repr.asInstanceOf[Boolean]
                     val cSym = cond.shadow.asInstanceOf[String]
                     val pathCondition =
-                        if cVal then
-                            cSym
-                        else
-                            s"(not ${cSym})"
+                        SMT_COND_MAGIC
+                        + (if cVal then "t" else "f")
+                        + ";"
+                        + cSym
                     if !(ctx.map contains "path-cond") then
                         ctx.map += ("path-cond", MutList.empty[String])
                     ctx.map("path-cond")
