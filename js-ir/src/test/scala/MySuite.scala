@@ -460,7 +460,10 @@ class TestSuite extends munit.FunSuite:
         .get
         .asInstanceOf[MutList[String]]
         .toList,
-      List("(not Y)", "X")
+      List(
+        "@@MAGIC:condition=f;Y",
+        "@@MAGIC:condition=t;X"
+      )
     )
   } // */
 
@@ -507,7 +510,10 @@ class TestSuite extends munit.FunSuite:
         .get
         .asInstanceOf[MutList[String]]
         .toList,
-      List("(not Y)", "(= (+ X 1) 4)")
+      List(
+        "@@MAGIC:condition=f;Y",
+        "@@MAGIC:condition=t;(= (+ X 1) 4)"
+      )
     )
   } // */
 
@@ -564,6 +570,10 @@ class TestSuite extends munit.FunSuite:
         .get
         .asInstanceOf[MutList[String]]
         .toList,
-      List("@@MAGIC:event-transition=yset", "(= (+ X 1) 4)", "(not Y)")
+      List(
+        "@@MAGIC:event-transition=yset",
+        "@@MAGIC:condition=t;(= (+ X 1) 4)",
+        "@@MAGIC:condition=f;Y"
+      )
     )
   }
