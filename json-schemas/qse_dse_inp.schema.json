@@ -1,0 +1,30 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "lostbitset://qse_dse_inp.quiver_se.json.schemas",
+    "title": "SiMReQ DSE Engine Input (Input Toplevel)",
+    "type": "object",
+    "properties": {
+        "vars": {
+            "description": "The assignments and sorts for symbolic variables",
+            "type": "object",
+            "propertyNames": {
+                "description": "Symbolic variable names as used by the SMT solver",
+                "type": "string"
+            },
+            "additionalProperties": {
+                "description": "The assignment and sort for a SMT variable",
+                "type": "object",
+                "properties": {
+                    "assigned_value": {
+                        "description": "The value assigned as an SMT source string",
+                        "type": "string"
+                    },
+                    "sort": {
+                        "description": "The sort of the variable",
+                        "type": "string"
+                    }
+                }
+            }
+        }
+    }
+}
