@@ -1,3 +1,5 @@
+import scala.collection.mutable.{ListBuffer => MutList}
+
 case class SeirPrelude(exprs: List[SeirExpr]):
     def transform(src: SeirExpr): SeirExpr =
         SeirExpr.Scope(
@@ -6,7 +8,11 @@ case class SeirPrelude(exprs: List[SeirExpr]):
 
 type SeirFnRepr = PartialFunction[List[SeirVal], SeirVal]
 
-case class ShadowCtx(var map: Map[String, Any] = Map())
+case class ShadowCtx(
+    var map: Map[String, Any] = Map(
+        "@@evtrxns" -> MutList[String]
+    )
+)
 
 case class ShadowOpSpec[+A](shadow: String, op: ShadowOp[A])
 
@@ -32,6 +38,8 @@ case class HiddenProc(proc: String => SeirVal):
 
 case class QuotedCapture(expr: SeirExpr)
 
+case class SeirBoundEvent(cap: QuotedCapture, name: String)
+
 case class SeirEvaluator(
     var env: SeirEnv = SeirEnv(),
     var shadowCtx: ShadowCtx = ShadowCtx(),
@@ -56,6 +64,17 @@ case class SeirEvaluator(
             case SeirExpr.Def(name, to) =>
                 env.define(name, rec(to))
                 SeirVal(())
+            case SeirExpr.DefEvent(name, callback) =>
+                val cap = rec(callback)
+                val toVal = SeirVal(
+                    SeirBoundEvent(
+                        cap.repr.asInstanceOf[QuotedCapture],
+                        name
+                    ),
+                    cap.shadows
+                )
+                env.define(name, toVal)
+                SeirVal(())
             case SeirExpr.Var(name) =>
                 val base = env(name)
                 SeirVal(
@@ -77,6 +96,14 @@ case class SeirEvaluator(
         f.repr match
             case QuotedCapture(expr) =>
                 eval(expr, args)
+            case SeirBoundEvent(cap, name) =>
+                shadowCtx
+                    .map
+                    .get("@@evtrxns")
+                    .get
+                    .asInstanceOf[MutList[String]]
+                    .addOne(name)
+                applyDropShadows(SeirVal(cap), args)
             case other =>
                 other.asInstanceOf[SeirFnRepr](args)
     

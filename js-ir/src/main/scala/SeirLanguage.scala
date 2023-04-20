@@ -10,6 +10,7 @@ enum SeirExpr:
   case Scope(of: List[SeirExpr])
   case Decl(name: SeirIdent)
   case Def(name: SeirIdent, to: SeirExpr)
+  case DefEvent(name: SeirIdent, callback: SeirExpr)
   case Var(name: SeirIdent)
   case Call(f: SeirExpr, args: List[SeirExpr])
   case Hidden(str: String)
@@ -169,6 +170,16 @@ class SeirParser(var text: String):
                       ))
                   case bad =>
                     mkFailure(s"unexpected name for def \"$bad\"")
+              case "defev" =>
+                takeToken match
+                  case SeirTok.IdentLike(name) =>
+                    takeExpr
+                      .flatMap(expr => takeTokenRequire(
+                        SeirTok.RParen,
+                        SeirExpr.DefEvent(name, expr)
+                      ))
+                  case bad =>
+                    mkFailure(s"unexpected name for defev \"$bad\"")
               case "hidden" =>
                 takeToken match
                   case SeirTok.Hidden(text) => takeTokenRequire(
