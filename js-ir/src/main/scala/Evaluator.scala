@@ -146,6 +146,14 @@ case class SeirEvaluator(
         eval(
             summon[SeirPrelude].transform(expr)
         )
+    
+    def eventTransitions: List[String] =
+        shadowCtx
+            .map
+            .get("@@evtrxns")
+            .get
+            .asInstanceOf[MutList[String]]
+            .toList
 
 
 def evalSeir(expr: SeirExpr): SeirVal =
