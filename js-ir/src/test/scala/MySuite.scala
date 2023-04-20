@@ -539,7 +539,6 @@ class TestSuite extends munit.FunSuite:
     |     ~(.ychoose)
     |     ~(.inc {int 0}))))
     """.stripMargin
-    println("TEST CASE UNDER SCRUTINY")
     val parser = SeirParser(text)
     val exprNoContext = parser.takeExpr.get
     val customPrelude = SeirPrelude(List(
@@ -565,6 +564,6 @@ class TestSuite extends munit.FunSuite:
         .get
         .asInstanceOf[MutList[String]]
         .toList,
-      List("(not Y)",  "(= (+ X 1) 4)", "@@MAGIC:event-transition=yset")
+      List("@@MAGIC:event-transition=yset", "(= (+ X 1) 4)", "(not Y)")
     )
   }
