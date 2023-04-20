@@ -208,7 +208,6 @@ class TestSuite extends munit.FunSuite:
     env.declare("slot")
     env.define("slot", SeirVal(0))
     env.define("slot", SeirVal(8))
-    println(env)
     assert(env.isDefined("slot"))
     assertEquals(
       env("slot"),
