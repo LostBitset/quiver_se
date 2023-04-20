@@ -148,7 +148,7 @@ class TestSuite extends munit.FunSuite:
     )
   } // */
 
-  test("env works properly 1/2") {
+  test("env works properly 1/3") {
     var env = SeirEnv()
     env.enterScope
     env.declare("test")
@@ -168,7 +168,7 @@ class TestSuite extends munit.FunSuite:
     env.enterScope
   } // */
 
-  test("env works properly 2/2") {
+  test("env works properly 2/3") {
     var env = SeirEnv()
     env.enterScope
     env.declare("f")
@@ -201,6 +201,8 @@ class TestSuite extends munit.FunSuite:
     assert(!env.isDefined("m"))
     assert(!env.isDefined("y"))
   } // */
+
+  test("env works properly 3/3")
 
   test("evaluation") {
     val text = """
@@ -313,9 +315,48 @@ class TestSuite extends munit.FunSuite:
     assertEquals(evalSeir(exprF).repr, 4)
   } // */
 
-  test("evaluation with events") {
+  /* test("evaluation with mutation") {
     val text = """
     |(scope
+    |  (decl mutate)
+    |  (decl slot)
+    |  (def slot {int 0})
+    |  (def mutate ~(def slot {int 8}))
+    |  (.mutate)
+    |  slot)
+    """.stripMargin
+    val expr = SeirParser(text).takeExpr.get
+    assertEquals(
+      evalSeir(expr).repr,
+      8
+    )
+  } // */
+
+  /* test("evaluation with event-like exprs") {
+    val text = """
+    |(scope
+    |  (decl ea)
+    |  (decl eb)
+    |  (decl slot)
+    |  (def slot {int 0})
+    |  (def ea ~(def slot {int 8}))
+    |  (def eb
+    |    ~(.
+    |      (.if true ~(.ea) ~(.eb))))
+    |  (scope
+    |    (.eb)
+    |    slot))
+    """.stripMargin
+    val expr = SeirParser(text).takeExpr.get
+    assertEquals(
+      evalSeir(expr).repr,
+      8
+    )
+  } // */
+
+  /* test("evaluation with events") {
+    val text = """
+   |(scope
     |  (decl ea)
     |  (decl eb)
     |  (decl slot)
@@ -324,7 +365,7 @@ class TestSuite extends munit.FunSuite:
     |  (defev eb ~(.if true (.ea) (.eb)))
     |  (scope
     |    (.eb)
-    |    slot))
+    |    slot)) 
     """.stripMargin
     val expr = SeirParser(text).takeExpr.get
     val evaluator = SeirEvaluator()
@@ -332,7 +373,8 @@ class TestSuite extends munit.FunSuite:
       evaluator.eventTransitions,
       List()
     )
-    evaluator.evalSeir(expr)
+    val res = evaluator.evalSeir(expr)
+    assertEquals(res.repr, 8)
     assertEquals(
       evaluator.eventTransitions,
       List("ea", "eb")

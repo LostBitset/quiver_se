@@ -113,7 +113,8 @@ case class SeirEvaluator(
             case Some(name: String) =>
                 val rewrittenShadows = args
                     .map(_.shadows.keys)
-                    .reduce(_ ++ _)
+                    .reduceOption(_ ++ _)
+                    .getOrElse(List())
                     .filterNot(_.startsWith("@@"))
                     .flatMap(
                         shadow => shadowHandles.handles.get(
