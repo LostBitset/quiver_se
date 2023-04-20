@@ -19,6 +19,7 @@ case class ShadowOpSpec[+A](shadow: String, op: ShadowOp[A])
 enum ShadowOp[+A]:
     case Named(name: String) extends ShadowOp[(List[ShadowPersp], ShadowCtx) => Any]
     case Promote extends ShadowOp[Any => Option[Any]]
+    case OnEventTransition extends ShadowOp[(String, ShadowCtx) => Unit]
 
 case class ShadowHandles(handles: TiedMap[ShadowOpSpec]):
     def extract(shadow: String)(value: SeirVal): Option[Any] =
@@ -43,7 +44,7 @@ case class SeirBoundEvent(cap: QuotedCapture, name: String)
 case class SeirEvaluator(
     var env: SeirEnv = SeirEnv(),
     var shadowCtx: ShadowCtx = ShadowCtx(),
-    shadowHandles: ShadowHandles = summon[ShadowHandles]
+    val shadowHandles: ShadowHandles = summon[ShadowHandles],
 ):
     def eval(expr: SeirExpr, arguments: List[SeirVal] = List()): SeirVal =
         lazy val rec = { eval(_, arguments) }
@@ -97,12 +98,7 @@ case class SeirEvaluator(
             case QuotedCapture(expr) =>
                 eval(expr, args)
             case SeirBoundEvent(cap, name) =>
-                shadowCtx
-                    .map
-                    .get("@@evtrxns")
-                    .get
-                    .asInstanceOf[MutList[String]]
-                    .addOne(name)
+                noteEventTransition(name)
                 applyDropShadows(SeirVal(cap), args)
             case other =>
                 other.asInstanceOf[SeirFnRepr](args)
@@ -143,6 +139,23 @@ case class SeirEvaluator(
             case None =>
                 base
     
+    def noteEventTransition(name: String): Unit =
+        shadowCtx
+            .map
+            .get("@@evtrxns")
+            .get
+            .asInstanceOf[MutList[String]]
+            .addOne(name)
+        shadowHandles.handles.mapP([A] => (k: ShadowOpSpec[A], v: A) =>
+            k match
+                case ShadowOpSpec[A](_, ShadowOp.OnEventTransition) =>
+                    // We know that A =:= (String, ShadowCtx) => Unit
+                    // But Scala doesn't :(
+                    val vTyped = v.asInstanceOf[(String, ShadowCtx) => Unit]
+                    vTyped(name, shadowCtx)
+                case _ => ()
+        )
+
     def evalSeir(expr: SeirExpr): SeirVal =
         eval(
             summon[SeirPrelude].transform(expr)
