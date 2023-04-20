@@ -7,6 +7,11 @@ given ShadowHandles = ShadowHandles(
                 case int: Int => Some(int.toString)
                 case _ => None
         })
+        + (ShadowOpSpec("smt", ShadowOp.OnEventTransition), (event, ctx) => {
+            ctx.map("path-cond")
+                .asInstanceOf[MutList[String]]
+                .addOne(s"@@MAGIC:event-transition=$event")
+        })
         + (ShadowOpSpec("smt", ShadowOp.Named("+")), (args, ctx) => {
             val spaceSep = args.map(_.shadow).asInstanceOf[List[String]].mkString(" ")
             s"(+ ${spaceSep})"
