@@ -4,6 +4,20 @@
     "title": "SiMReQ DSE Engine Input (Input Toplevel)",
     "type": "object",
     "properties": {
+        "languages": {
+            "description": "The formats or languages used",
+            "type": "object",
+            "properties": {
+                "smt": {
+                    "description": "The format or language used to encode SMT values and constraints",
+                    "type": "string"
+                },
+                "source": {
+                    "description": "The language of the source that is being analyzed",
+                    "type": "string"
+                }
+            }
+        },
         "vars": {
             "description": "The assignments and sorts for symbolic variables",
             "type": "object",
