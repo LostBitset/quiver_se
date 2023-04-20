@@ -148,7 +148,7 @@ class TestSuite extends munit.FunSuite:
     )
   } // */
 
-  test("env works properly 1/3") {
+  test("env works properly 1/4") {
     var env = SeirEnv()
     env.enterScope
     env.declare("test")
@@ -168,7 +168,7 @@ class TestSuite extends munit.FunSuite:
     env.enterScope
   } // */
 
-  test("env works properly 2/3") {
+  test("env works properly 2/4") {
     var env = SeirEnv()
     env.enterScope
     env.declare("f")
@@ -202,7 +202,41 @@ class TestSuite extends munit.FunSuite:
     assert(!env.isDefined("y"))
   } // */
 
-  test("env works properly 3/3")
+  test("env works properly 3/4") {
+    var env = SeirEnv()
+    env.enterScope
+    env.declare("slot")
+    env.define("slot", SeirVal(0))
+    env.define("slot", SeirVal(8))
+    println(env)
+    assert(env.isDefined("slot"))
+    assertEquals(
+      env("slot"),
+      SeirVal(8)
+    )
+    env.leaveScope
+    assert(!env.isDefined("slot"))
+  } // */
+
+  /* test("env works properly 4/4") {
+    var env = SeirEnv()
+    env.enterScope
+    env.declare("slot")
+    env.define("slot", SeirVal(0))
+    env.define("slot", SeirVal(1))
+    env.enterScope
+    env.enterScope
+    env.define("slot", SeirVal(8))
+    env.leaveScope
+    assert(env.isDefined("slot"))
+    assertEquals(
+      env("slot"),
+      SeirVal(8)
+    )
+    env.leaveScope
+    env.leaveScope
+    assert(!env.isDefined("slot"))
+  } // */
 
   test("evaluation") {
     val text = """

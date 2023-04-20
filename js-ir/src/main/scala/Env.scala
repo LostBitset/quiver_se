@@ -36,3 +36,42 @@ class SeirEnv(
     def isDefined(key: String): Boolean =
         vars contains key
     
+    override def toString: String =
+        s"""
+        |SeirEnv@${hashCode}
+        |├─ Stack
+        |${
+            stack.zipWithIndex.map((x, i) =>
+                (
+                    if (i + 1) == stack.length then
+                        s"   └─ (Frame $i)\n"
+                    else
+                        s"   ├─ (Frame $i)\n"
+                )
+                + x.zipWithIndex.map((item, j) =>
+                    if (j + 1) == stack.length then
+                        s"      └─ $item"
+                    else
+                        s"      ├─ $item"
+                ).mkString("\n")
+            ).mkString("\n")
+        }
+        |└─ Vars (bindings)
+        |${
+            vars.keys.toList.zipWithIndex.map((k, i) =>
+                (
+                    if (i + 1) == vars.size then
+                        s"   └─ Key: $k\n"
+                    else
+                        s"   ├─ Key: $k\n"
+                )
+                + vars(k).zipWithIndex.map((item, j) =>
+                    if (j + 1) == stack.length then
+                        s"      └─ $item"
+                    else
+                        s"      ├─ $item"
+                ).mkString("\n")
+            ).mkString("\n")
+        }
+        """.stripMargin
+    
