@@ -10,7 +10,7 @@ type SeirFnRepr = PartialFunction[List[SeirVal], SeirVal]
 
 case class ShadowCtx(
     var map: Map[String, Any] = Map(
-        "@@evtrxns" -> MutList[String]
+        "@@evtrxns" -> MutList[String]()
     )
 )
 
