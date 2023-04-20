@@ -349,7 +349,7 @@ class TestSuite extends munit.FunSuite:
     assertEquals(evalSeir(exprF).repr, 4)
   } // */
 
-  /* test("evaluation with mutation") {
+  test("evaluation with mutation") {
     val text = """
     |(scope
     |  (decl mutate)
@@ -366,7 +366,7 @@ class TestSuite extends munit.FunSuite:
     )
   } // */
 
-  /* test("evaluation with event-like exprs") {
+  test("evaluation with event-like exprs") {
     val text = """
     |(scope
     |  (decl ea)
