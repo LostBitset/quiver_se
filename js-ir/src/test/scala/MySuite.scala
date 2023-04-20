@@ -536,7 +536,7 @@ class TestSuite extends munit.FunSuite:
     |         (.if yy
     |           ~(.inc {int 1})
     |           ~(.inc {int 2}))))
-    |     ~(.inc {int 1})))
+    |     ~(.inc {int 1}))))
     """.stripMargin
     val parser = SeirParser(text)
     val exprNoContext = parser.takeExpr.get
