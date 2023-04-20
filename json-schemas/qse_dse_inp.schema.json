@@ -36,9 +36,17 @@
                     "sort": {
                         "description": "The sort of the variable",
                         "type": "string"
+                    },
+                    "source_name": {
+                        "description": "What the variable is called in the source code",
+                        "type": "string"
                     }
                 }
             }
+        },
+        "source": {
+            "description": "The actual source to be analyzed",
+            "type": "string"
         }
     }
 }
