@@ -31,7 +31,8 @@ class SeirEnv(
                 .patchInPlace(lastIndex, List(value), 1)
 
     def apply(key: String): SeirVal =
-        vars(key).last
+        val assignments = vars(key).toList
+        assignments.last
 
     def isDefined(key: String): Boolean =
         vars contains key
@@ -61,12 +62,12 @@ class SeirEnv(
             vars.keys.toList.zipWithIndex.map((k, i) =>
                 (
                     if (i + 1) == vars.size then
-                        s"   └─ Key: $k\n"
+                        s"   └─ List for $k\n"
                     else
-                        s"   ├─ Key: $k\n"
+                        s"   ├─ List for $k\n"
                 )
                 + vars(k).zipWithIndex.map((item, j) =>
-                    if (j + 1) == stack.length then
+                    if (j + 1) == vars.size then
                         s"      └─ $item"
                     else
                         s"      ├─ $item"
