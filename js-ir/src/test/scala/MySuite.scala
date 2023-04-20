@@ -510,3 +510,59 @@ class TestSuite extends munit.FunSuite:
       List("(not Y)", "(= (+ X 1) 4)")
     )
   } // */
+
+  test("segmented path conditions") {
+    val text = """
+    |(scope
+    |  (decl inc)
+    |  (def inc ~(.+ ~#0 {int 1}))
+    |  (decl eks)
+    |  (decl inc)
+    |  (decl four)
+    |  (decl yy)
+    |  (scope
+    |    (def eks X)
+    |    (def incd (.inc eks))
+    |    (def four {int 4})
+    |    (def yy true))
+    |  (decl yset)
+    |  (defev yset
+    |    ~(def yy Y))
+    |  (.yset)
+    |  (.
+    |    (.if (.int= incd four)
+    |     ~(scope
+    |       (.
+    |         (.if yy
+    |           ~(.inc {int 1})
+    |           ~(.inc {int 2}))))
+    |     ~(.inc {int 1})))
+    """.stripMargin
+    val parser = SeirParser(text)
+    val exprNoContext = parser.takeExpr.get
+    val customPrelude = SeirPrelude(List(
+      SeirExpr.Decl("X"),
+      SeirExpr.Def("X", SeirExpr.Re(SeirVal(
+        3,
+        Map("smt" -> "X")
+      ))),
+      SeirExpr.Decl("Y"),
+      SeirExpr.Def("Y", SeirExpr.Re(SeirVal(
+        false,
+        Map("smt" -> "Y")
+      )))
+    ))
+    val expr = customPrelude.transform(exprNoContext)
+    val evaluator = SeirEvaluator()
+    evaluator.evalSeir(expr)
+    assertEquals(
+      evaluator
+        .shadowCtx
+        .map
+        .get("path-cond")
+        .get
+        .asInstanceOf[MutList[String]]
+        .toList,
+      List("(not Y)",  "(= (+ X 1) 4)", "@@MAGIC:event-transition=yset")
+    )
+  }
