@@ -218,7 +218,7 @@ class TestSuite extends munit.FunSuite:
     assert(!env.isDefined("slot"))
   } // */
 
-  /* test("env works properly 4/4") {
+  test("env works properly 4/4") {
     var env = SeirEnv()
     env.enterScope
     env.declare("slot")
