@@ -1,0 +1,50 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "lostbitset://qse_dse_out.quiver_se.json.schemas",
+    "title": "SiMReQ DSE Engine Output (Output Toplevel)",
+    "type": "object",
+    "properties": {
+        "languages": {
+            "description": "The formats or languages used",
+            "type": "object",
+            "properties": {
+                "smt": {
+                    "description": "The format or language used to encode SMT constraints",
+                    "type": "string"
+                }
+            }
+        },
+        "segmented_path_condition": {
+            "description": "All of the conditions collected as necessary for the path followed",
+            "type": "array",
+            "items": {
+                "description": "A segment of the path condition corresponding to one callback",
+                "type": "object",
+                "properties": {
+                    "callback": {
+                        "description": "The name given to the callback for this segment",
+                        "type": "string"
+                    },
+                    "path_condition_segment": {
+                        "description": "A segment of the overall path condition",
+                        "type": "array",
+                        "items": {
+                            "description": "A condition in SMT and whether it was followed",
+                            "type": "object",
+                            "properties": {
+                                "constraint": {
+                                    "description": "The condition as an SMT expression",
+                                    "type": "string"
+                                },
+                                "followed_value": {
+                                    "description": "What the condition evaluated to",
+                                    "type": "boolean"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
