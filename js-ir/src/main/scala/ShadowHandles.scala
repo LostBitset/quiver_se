@@ -35,6 +35,7 @@ given ShadowHandles = ShadowHandles(
             ctx.map("path-cond")
                 .asInstanceOf[MutList[String]]
                 .addOne(pathCondition)
+            println(args)
             if cVal then args(1).shadow else args(2).shadow
         })
 )

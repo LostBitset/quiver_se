@@ -94,12 +94,10 @@ case class SeirEvaluator(
                 arguments(pos)
             
     def applyDropShadows(f: SeirVal, args: List[SeirVal]): SeirVal =
-        println(f.shadows)
         f.repr match
             case QuotedCapture(expr) =>
                 eval(expr, args)
             case SeirBoundEvent(cap, name) =>
-                println(s"^event=$name")
                 noteEventTransition(name)
                 applyDropShadows(SeirVal(cap), args)
             case other =>
