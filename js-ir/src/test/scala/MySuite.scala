@@ -528,18 +528,21 @@ class TestSuite extends munit.FunSuite:
     |  (decl yset)
     |  (defev yset
     |    ~(def yy Y))
+    |  (decl ychoose)
+    |  (def ychoose
+    |    ~(.if yy
+    |      {int 2}
+    |      {int 3}))
     |  (.yset)
     |  (.
     |    (.if (.int= incd four)
-    |     ~(scope
-    |       (.
-    |         (.if yy
-    |           ~(.inc {int 1})
-    |           ~(.inc {int 2}))))
-    |     ~(.inc {int 1}))))
+    |     ~(.ychoose)
+    |     ~(.inc {int 0}))))
     """.stripMargin
+    println("TEST CASE UNDER SCRUTINY")
     val parser = SeirParser(text)
     val exprNoContext = parser.takeExpr.get
+    println(exprNoContext)
     val customPrelude = SeirPrelude(List(
       SeirExpr.Decl("X"),
       SeirExpr.Def("X", SeirExpr.Re(SeirVal(
