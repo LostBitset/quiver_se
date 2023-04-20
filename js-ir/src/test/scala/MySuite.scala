@@ -414,6 +414,16 @@ class TestSuite extends munit.FunSuite:
       evaluator.eventTransitions,
       List("eb", "ea")
     )
+    assertEquals(
+      evaluator
+        .shadowCtx
+        .map
+        .get("path-cond")
+        .get
+        .asInstanceOf[MutList[String]]
+        .toList,
+      List("@@MAGIC:event-transition=eb", "@@MAGIC:event-transition=ea")
+    )
   } // */
 
   test("path conditions") {
