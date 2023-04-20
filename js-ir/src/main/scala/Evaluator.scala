@@ -17,9 +17,14 @@ case class ShadowCtx(
 case class ShadowOpSpec[+A](shadow: String, op: ShadowOp[A])
 
 enum ShadowOp[+A]:
-    case Named(name: String) extends ShadowOp[(List[ShadowPersp], ShadowCtx) => Any]
-    case Promote extends ShadowOp[Any => Option[Any]]
-    case OnEventTransition extends ShadowOp[(String, ShadowCtx) => Unit]
+    case Named(name: String)
+        extends ShadowOp[(List[ShadowPersp], ShadowCtx) => Any]
+    case NamedRelaxed(name: String)
+        extends ShadowOp[(List[Option[ShadowPersp]], ShadowCtx) => Option[Any]]
+    case Promote
+        extends ShadowOp[Any => Option[Any]]
+    case OnEventTransition
+        extends ShadowOp[(String, ShadowCtx) => Unit]
 
 case class ShadowHandles(handles: TiedMap[ShadowOpSpec]):
     def extract(shadow: String)(value: SeirVal): Option[Any] =
@@ -113,13 +118,11 @@ case class SeirEvaluator(
                     .getOrElse(List())
                     .filterNot(_.startsWith("@@"))
                     .flatMap(
-                        shadow => shadowHandles.handles.get(
-                            ShadowOpSpec(shadow, ShadowOp.Named(name))
-                        )
-                            .map(shadow -> _(
+                        shadow =>
+                            val shadowList =
                                 args
                                     .zipWithIndex
-                                    .flatMap(
+                                    .map(
                                         (x, i) =>
                                             shadowHandles.extract(shadow)(x)
                                                 .map(shadowVal =>
@@ -128,9 +131,31 @@ case class SeirEvaluator(
                                                         shadowVal
                                                     )
                                                 )
-                                    ),
-                                shadowCtx,
-                            ))
+                                    )
+                            val relaxedVer = shadowHandles.handles.get(
+                                ShadowOpSpec(shadow, ShadowOp.NamedRelaxed(name))
+                            )
+                                .map(shadow -> _(
+                                    shadowList,
+                                    shadowCtx,
+                                ))
+                            val normalVer =
+                                shadowList
+                                    .flipOptions
+                                    .map(shadowListUnwrapped =>
+                                        shadowHandles.handles.get(
+                                            ShadowOpSpec(shadow, ShadowOp.Named(name))
+                                        )
+                                            .map(shadow -> _(
+                                                shadowListUnwrapped,
+                                                shadowCtx,
+                                            ))
+                                    )
+                            normalVer.getOrElse(
+                                relaxedVer match
+                                    case Some(_, Some(_)) => relaxedVer
+                                    case _ => None
+                            )
                     )
                     .toMap
                 SeirVal(base.repr, base.shadows ++ rewrittenShadows)
@@ -169,6 +194,13 @@ case class SeirEvaluator(
             .asInstanceOf[MutList[String]]
             .toList
 
+extension [A](xs: List[Option[A]]) {
+    def flipOptions: Option[List[A]] =
+        if xs contains None then
+            None
+        else
+            Some(xs flatMap identity)
+}
 
 def evalSeir(expr: SeirExpr): SeirVal =
     SeirEvaluator().evalSeir(expr)

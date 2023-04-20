@@ -22,20 +22,26 @@ given ShadowHandles = ShadowHandles(
             val spaceSep = args.map(_.shadow).asInstanceOf[List[Int]].mkString(" ")
             s"(= ${spaceSep})"
         })
+        + (ShadowOpSpec("smt", ShadowOp.NamedRelaxed("if")), (args, ctx) => {
+            args(0) match
+                case Some(cond) =>
+                    val cVal = cond.repr.asInstanceOf[Boolean]
+                    val cSym = cond.shadow.asInstanceOf[String]
+                    val pathCondition =
+                        if cVal then
+                            cSym
+                        else
+                            s"(not ${cSym})"
+                    if !(ctx.map contains "path-cond") then
+                        ctx.map += ("path-cond", MutList.empty[String])
+                    ctx.map("path-cond")
+                        .asInstanceOf[MutList[String]]
+                        .addOne(pathCondition)
+                case None => ()
+            None
+        })
         + (ShadowOpSpec("smt", ShadowOp.Named("if")), (args, ctx) => {
-            val cVal = args(0).repr.asInstanceOf[Boolean]
-            val cSym = args(0).shadow.asInstanceOf[String]
-            val pathCondition =
-                if cVal then
-                    cSym
-                else
-                    s"(not ${cSym})"
-            if !(ctx.map contains "path-cond") then
-                ctx.map += ("path-cond", MutList.empty[String])
-            ctx.map("path-cond")
-                .asInstanceOf[MutList[String]]
-                .addOne(pathCondition)
-            println(args)
-            if cVal then args(1).shadow else args(2).shadow
+            val cond = args(0).repr.asInstanceOf[Boolean]
+            if cond then args(1).shadow else args(2).shadow
         })
 )

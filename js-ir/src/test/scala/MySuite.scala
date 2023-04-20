@@ -542,7 +542,6 @@ class TestSuite extends munit.FunSuite:
     println("TEST CASE UNDER SCRUTINY")
     val parser = SeirParser(text)
     val exprNoContext = parser.takeExpr.get
-    println(exprNoContext)
     val customPrelude = SeirPrelude(List(
       SeirExpr.Decl("X"),
       SeirExpr.Def("X", SeirExpr.Re(SeirVal(
