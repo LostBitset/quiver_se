@@ -592,19 +592,20 @@ class TestSuite extends munit.FunSuite:
     |    (def incd (.inc eks))
     |    (def four {int 4})
     |    (def yy true))
-    |  (decl yset)
-    |  (defev yset
-    |    ~(def yy Y))
     |  (decl ychoose)
     |  (def ychoose
     |    ~(.if yy
     |      {int 2}
     |      {int 3}))
-    |  (.yset)
-    |  (.
-    |    (.if (.int= incd four)
-    |     ~(.ychoose)
-    |     ~(.inc {int 0}))))
+    |  (decl yset)
+    |  (defev yset
+    |    ~(scope
+    |      (def yy Y)
+    |      (.
+    |        (.if (.int= incd four)
+    |          ~(.ychoose)
+    |          ~(.inc {int 0})))))
+    |  (.yset))
     """.stripMargin
     val parser = SeirParser(text)
     val exprNoContext = parser.takeExpr.get
