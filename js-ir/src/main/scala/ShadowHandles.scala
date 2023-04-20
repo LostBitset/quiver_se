@@ -8,6 +8,8 @@ given ShadowHandles = ShadowHandles(
                 case _ => None
         })
         + (ShadowOpSpec("smt", ShadowOp.OnEventTransition), (event, ctx) => {
+            if !(ctx.map contains "path-cond") then
+                ctx.map += ("path-cond", MutList.empty[String])
             ctx.map("path-cond")
                 .asInstanceOf[MutList[String]]
                 .addOne(s"@@MAGIC:event-transition=$event")
