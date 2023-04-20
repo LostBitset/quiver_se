@@ -22,8 +22,17 @@
                 "type": "object",
                 "properties": {
                     "callback": {
-                        "description": "The name given to the callback for this segment",
-                        "type": "string"
+                        "description": "The callback for this segment",
+                        "oneOf": [
+                            {
+                                "description": "The callback as named in the program source",
+                                "type": "string"
+                            },
+                            {
+                                "description": "The entry point to the program",
+                                "type": "null"
+                            }
+                        ]
                     },
                     "path_condition_segment": {
                         "description": "A segment of the overall path condition",
