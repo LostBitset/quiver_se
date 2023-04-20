@@ -388,7 +388,7 @@ class TestSuite extends munit.FunSuite:
     )
   } // */
 
-  /* test("evaluation with events") {
+  test("evaluation with events") {
     val text = """
    |(scope
     |  (decl ea)
@@ -396,7 +396,9 @@ class TestSuite extends munit.FunSuite:
     |  (decl slot)
     |  (def slot {int 0})
     |  (defev ea ~(def slot {int 8}))
-    |  (defev eb ~(.if true (.ea) (.eb)))
+    |  (defev eb
+    |    ~(.
+    |      (.if true ~(.ea) ~(.eb))))
     |  (scope
     |    (.eb)
     |    slot)) 
@@ -411,7 +413,7 @@ class TestSuite extends munit.FunSuite:
     assertEquals(res.repr, 8)
     assertEquals(
       evaluator.eventTransitions,
-      List("ea", "eb")
+      List("eb", "ea")
     )
   } // */
 
