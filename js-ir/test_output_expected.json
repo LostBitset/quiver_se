@@ -1,0 +1,1 @@
+{"languages":{"smt":"smtlib_2va"},"segmented_path_condition":[{"callback":null,"path_cond_segment":[]},{"callback":"yset","path_cond_segment":[{"constraint":"(= (+ X 1) 4)","followed_value":true},{"constraint":"Y","followed_value":false}]}]}
