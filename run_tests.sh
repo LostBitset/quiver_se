@@ -7,6 +7,13 @@ cd z3_test
 cd ..
 echo "[run_tests.sh] Leave subdirectory z3_test. (pass)"
 
+# Subdirectory: js-ir
+echo "[run_tests.sh] Enter subdirectory js-ir..."
+cd js-ir
+./test.sh || exit 1
+cd ..
+echo "[run_tests.sh] Leave subdirectory js-ir. (pass)"
+
 # Subdirectory: lib
 echo "[run_tests.sh] Enter subdirectory lib..."
 cd lib
