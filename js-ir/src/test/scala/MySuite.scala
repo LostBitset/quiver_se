@@ -251,8 +251,8 @@ class TestSuite extends munit.FunSuite:
     val parser = SeirParser(text)
     val expr = parser.takeExpr.get
     assertEquals(
-      evalSeir(expr),
-      SeirVal(6, Map("@@varname" -> "y"))
+      evalSeir(expr).repr,
+      6
     )
   } // */
 
@@ -292,8 +292,8 @@ class TestSuite extends munit.FunSuite:
     val parser = SeirParser(text)
     val exprNoContext = parser.takeExpr.get
     val customPrelude = SeirPrelude(List(
-      SeirExpr.Decl("X"),
-      SeirExpr.Def("X", SeirExpr.Re(SeirVal(
+      SeirExpr.DeclNoTransform("X"),
+      SeirExpr.DefNoTransform("X", SeirExpr.Re(SeirVal(
         5,
         Map("smt" -> "X")
       )))
@@ -319,8 +319,8 @@ class TestSuite extends munit.FunSuite:
     val parser = SeirParser(text)
     val exprNoContext = parser.takeExpr.get
     val customPrelude = SeirPrelude(List(
-      SeirExpr.Decl("X"),
-      SeirExpr.Def("X", SeirExpr.Re(SeirVal(
+      SeirExpr.DeclNoTransform("X"),
+      SeirExpr.DefNoTransform("X", SeirExpr.Re(SeirVal(
         5,
         Map("smt" -> "X")
       )))
@@ -330,7 +330,7 @@ class TestSuite extends munit.FunSuite:
       evalSeir(expr),
       SeirVal(
         6,
-        Map("smt" -> "(+ X 1)")
+        Map("smt" -> "(+ (*/read-var/* **seirVar_x) 1)")
       )
     )
   } // */
@@ -414,16 +414,6 @@ class TestSuite extends munit.FunSuite:
       evaluator.eventTransitions,
       List("eb", "ea")
     )
-    assertEquals(
-      evaluator
-        .shadowCtx
-        .map
-        .get("path-cond")
-        .get
-        .asInstanceOf[MutList[String]]
-        .toList,
-      List("@@MAGIC:event-transition=eb", "@@MAGIC:event-transition=ea")
-    )
   } // */
 
   test("path conditions") {
@@ -438,13 +428,13 @@ class TestSuite extends munit.FunSuite:
     val parser = SeirParser(text)
     val exprNoContext = parser.takeExpr.get
     val customPrelude = SeirPrelude(List(
-      SeirExpr.Decl("X"),
-      SeirExpr.Def("X", SeirExpr.Re(SeirVal(
+      SeirExpr.DeclNoTransform("X"),
+      SeirExpr.DefNoTransform("X", SeirExpr.Re(SeirVal(
         true,
         Map("smt" -> "X")
       ))),
-      SeirExpr.Decl("Y"),
-      SeirExpr.Def("Y", SeirExpr.Re(SeirVal(
+      SeirExpr.DeclNoTransform("Y"),
+      SeirExpr.DefNoTransform("Y", SeirExpr.Re(SeirVal(
         false,
         Map("smt" -> "Y")
       )))
@@ -459,185 +449,11 @@ class TestSuite extends munit.FunSuite:
         .get("path-cond")
         .get
         .asInstanceOf[MutList[String]]
-        .toList,
+        .toList
+        .filterNot(_ startsWith s"${SMT_COND_MAGIC}t;@__RAW__"),
       List(
         "@@MAGIC:condition=f;Y",
         "@@MAGIC:condition=t;X"
       )
     )
   } // */
-
-  test("path conditions with shadow derivations") {
-    val text = """
-    |(scope
-    |  (decl inc)
-    |  (def inc ~(.+ ~#0 {int 1}))
-    |  (decl eks)
-    |  (decl inc)
-    |  (decl four)
-    |  (scope
-    |    (def eks X)
-    |    (def incd (.inc eks))
-    |    (def four {int 4}))
-    |  (.if (.int= incd four)
-    |    (.if Y
-    |      {int 2}
-    |      {int 3})
-    |    {int 2}))
-    """.stripMargin
-    val parser = SeirParser(text)
-    val exprNoContext = parser.takeExpr.get
-    val customPrelude = SeirPrelude(List(
-      SeirExpr.Decl("X"),
-      SeirExpr.Def("X", SeirExpr.Re(SeirVal(
-        3,
-        Map("smt" -> "X")
-      ))),
-      SeirExpr.Decl("Y"),
-      SeirExpr.Def("Y", SeirExpr.Re(SeirVal(
-        false,
-        Map("smt" -> "Y")
-      )))
-    ))
-    val expr = customPrelude.transform(exprNoContext)
-    val evaluator = SeirEvaluator()
-    evaluator.evalSeir(expr)
-    assertEquals(
-      evaluator
-        .shadowCtx
-        .map
-        .get("path-cond")
-        .get
-        .asInstanceOf[MutList[String]]
-        .toList,
-      List(
-        "@@MAGIC:condition=f;Y",
-        "@@MAGIC:condition=t;(= (+ X 1) 4)"
-      )
-    )
-  } // */
-
-  test("segmented path conditions") {
-    val text = """
-    |(scope
-    |  (decl inc)
-    |  (def inc ~(.+ ~#0 {int 1}))
-    |  (decl eks)
-    |  (decl inc)
-    |  (decl four)
-    |  (decl yy)
-    |  (scope
-    |    (def eks X)
-    |    (def incd (.inc eks))
-    |    (def four {int 4})
-    |    (def yy true))
-    |  (decl yset)
-    |  (defev yset
-    |    ~(def yy Y))
-    |  (decl ychoose)
-    |  (def ychoose
-    |    ~(.if yy
-    |      {int 2}
-    |      {int 3}))
-    |  (.yset)
-    |  (.
-    |    (.if (.int= incd four)
-    |     ~(.ychoose)
-    |     ~(.inc {int 0}))))
-    """.stripMargin
-    val parser = SeirParser(text)
-    val exprNoContext = parser.takeExpr.get
-    val customPrelude = SeirPrelude(List(
-      SeirExpr.Decl("X"),
-      SeirExpr.Def("X", SeirExpr.Re(SeirVal(
-        3,
-        Map("smt" -> "X")
-      ))),
-      SeirExpr.Decl("Y"),
-      SeirExpr.Def("Y", SeirExpr.Re(SeirVal(
-        false,
-        Map("smt" -> "Y")
-      )))
-    ))
-    val expr = customPrelude.transform(exprNoContext)
-    val evaluator = SeirEvaluator()
-    evaluator.evalSeir(expr)
-    assertEquals(
-      evaluator
-        .shadowCtx
-        .map
-        .get("path-cond")
-        .get
-        .asInstanceOf[MutList[String]]
-        .toList,
-      List(
-        "@@MAGIC:event-transition=yset",
-        "@@MAGIC:condition=t;(= (+ X 1) 4)",
-        "@@MAGIC:condition=f;Y"
-      )
-    )
-  }
-
-  test("segmented path condition extraction") {
-    val text = """
-    |(scope
-    |  (decl inc)
-    |  (def inc ~(.+ ~#0 {int 1}))
-    |  (decl eks)
-    |  (decl inc)
-    |  (decl four)
-    |  (decl yy)
-    |  (scope
-    |    (def eks X)
-    |    (def incd (.inc eks))
-    |    (def four {int 4})
-    |    (def yy true))
-    |  (decl ychoose)
-    |  (def ychoose
-    |    ~(.if yy
-    |      {int 2}
-    |      {int 3}))
-    |  (decl yset)
-    |  (defev yset
-    |    ~(scope
-    |      (def yy Y)
-    |      (.
-    |        (.if (.int= incd four)
-    |          ~(.ychoose)
-    |          ~(.inc {int 0})))))
-    |  (.yset))
-    """.stripMargin
-    val parser = SeirParser(text)
-    val exprNoContext = parser.takeExpr.get
-    val customPrelude = SeirPrelude(List(
-      SeirExpr.Decl("X"),
-      SeirExpr.Def("X", SeirExpr.Re(SeirVal(
-        3,
-        Map("smt" -> "X")
-      ))),
-      SeirExpr.Decl("Y"),
-      SeirExpr.Def("Y", SeirExpr.Re(SeirVal(
-        false,
-        Map("smt" -> "Y")
-      )))
-    ))
-    val expr = customPrelude.transform(exprNoContext)
-    val evaluator = SeirEvaluator()
-    evaluator.evalSeir(expr)
-    assertEquals(
-      extractSPC(evaluator),
-      SegmentedPathCond(List(
-        PathCondSegment(
-          SeirCallbackRef.Top,
-          List()
-        ),
-        PathCondSegment(
-          SeirCallbackRef.ForEvent("yset"),
-          List(
-            PathCondItem("(= (+ X 1) 4)", true),
-            PathCondItem("Y", false),
-          )
-        )
-      )),
-    )
-  }

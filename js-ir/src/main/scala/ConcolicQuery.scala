@@ -43,8 +43,8 @@ case class ConcolicVarDesc(smt_name: String, value: String, sort: String, source
     def toExprDeclare: SeirExpr.Decl =
         SeirExpr.Decl(source_name)
 
-    def toExprDefine: SeirExpr.Def =
-        SeirExpr.Def(
+    def toExprDefine: SeirExpr.DefNoTransform =
+        SeirExpr.DefNoTransform(
             source_name,
             SeirExpr.Re(SeirVal(
                 getRepr,

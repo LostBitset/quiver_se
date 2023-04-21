@@ -36,9 +36,11 @@ case class SeirEnv(
         stack.dropRightInPlace(1)
         denoteRaw2VA("(*/leave-scope/*)")
 
-    def declare(key: String): Unit =
+    def declare(key: String, collapseSMT: Boolean = true): Unit =
+        println(s"$key -> $collapseSMT")
         stack.last.add(key)
-        denoteRaw2VA(s"(*/decl-var/* **seirVar_$key)")
+        if collapseSMT then
+            denoteRaw2VA(s"(*/decl-var/* **seirVar_$key)")
     
     // Linear time for now, but this shouldn't really be a problem
     def define(key: String, value: SeirVal, collapseSMT: Boolean = true): Unit =

@@ -77,8 +77,14 @@ case class SeirEvaluator(
             case SeirExpr.Decl(name) =>
                 env.declare(name)
                 SeirVal(())
+            case SeirExpr.DeclNoTransform(name) =>
+                env.declare(name, collapseSMT = false)
+                SeirVal(())
             case SeirExpr.Def(name, to) =>
                 env.define(name, rec(to))
+                SeirVal(())
+            case SeirExpr.DefNoTransform(name, to) =>
+                env.define(name, rec(to), collapseSMT = false)
                 SeirVal(())
             case SeirExpr.DefEvent(name, callback) =>
                 val cap = rec(callback)
