@@ -5,7 +5,12 @@ case class ConcolicQuery(
 ):
     def run: SegmentedPathCond =
         val exprNoContext = SeirParser(source).takeExpr.get
-        val symPrelude = SeirPrelude(vars.map(_.toExpr))
+        val symPrelude = SeirPrelude(
+            vars.flatMap(desc => List(
+                desc.toExprDeclare,
+                desc.toExprDefine
+            ))
+        )
         val expr = symPrelude.transform(exprNoContext)
         val evaluator = SeirEvaluator()
         evaluator.evalSeir(expr)
@@ -22,3 +27,9 @@ case class ConcolicVarDesc(smt_name: String, value: String, sort: String, source
             case "Int" => value.toInt
             case _ => throw UnrecognizedSmtSort(sort)
     )
+
+    def toExprDeclare: SeirExpr.Decl =
+        ???
+
+    def toExprDefine: SeirExpr.Def =
+        ???
