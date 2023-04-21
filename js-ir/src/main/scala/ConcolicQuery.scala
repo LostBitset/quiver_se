@@ -22,14 +22,19 @@ class UnrecognizedSmtSort(sort: String)
     extends Exception(s"Unrecognized sort $sort")
 
 case class ConcolicVarDesc(smt_name: String, value: String, sort: String, source_name: String):
-    def getAsSeirValue: SeirVal = SeirVal(
+    def getRepr: Any =
         sort match
             case "Int" => value.toInt
             case _ => throw UnrecognizedSmtSort(sort)
-    )
 
     def toExprDeclare: SeirExpr.Decl =
-        ???
+        SeirExpr.Decl(source_name)
 
     def toExprDefine: SeirExpr.Def =
-        ???
+        SeirExpr.Def(
+            source_name,
+            SeirExpr.Re(SeirVal(
+                getRepr,
+                Map("smt" -> value)
+            ))
+        )
