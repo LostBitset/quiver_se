@@ -1,0 +1,21 @@
+{
+    "languages": {
+        "source": "seir",
+        "smt": "smtlib_2va"
+    },
+    "vars": [
+        {
+            "source_name": "X",
+            "assigned_value": "3",
+            "sort": "Int",
+            "smt_name": "X"
+        },
+        {
+            "source_name": "Y",
+            "assigned_value": "false",
+            "sort": "Bool",
+            "smt_name": "Y"
+        }
+    ],
+    "source": "(scope (decl inc) (def inc ~(.+ ~#0 {int 1})) (decl eks) (decl inc) (decl four) (decl yy) (scope (def eks X) (def incd (.inc eks)) (def four {int 4}) (def yy true)) (decl ychoose) (def ychoose ~(.if yy {int 2} {int 3})) (decl yset) (defev yset ~(scope (def yy Y) (. (.if (.int= incd four) ~(.ychoose) ~(.inc {int 0}))))) (.yset))"
+}

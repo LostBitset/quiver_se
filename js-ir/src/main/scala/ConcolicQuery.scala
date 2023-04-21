@@ -33,6 +33,11 @@ case class ConcolicVarDesc(smt_name: String, value: String, sort: String, source
     def getRepr: Any =
         sort match
             case "Int" => value.toInt
+            case "Bool" =>
+                value match
+                    case "true" => true
+                    case "false" => false
+                    case _ => throw IllegalArgumentException(value)
             case _ => throw UnrecognizedSmtSort(sort)
 
     def toExprDeclare: SeirExpr.Decl =
