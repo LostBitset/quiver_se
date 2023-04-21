@@ -2,6 +2,22 @@ import grapple.json.{_, given}
 
 import scala.language.implicitConversions
 
+given JsonOutput[ConcolicResult] with
+    def write(u: ConcolicResult) =
+        Json.obj(
+            "languages" -> u.languages,
+            "segmented_path_condition" -> u.spc
+        )
+
+given JsonOutput[ConcolicResultLanguages] with
+    def write(u: ConcolicResultLanguages) =
+        Json.obj(
+            "smt" -> u.smt
+        )
+
+given JsonOutput[SegmentedPathCond] with
+    def write(u: SegmentedPathCond) = u.segments
+
 given JsonOutput[PathCondSegment] with
     def write(u: PathCondSegment) =
         Json.obj(
