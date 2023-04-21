@@ -46,10 +46,20 @@ case class QuotedCapture(expr: SeirExpr)
 
 case class SeirBoundEvent(cap: QuotedCapture, name: String)
 
+object SeirEvaluator:
+    def apply(): SeirEvaluator =
+        val shadowCtx = ShadowCtx()
+        val shadowHandles = summon[ShadowHandles]
+        SeirEvaluator(
+            SeirEnv(shadowCtx, shadowHandles),
+            shadowCtx,
+            shadowHandles
+        )
+
 case class SeirEvaluator(
-    var env: SeirEnv = SeirEnv(),
-    var shadowCtx: ShadowCtx = ShadowCtx(),
-    val shadowHandles: ShadowHandles = summon[ShadowHandles],
+    var env: SeirEnv,
+    var shadowCtx: ShadowCtx,
+    val shadowHandles: ShadowHandles,
 ):
     def eval(expr: SeirExpr, arguments: List[SeirVal] = List()): SeirVal =
         lazy val rec = { eval(_, arguments) }
