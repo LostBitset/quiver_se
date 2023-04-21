@@ -41,17 +41,17 @@ case class SeirEnv(
         denoteRaw2VA(s"(*/decl-var/* **seirVar_$key)")
     
     // Linear time for now, but this shouldn't really be a problem
-    def define(key: String, value: SeirVal): Unit =
+    def define(key: String, value: SeirVal, collapseSMT: Boolean = true): Unit =
         val toWrite =
             shadowHandles.extract("smt")(value) match
-                case Some(extractedSMT) =>
+                case Some(extractedSMT) if collapseSMT =>
                     val smtReferenceEncoding = s"(*/read-var/* **seirVar_$key)";
                     denoteRaw2VA(s"(*/write-var/* **seirVar_$key *{{$extractedSMT}}*)")
                     SeirVal(
                         value.repr,
                         value.shadows + ("smt" -> smtReferenceEncoding)
                     )
-                case None =>
+                case _ =>
                     value
         val lastIndex = vars.size - 1
         if !(vars contains key) then
