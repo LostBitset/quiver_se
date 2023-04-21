@@ -37,7 +37,6 @@ case class SeirEnv(
         denoteRaw2VA("(*/leave-scope/*)")
 
     def declare(key: String, collapseSMT: Boolean = true): Unit =
-        println(s"$key -> $collapseSMT")
         stack.last.add(key)
         if collapseSMT then
             denoteRaw2VA(s"(*/decl-var/* **seirVar_$key)")
