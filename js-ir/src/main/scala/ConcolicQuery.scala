@@ -40,8 +40,8 @@ case class ConcolicVarDesc(smt_name: String, value: String, sort: String, source
                     case _ => throw IllegalArgumentException(value)
             case _ => throw UnrecognizedSmtSort(sort)
 
-    def toExprDeclare: SeirExpr.Decl =
-        SeirExpr.Decl(source_name)
+    def toExprDeclare: SeirExpr.DeclNoTransform =
+        SeirExpr.DeclNoTransform(source_name)
 
     def toExprDefine: SeirExpr.DefNoTransform =
         SeirExpr.DefNoTransform(
