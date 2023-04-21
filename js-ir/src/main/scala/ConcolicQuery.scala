@@ -3,6 +3,9 @@ case class ConcolicQuery(
     vars: List[ConcolicVarDesc],
     source: String
 ):
+    assert(languages.source == "seir")
+    assert(languages.smt == "smtlib_2va")
+
     def runExtractSPC: SegmentedPathCond =
         val exprNoContext = SeirParser(source).takeExpr.get
         val symPrelude = SeirPrelude(
