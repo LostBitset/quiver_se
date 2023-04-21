@@ -3,7 +3,7 @@ case class ConcolicQuery(
     vars: List[ConcolicVarDesc],
     source: String
 ):
-    def run: SegmentedPathCond =
+    def runExtractSPC: SegmentedPathCond =
         val exprNoContext = SeirParser(source).takeExpr.get
         val symPrelude = SeirPrelude(
             vars.flatMap(desc => List(
@@ -15,8 +15,13 @@ case class ConcolicQuery(
         val evaluator = SeirEvaluator()
         evaluator.evalSeir(expr)
         extractSPC(evaluator)
+    
+    def run: ConcolicResult =
+        ConcolicResult(languages.toResultLanguages, runExtractSPC)
 
-case class ConcolicQueryLanguages(smt: String, source: String)
+case class ConcolicQueryLanguages(smt: String, source: String):
+    def toResultLanguages: ConcolicResultLanguages =
+        ConcolicResultLanguages(smt)
 
 class UnrecognizedSmtSort(sort: String)
     extends Exception(s"Unrecognized sort $sort")
@@ -38,3 +43,7 @@ case class ConcolicVarDesc(smt_name: String, value: String, sort: String, source
                 Map("smt" -> value)
             ))
         )
+
+case class ConcolicResult(languages: ConcolicResultLanguages, spc: SegmentedPathCond)
+
+case class ConcolicResultLanguages(smt: String)
