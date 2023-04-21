@@ -20,15 +20,15 @@
         },
         "vars": {
             "description": "The assignments and sorts for symbolic variables",
-            "type": "object",
-            "propertyNames": {
-                "description": "Symbolic variable names as used by the SMT solver",
-                "type": "string"
-            },
-            "additionalProperties": {
-                "description": "The assignment and sort for a SMT variable",
+            "type": "array",
+            "items": {
+                "description": "The assignment and sort for a single symbolic variable",
                 "type": "object",
                 "properties": {
+                    "smt_name": {
+                        "description": "Symbolic variable names as used by the SMT solver",
+                        "type": "string"
+                    },
                     "assigned_value": {
                         "description": "The value assigned as an SMT source string",
                         "type": "string"
