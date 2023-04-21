@@ -14,6 +14,13 @@ cd js-ir
 cd ..
 echo "[run_tests.sh] Leave subdirectory js-ir. (pass)"
 
+# Subdirectory: SMTLib_2VA
+echo "[run_tests.sh] Enter subdirectory SMTLib_2VA..."
+cd SMTLib_2VA
+./run_tests.sh || exit 1
+cd ..
+echo "[run_tests.sh] Leave subdirectory SMTLib_2VA. (pass)"
+
 # Subdirectory: lib
 echo "[run_tests.sh] Enter subdirectory lib..."
 cd lib
