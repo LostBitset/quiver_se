@@ -48,7 +48,7 @@ case class ConcolicVarDesc(smt_name: String, value: String, sort: String, source
             source_name,
             SeirExpr.Re(SeirVal(
                 getRepr,
-                Map("smt" -> value)
+                Map("smt" -> smt_name)
             ))
         )
 
