@@ -41,7 +41,7 @@ func MicroprogramQuiverDot(uprgm s.Microprogram) (g *dot.Graph) {
 		g.Edge(
 			nodes[edge.Src],
 			nodes[edge.Dst],
-		).Attr("penwidth", UPRGM_QUIVER_DOT_PENWIDTH_FACTOR*value)
+		).Attr("penwidth", 1+0*UPRGM_QUIVER_DOT_PENWIDTH_FACTOR*value)
 	}
 	return
 }
