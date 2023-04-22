@@ -7,14 +7,14 @@ import (
 type MicroprogramState int
 
 type Microprogram struct {
-	top_state     MicroprogramState
-	fail_state    MicroprogramState
-	transitions   map[MicroprogramState][]MicroprogramTransition
+	StateTop      MicroprogramState
+	StateFail     MicroprogramState
+	Transitions   map[MicroprogramState][]MicroprogramTransition
 	smt_free_funs []qse.SMTFreeFun[string, string]
 }
 
 type MicroprogramTransition struct {
-	dst_state   MicroprogramState
+	StateDst    MicroprogramState
 	constraints []string
 }
 

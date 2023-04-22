@@ -1,10 +1,11 @@
 package libsynthetic
 
 import (
-	qse "github.com/LostBitset/quiver_se/lib"
 	"fmt"
 	"strconv"
 	"strings"
+
+	qse "github.com/LostBitset/quiver_se/lib"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -18,7 +19,7 @@ func (uprgm Microprogram) ExecuteGetPathCondition(
 	pc []string,
 ) {
 	fmt.Println("[REPORT] [EVAL-INFO] EXECUTION")
-	fails, pc = uprgm.ExecuteGetPathConditionFrom(model, uprgm.top_state, no_transition, PC_REC_LIMIT)
+	fails, pc = uprgm.ExecuteGetPathConditionFrom(model, uprgm.StateTop, no_transition, PC_REC_LIMIT)
 	return
 }
 
@@ -30,14 +31,14 @@ func (uprgm Microprogram) ExecuteGetPathConditionFrom(
 ) {
 	log.Info("[bin:path_conditions] Microprogram entered state: " + strconv.Itoa(int(state)))
 	pc = make([]string, 0)
-	fails = state == uprgm.fail_state
+	fails = state == uprgm.StateFail
 	if fails {
 		return
 	}
 	if rec_budget == 0 {
 		return
 	}
-	transitions := uprgm.transitions[state]
+	transitions := uprgm.Transitions[state]
 	not_taken := make([]string, 0)
 	for _, transition := range transitions {
 		if uprgm.ModelSatisfiesConstraints(model, transition.constraints) {
@@ -49,7 +50,7 @@ func (uprgm Microprogram) ExecuteGetPathConditionFrom(
 					"@__RAW__;;@RICHPC:was-segment "+
 						strconv.Itoa(int(state))+
 						" "+
-						strconv.Itoa(int(transition.dst_state)),
+						strconv.Itoa(int(transition.StateDst)),
 				)
 			}
 			log.Infof(
@@ -58,11 +59,11 @@ func (uprgm Microprogram) ExecuteGetPathConditionFrom(
 			)
 			if no_transition {
 				// no rec_pc but we still need to check failure ourselves
-				fails = transition.dst_state == uprgm.fail_state
+				fails = transition.StateDst == uprgm.StateFail
 				return
 			}
 			rec_fails, rec_pc := uprgm.ExecuteGetPathConditionFrom(
-				model, transition.dst_state, no_transition, rec_budget-1,
+				model, transition.StateDst, no_transition, rec_budget-1,
 			)
 			pc = append(pc, rec_pc...)
 			log.Infof(

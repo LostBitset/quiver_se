@@ -54,7 +54,7 @@ buildUpUprgmTransitionsLoop:
 		if len(dst_list) == 1 {
 			new_transitions = []MicroprogramTransition{
 				{
-					dst_state: node_allocation.ShiftBy(dst_list[0]),
+					StateDst: node_allocation.ShiftBy(dst_list[0]),
 					constraints: []string{
 						gen.P_constraintgen.Generate(BoolSort),
 					},
@@ -73,9 +73,9 @@ buildUpUprgmTransitionsLoop:
 		uprgm_transitions[src_state] = append(uprgm_transitions[src_state], new_transitions...)
 	}
 	uprgm = Microprogram{
-		top_state:     top_state,
-		fail_state:    failure_state,
-		transitions:   uprgm_transitions,
+		StateTop:      top_state,
+		StateFail:     failure_state,
+		Transitions:   uprgm_transitions,
 		smt_free_funs: gen.P_constraintgen.SMTFreeFuns(),
 	}
 	return

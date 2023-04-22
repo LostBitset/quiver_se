@@ -1,18 +1,19 @@
 package libsynthetic
 
 import (
-	qse "github.com/LostBitset/quiver_se/lib"
 	"fmt"
 	"testing"
+
+	qse "github.com/LostBitset/quiver_se/lib"
 
 	"github.com/stretchr/testify/assert"
 )
 
 func TestDSESimple(t *testing.T) {
 	uprgm := Microprogram{
-		top_state:  1,
-		fail_state: 2,
-		transitions: map[MicroprogramState][]MicroprogramTransition{
+		top_state: 1,
+		StateFail: 2,
+		Transitions: map[MicroprogramState][]MicroprogramTransition{
 			1: {
 				{5, []string{"false"}},
 				{5, []string{"(and (= x 8) (= x 9))"}},

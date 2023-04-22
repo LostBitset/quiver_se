@@ -1,17 +1,18 @@
 package libsynthetic
 
 import (
-	qse "github.com/LostBitset/quiver_se/lib"
 	"fmt"
 	"hash/fnv"
 	"strings"
+
+	qse "github.com/LostBitset/quiver_se/lib"
 )
 
 func (uprgm Microprogram) RunDSE() (n_bugs int) {
 	n_bugs = 0
 	bug_signal := make(chan uint32)
 	go uprgm.RunDSEContinuously(
-		bug_signal, false, nil, false, -1, uprgm.top_state,
+		bug_signal, false, nil, false, -1, uprgm.StateTop,
 	)
 	for range bug_signal {
 		n_bugs++

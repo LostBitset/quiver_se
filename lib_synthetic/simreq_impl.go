@@ -54,12 +54,12 @@ func (uprgm Microprogram) SiMReQProcessPCs(
 	// Create all necessary nodes (for each state/callback)
 	callback_nodes := make(map[MicroprogramState]qse.QuiverIndex)
 addNodesForMicroprogramStatesLoop:
-	for state := range uprgm.transitions {
-		if state == uprgm.top_state {
+	for state := range uprgm.Transitions {
+		if state == uprgm.StateTop {
 			// Top state gets special treatment
 			continue addNodesForMicroprogramStatesLoop
 		}
-		if state == uprgm.fail_state {
+		if state == uprgm.StateFail {
 			// Fail state gets special treatment
 			continue addNodesForMicroprogramStatesLoop
 		}
@@ -68,8 +68,8 @@ addNodesForMicroprogramStatesLoop:
 		callback_nodes[state] = added_node_index
 	}
 	// Overwrite those for top and failure states since they have special indices on the quiver
-	callback_nodes[uprgm.top_state] = top_node
-	callback_nodes[uprgm.fail_state] = fail_node
+	callback_nodes[uprgm.StateTop] = top_node
+	callback_nodes[uprgm.StateFail] = fail_node
 	// Start goroutine to handle canidate models
 	go func() {
 		defer close(bug_signal)
@@ -88,8 +88,8 @@ addNodesForMicroprogramStatesLoop:
 		}
 	}()
 	seen_states := make(map[MicroprogramState]struct{})
-	seen_states[uprgm.top_state] = struct{}{}
-	seen_states[uprgm.fail_state] = struct{}{}
+	seen_states[uprgm.StateTop] = struct{}{}
+	seen_states[uprgm.StateFail] = struct{}{}
 	for pc := range in_pcs {
 		log.Info("[bin:simreq] Received path condition in SiMReQProcessPCs.")
 		// Group the segmented path condition by segments (which represent transitions)
@@ -123,7 +123,7 @@ addNodesForMicroprogramStatesLoop:
 			for _, pc_state := range pc_states {
 				if _, ok := seen_states[pc_state]; !ok {
 					seen_states[pc_state] = struct{}{}
-					edge_desc := SimpleMicroprogramTransitionDesc{pc_state, uprgm.fail_state}
+					edge_desc := SimpleMicroprogramTransitionDesc{pc_state, uprgm.StateFail}
 					bug_signal_black_hole := make(chan uint32)
 					go func() {
 						for range bug_signal_black_hole {
@@ -222,6 +222,6 @@ func (uprgm Microprogram) RunSiMReQ(bug_signal chan struct{}, jit_dse bool) {
 		}
 	}()
 	in_pcs := make(chan PathConditionResult)
-	go uprgm.RunDSEContinuously(bug_signal_values, true, &in_pcs, false, -1, uprgm.top_state)
+	go uprgm.RunDSEContinuously(bug_signal_values, true, &in_pcs, false, -1, uprgm.StateTop)
 	uprgm.SiMReQProcessPCs(in_pcs, bug_signal_values, jit_dse)
 }
