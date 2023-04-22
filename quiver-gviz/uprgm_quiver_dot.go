@@ -5,4 +5,7 @@ import (
 	"github.com/emicklei/dot"
 )
 
-func MicroprogramQuiverDot(uprgm s.Microprogram) (g dot.Graph)
+func MicroprogramQuiverDot(uprgm s.Microprogram) (g *dot.Graph) {
+	g = dot.NewGraph(dot.Directed)
+	// TODO TODO TODO
+}
