@@ -11,7 +11,7 @@ import (
 
 func TestDSESimple(t *testing.T) {
 	uprgm := Microprogram{
-		top_state: 1,
+		StateTop:  1,
 		StateFail: 2,
 		Transitions: map[MicroprogramState][]MicroprogramTransition{
 			1: {

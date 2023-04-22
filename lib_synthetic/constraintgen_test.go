@@ -9,7 +9,7 @@ import (
 func TestConstraintGeneration(t *testing.T) {
 	ops, vals := GetStandardItems()
 	gtor := ConstraintGenerator{
-		n_depth_mean:     2.0,
+		P_n_depth_mean:   2.0,
 		P_n_depth_stddev: 1.5,
 		P_ops:            ops,
 		P_vals:           vals,

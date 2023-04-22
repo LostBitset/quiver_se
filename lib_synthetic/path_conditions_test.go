@@ -32,7 +32,7 @@ func TestPathConditions(t *testing.T) {
 
 func TestSpecificPathCondition(t *testing.T) {
 	uprgm := Microprogram{
-		top_state: 1,
+		StateTop:  1,
 		StateFail: 2,
 		Transitions: map[MicroprogramState][]MicroprogramTransition{
 			1: {
@@ -63,7 +63,7 @@ func TestSpecificPathCondition(t *testing.T) {
 
 func TestSpecificFailureCheck(t *testing.T) {
 	uprgm := Microprogram{
-		top_state: 1,
+		StateTop:  1,
 		StateFail: 2,
 		Transitions: map[MicroprogramState][]MicroprogramTransition{
 			1: {
