@@ -20,7 +20,7 @@ func BuildTestingMicroprogramGenerator() (uprgm_gen MicroprogramGenerator) {
 	uprgm_gen = MicroprogramGenerator{
 		P_n_states:          7,
 		P_p_transition:      0.75,
-		P_avg_n_transitions: 2.0,
+		P_avg_n_transitions: 40.0,
 		P_p_fallible:        0.4,
 		P_n_entry_samples:   3,
 		P_n_tree_nonleaf:    4,

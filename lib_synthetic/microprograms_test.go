@@ -14,3 +14,13 @@ func TestMicroprogramGeneration(t *testing.T) {
 		uprgm_gen.RandomMicroprogram()
 	}
 }
+
+func TestMicroprogramGenerationOnce(t *testing.T) {
+	uprgm_gen := BuildTestingMicroprogramGenerator()
+	uprgm := uprgm_gen.RandomMicroprogram()
+	for k, vList := range uprgm.Transitions {
+		for _, v := range vList {
+			fmt.Printf("| %v -> %v\n", k, v.StateDst)
+		}
+	}
+}

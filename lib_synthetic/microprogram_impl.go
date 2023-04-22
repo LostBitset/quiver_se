@@ -1,6 +1,9 @@
 package libsynthetic
 
-import "math/rand"
+import (
+	"fmt"
+	"math/rand"
+)
 
 func (gen *MicroprogramGenerator) GetNextStateId() (state MicroprogramState) {
 	state = gen.next_state_id
@@ -43,6 +46,13 @@ func (gen *MicroprogramGenerator) RandomMicroprogram() (uprgm Microprogram) {
 	}
 	// Replace edges with random trees of random constraints
 	adj_list_map := base_quiver.ExtractAdjListAsMap(n_nodes)
+	// @@@ DBG BEGIN @@@
+	for k, vList := range adj_list_map {
+		for _, v := range vList {
+			fmt.Printf("$ %v -> %v\n", k, v)
+		}
+	}
+	// @@@ DBG END @@@
 	uprgm_transitions := make(map[MicroprogramState][]MicroprogramTransition)
 buildUpUprgmTransitionsLoop:
 	for src, dst_list := range adj_list_map {
