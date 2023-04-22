@@ -1,11 +1,11 @@
 package libsynthetic
 
 type ConstraintGenerator struct {
-	n_depth_mean   float64
-	n_depth_stddev float64
-	ops            map[Sort][]Op
-	vals           map[Sort][]Val
-	next_var_id    *int
+	P_n_depth_mean   float64
+	P_n_depth_stddev float64
+	P_ops            map[Sort][]Op
+	P_vals           map[Sort][]Val
+	NextVarId        *int
 }
 
 type Op struct {

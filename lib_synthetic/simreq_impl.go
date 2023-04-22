@@ -1,11 +1,12 @@
 package libsynthetic
 
 import (
-	qse "github.com/LostBitset/quiver_se/lib"
 	"fmt"
 	"hash/fnv"
 	"strconv"
 	"strings"
+
+	qse "github.com/LostBitset/quiver_se/lib"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -182,7 +183,7 @@ addNodesForMicroprogramStatesLoop:
 				]{
 					Src: callback_nodes[transition.src],
 					Dst: dmtq.ParameterizeIndex(callback_nodes[transition.dst]),
-					Edge: pto(SliceToPHashMapSet(
+					Edge: Pto(SliceToPHashMapSet(
 						constraints_in_qse_form,
 					)),
 				},

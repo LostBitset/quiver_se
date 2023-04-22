@@ -3,11 +3,11 @@ package libsynthetic
 func BuildTestingMicroprogramGenerator() (uprgm_gen MicroprogramGenerator) {
 	ops, vals := GetStandardItems()
 	constraint_gen := ConstraintGenerator{
-		n_depth_mean:   2.0,
-		n_depth_stddev: 1.5,
-		ops:            ops,
-		vals:           vals,
-		next_var_id:    pto(0),
+		P_n_depth_mean:   2.0,
+		P_n_depth_stddev: 1.5,
+		P_ops:            ops,
+		P_vals:           vals,
+		NextVarId:        Pto(0),
 	}
 	var_sorts := SimpleDDistr[Sort]{
 		map[Sort]float64{
@@ -18,13 +18,13 @@ func BuildTestingMicroprogramGenerator() (uprgm_gen MicroprogramGenerator) {
 	var_sorts_distr := BakeDDistr[Sort](var_sorts)
 	constraint_gen.AddVariables(4, var_sorts_distr, 0.75)
 	uprgm_gen = MicroprogramGenerator{
-		n_states:          7,
-		p_transition:      0.75,
-		avg_n_transitions: 2.0,
-		p_fallible:        0.4,
-		n_entry_samples:   3,
-		n_tree_nonleaf:    4,
-		constraintgen:     constraint_gen,
+		P_n_states:          7,
+		P_p_transition:      0.75,
+		P_avg_n_transitions: 2.0,
+		P_p_fallible:        0.4,
+		P_n_entry_samples:   3,
+		P_n_tree_nonleaf:    4,
+		P_constraintgen:     constraint_gen,
 	}
 	return
 }

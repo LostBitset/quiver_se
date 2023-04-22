@@ -1,9 +1,10 @@
 package libsynthetic
 
 import (
-	qse "github.com/LostBitset/quiver_se/lib"
 	"math"
 	"math/rand"
+
+	qse "github.com/LostBitset/quiver_se/lib"
 
 	"strconv"
 	"strings"
@@ -65,14 +66,14 @@ func GetStandardItems() (ops map[Sort][]Op, vals map[Sort][]Val) {
 }
 
 func (g ConstraintGenerator) Verify() {
-	for k, v := range g.ops {
+	for k, v := range g.P_ops {
 		for _, i := range v {
 			if k != i.ret {
 				panic("Incorrect sort used as key for generator operator.")
 			}
 		}
 	}
-	for k, v := range g.vals {
+	for k, v := range g.P_vals {
 		for _, i := range v {
 			if k != i.sort {
 				panic("Incorrect sort used as key for generator value.")
@@ -97,7 +98,7 @@ func (sort Sort) String() (s string) {
 const VARIABLE_PREFIX = "var_"
 
 func (g ConstraintGenerator) AddVariables(n int, sort_distr DDistr[Sort], p_var float64) {
-	prev := len(g.vals)
+	prev := len(g.P_vals)
 	// p_var = rep*n / (prev + rep*n)
 	// p_var*prev + p_var*rep*n = rep*n
 	// p_var*prev = (1 - p_var)*rep*n
@@ -112,15 +113,15 @@ func (g ConstraintGenerator) AddVariables(n int, sort_distr DDistr[Sort], p_var 
 
 func (g ConstraintGenerator) AddVariable(sort_distr DDistr[Sort], rep int) {
 	sort := sort_distr.Sample()
-	id := *g.next_var_id
-	*g.next_var_id++
+	id := *g.NextVarId
+	*g.NextVarId++
 	val := Val{VARIABLE_PREFIX + strconv.Itoa(id), sort}
 	for i := 0; i < rep; i++ {
-		if _, ok := g.vals[sort]; !ok {
-			g.vals[sort] = make([]Val, 1)
-			g.vals[sort][0] = val
+		if _, ok := g.P_vals[sort]; !ok {
+			g.P_vals[sort] = make([]Val, 1)
+			g.P_vals[sort][0] = val
 		} else {
-			g.vals[sort] = append(g.vals[sort], val)
+			g.P_vals[sort] = append(g.P_vals[sort], val)
 		}
 	}
 }
@@ -128,7 +129,7 @@ func (g ConstraintGenerator) AddVariable(sort_distr DDistr[Sort], rep int) {
 func (g ConstraintGenerator) Variables() (vars []Val) {
 	vars = make([]Val, 0)
 	seen_vars := make(map[string]struct{})
-	for _, val_subset := range g.vals {
+	for _, val_subset := range g.P_vals {
 		for _, val := range val_subset {
 			if strings.HasPrefix(val.name, VARIABLE_PREFIX) {
 				if _, ok := seen_vars[val.name]; !ok {
@@ -159,7 +160,7 @@ func (g ConstraintGenerator) Generate(sort Sort) (expr string) {
 		sort,
 		int(math.Round(math.Max(
 			0,
-			(rand.NormFloat64()*g.n_depth_stddev)+g.n_depth_mean,
+			(rand.NormFloat64()*g.P_n_depth_stddev)+g.P_n_depth_mean,
 		))),
 	)
 	return
@@ -167,11 +168,11 @@ func (g ConstraintGenerator) Generate(sort Sort) (expr string) {
 
 func (g ConstraintGenerator) GenerateAtDepth(sort Sort, depth int) (expr string) {
 	if depth == 0 {
-		index := rand.Intn(len(g.vals[sort]))
-		return g.vals[sort][index].name
+		index := rand.Intn(len(g.P_vals[sort]))
+		return g.P_vals[sort][index].name
 	}
-	index := rand.Intn(len(g.ops[sort]))
-	head := g.ops[sort][index]
+	index := rand.Intn(len(g.P_ops[sort]))
+	head := g.P_ops[sort][index]
 	var sb strings.Builder
 	sb.WriteRune('(')
 	sb.WriteString(head.name)

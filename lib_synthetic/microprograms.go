@@ -19,12 +19,12 @@ type MicroprogramTransition struct {
 }
 
 type MicroprogramGenerator struct {
-	n_states          int
-	p_transition      float64
-	avg_n_transitions int
-	p_fallible        float64
-	n_entry_samples   int
-	n_tree_nonleaf    int
-	constraintgen     ConstraintGenerator
-	next_state_id     MicroprogramState
+	P_n_states          int
+	P_p_transition      float64
+	P_avg_n_transitions int
+	P_p_fallible        float64
+	P_n_entry_samples   int
+	P_n_tree_nonleaf    int
+	P_constraintgen     ConstraintGenerator
+	next_state_id       MicroprogramState
 }

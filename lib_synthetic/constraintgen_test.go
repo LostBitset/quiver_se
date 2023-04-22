@@ -9,11 +9,11 @@ import (
 func TestConstraintGeneration(t *testing.T) {
 	ops, vals := GetStandardItems()
 	gtor := ConstraintGenerator{
-		n_depth_mean:   2.0,
-		n_depth_stddev: 1.5,
-		ops:            ops,
-		vals:           vals,
-		next_var_id:    pto(0),
+		n_depth_mean:     2.0,
+		P_n_depth_stddev: 1.5,
+		P_ops:            ops,
+		P_vals:           vals,
+		NextVarId:        Pto(0),
 	}
 	var_sorts := SimpleDDistr[Sort]{
 		map[Sort]float64{
