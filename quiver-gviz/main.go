@@ -1,9 +1,19 @@
 package main
 
-import "fmt"
+import (
+	"os"
+)
 
 func main() {
 	uprgm := GenerateEvaluationMicroprogram()
 	dot := MicroprogramQuiverDot(uprgm)
-	fmt.Println(dot.String())
+	f, errC := os.Create("reprdigraph.dot")
+	if errC != nil {
+		panic(errC)
+	}
+	defer f.Close()
+	_, errW := f.Write([]byte(dot.String()))
+	if errW != nil {
+		panic(errW)
+	}
 }
