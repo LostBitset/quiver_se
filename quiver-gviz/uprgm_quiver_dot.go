@@ -12,6 +12,8 @@ type GenEdge[A comparable] struct {
 	Dst A
 }
 
+const UPRGM_QUIVER_DOT_PENWIDTH_FACTOR = 2.0
+
 func MicroprogramQuiverDot(uprgm s.Microprogram) (g *dot.Graph) {
 	g = dot.NewGraph(dot.Directed)
 	edges := make(map[GenEdge[s.MicroprogramState]]int)
@@ -35,5 +37,11 @@ func MicroprogramQuiverDot(uprgm s.Microprogram) (g *dot.Graph) {
 			}
 		}
 	}
-	// TODO TODO TODO
+	for edge, value := range edges {
+		g.Edge(
+			nodes[edge.Src],
+			nodes[edge.Dst],
+		).Attr("penwidth", UPRGM_QUIVER_DOT_PENWIDTH_FACTOR*value)
+	}
+	return
 }
