@@ -1,7 +1,7 @@
 package libsynthetic
 
 import (
-	qse "LostBitset/quiver_se/lib"
+	qse "github.com/LostBitset/quiver_se/lib"
 	"math"
 	"math/rand"
 

@@ -1,6 +1,6 @@
 package libsynthetic
 
-import qse "LostBitset/quiver_se/lib"
+import qse "github.com/LostBitset/quiver_se/lib"
 
 type StringSMTFreeFun struct {
 	FreeFun qse.SMTFreeFun[string, string]
