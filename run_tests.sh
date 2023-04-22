@@ -21,6 +21,13 @@ cd SMTLib_2VA
 cd ..
 echo "[run_tests.sh] Leave subdirectory SMTLib_2VA. (pass)"
 
+# Subdirectory: lib_synthetic
+echo "[run_tests.sh] Enter subdirectory lib_synthetic..."
+cd lib_synthetic
+go test -v || exit 1
+cd ..
+echo "[run_tests.sh] Leave subdirectory lib_synthetic. (pass)"
+
 # Subdirectory: lib
 echo "[run_tests.sh] Enter subdirectory lib..."
 cd lib
