@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-const TEST_ITERATIONS_PC = TEST_ITERATIONS / 16
+const TEST_ITERATIONS_PC = TEST_ITERATIONS / 20
 
 func TestPathConditions(t *testing.T) {
 	uprgm_gen := BuildTestingMicroprogramGenerator()

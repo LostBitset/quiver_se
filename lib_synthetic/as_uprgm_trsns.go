@@ -1,5 +1,7 @@
 package libsynthetic
 
+import "fmt"
+
 func (tree SimpleTree) AsMicroprogramTransitions(
 	dst_states []MicroprogramState,
 	constraintgen ConstraintGenerator,
@@ -40,16 +42,7 @@ func (tree SimpleTree) AsMicroprogramTransitionsWithPrefix(
 	// Non-leaf case
 	transitions = make([]MicroprogramTransition, 0)
 	if len(tree.children) == 1 {
-		new_invertible_constraint := constraintgen.Generate(BoolSort)
-		new_invertible_constraint_prefix := make([]string, len(invertible_constraint_prefix)+1)
-		copy(new_invertible_constraint_prefix, invertible_constraint_prefix)
-		new_invertible_constraint_prefix[len(invertible_constraint_prefix)] = new_invertible_constraint
-		transitions = tree.children[0].AsMicroprogramTransitionsWithPrefix(
-			dst_states,
-			constraintgen,
-			constraint_prefix,
-			new_invertible_constraint_prefix,
-		)
+		panic("(Tree) degree one is disallowed. Remember to call tree.CoerceForbidDegreeOne(). ")
 	} else if len(tree.children) == 2 {
 		// Binary case
 		constraint_size := len(constraint_prefix) + len(invertible_constraint_prefix) + 1
@@ -82,7 +75,12 @@ func (tree SimpleTree) AsMicroprogramTransitionsWithPrefix(
 			[]string{},
 		)...)
 	} else {
-		panic("Invalid. Maximum degree must be 2. ")
+		panic(
+			fmt.Sprintf(
+				"(Tree) invalid. Maximum degree must be 2. Got %d. ",
+				len(tree.children),
+			),
+		)
 	}
 	return
 }

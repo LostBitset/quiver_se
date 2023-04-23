@@ -12,9 +12,11 @@ type GenEdge[A comparable] struct {
 	Dst A
 }
 
-const UPRGM_QUIVER_DOT_PENWIDTH_FACTOR = 2.0
+const UPRGM_QUIVER_DOT_PENWIDTH_FACTOR = 0.1
 
 func MicroprogramQuiverDot(uprgm s.Microprogram) (g *dot.Graph) {
+	fmt.Printf(".StateTop  = %#+v\n", uprgm.StateTop)
+	fmt.Printf(".StateFail = %#+v\n", uprgm.StateFail)
 	g = dot.NewGraph(dot.Directed)
 	edges := make(map[GenEdge[s.MicroprogramState]]int)
 	nodes := make(map[s.MicroprogramState]dot.Node)
@@ -28,23 +30,31 @@ func MicroprogramQuiverDot(uprgm s.Microprogram) (g *dot.Graph) {
 				edges[edge_key] = 0
 			}
 			edges[edge_key] += 1
+			var state s.MicroprogramState
 			if _, ok := nodes[edge_key.Src]; !ok {
-				nodes[edge_key.Src] = g.Node(
-					fmt.Sprintf("%#+v", edge_key.Src),
-				)
+				state = edge_key.Src
+				node_text := fmt.Sprintf("%#+v", state)
+				if state == uprgm.StateTop {
+					node_text = "TOP"
+				}
+				nodes[edge_key.Src] = g.Node(node_text)
 			}
 			if _, ok := nodes[edge_key.Dst]; !ok {
-				nodes[edge_key.Dst] = g.Node(
-					fmt.Sprintf("%#+v", edge_key.Dst),
-				)
+				state = edge_key.Dst
+				node_text := fmt.Sprintf("%#+v", state)
+				if state == uprgm.StateFail {
+					node_text = "FAIL"
+				}
+				nodes[edge_key.Dst] = g.Node(node_text)
 			}
 		}
 	}
 	for edge, value := range edges {
-		g.Edge(
+		edge := g.Edge(
 			nodes[edge.Src],
 			nodes[edge.Dst],
-		).Attr("penwidth", 1+0*UPRGM_QUIVER_DOT_PENWIDTH_FACTOR*value)
+		)
+		edge.Attr("penwidth", 1+(UPRGM_QUIVER_DOT_PENWIDTH_FACTOR*float64(value)))
 	}
 	return
 }

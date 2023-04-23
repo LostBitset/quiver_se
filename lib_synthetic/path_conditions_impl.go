@@ -10,8 +10,8 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-const PC_REC_LIMIT = 15000
-const PC_CYCLE_LIMIT = 30
+const PC_REC_LIMIT = 30
+const PC_CYCLE_LIMIT = 3
 
 func (uprgm Microprogram) ExecuteGetPathCondition(
 	model string, no_transition bool,

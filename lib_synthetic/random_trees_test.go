@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"math/rand"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestRandomTreeGeneration(t *testing.T) {
@@ -23,4 +25,11 @@ func TestRandomTreeGeneration(t *testing.T) {
 		fmt.Printf("size of final random tree: %d.\n", tree.ComputeSize())
 
 	}
+}
+
+func TestRandomTreeCoerceMaxDegreeOnce(t *testing.T) {
+	tree := PruferEvenFinalRandomTree(22, 17)
+	tree.CoerceToMaxDegree(2)
+	actual_max_degree := tree.MaxDegree()
+	assert.LessOrEqual(t, actual_max_degree, 2)
 }
