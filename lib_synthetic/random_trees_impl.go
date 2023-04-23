@@ -28,6 +28,9 @@ func PruferEvenFinalRandomTree(n_nonleaf int, n_leaves int) (tree SimpleTree) {
 	tree = PruferRandomTree(n_nonleaf - 2)
 	leaf_refs := tree.ComputeLeafReferences()
 	period := len(leaf_refs)
+	fmt.Println("v PERIOD")
+	fmt.Println(period)
+	fmt.Println("^ PERIOD")
 	base_former_leaf_degree := n_leaves / period
 	n_addl_leaf_degree := n_leaves % period
 	for i, leaf_ref := range leaf_refs {
@@ -42,7 +45,6 @@ func PruferEvenFinalRandomTree(n_nonleaf int, n_leaves int) (tree SimpleTree) {
 		}
 		actual_leaves := make([]*SimpleTree, leaf_degree)
 		for j, value := range actual_leaf_values {
-			fmt.Printf("create leaf with value -> %#+v\n", value)
 			backing_leaf := SimpleTree{
 				id:       value,
 				children: []*SimpleTree{},
@@ -59,6 +61,7 @@ func PruferEvenFinalRandomTree(n_nonleaf int, n_leaves int) (tree SimpleTree) {
 			panic("Unreachable. Was forced to generate a tree with no leaves. ")
 		}
 	}
+	tree.RewriteLeafIds()
 	if tree.ComputeLeafCount() != n_leaves {
 		fmt.Printf(
 			"Incorrrectly generated a tree with %d leaves. Should have had %d leaves.\n",
@@ -68,6 +71,13 @@ func PruferEvenFinalRandomTree(n_nonleaf int, n_leaves int) (tree SimpleTree) {
 		panic("Unreachable. Should have generated a tree with n_leaves leaves, but did not.")
 	}
 	return
+}
+
+func (tree *SimpleTree) RewriteLeafIds() {
+	for i, leaf_ref := range tree.ComputeLeafReferences() {
+		new_id := -(i + 1)
+		(*leaf_ref).id = new_id
+	}
 }
 
 func (tree *SimpleTree) CleanUpNonNegativeSubtrees() (destroy bool) {

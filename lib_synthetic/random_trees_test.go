@@ -22,6 +22,12 @@ func TestRandomTreeGeneration(t *testing.T) {
 			n_leaf,
 		)
 		tree := PruferEvenFinalRandomTree(n_nonleaf, n_leaf)
+		leaves := tree.ComputeLeafReferences()
+		n_leaf_found := len(leaves)
+		for _, leaf := range leaves {
+			fmt.Println(leaf.id)
+		}
+		fmt.Printf("number of leaf nodes found in final random tree: %d.\n", n_leaf_found)
 		fmt.Printf("size of final random tree: %d.\n", tree.ComputeSize())
 
 	}

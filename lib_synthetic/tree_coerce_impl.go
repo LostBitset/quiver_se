@@ -1,10 +1,7 @@
 package libsynthetic
 
-import "fmt"
-
 func (tree *SimpleTree) CoerceToMaxDegree(n int) {
 	if len(tree.children) == 0 {
-		fmt.Printf("(in CoerceMaxDegree) <subtree which is leaf>.id = %#+v\n", tree.id)
 		return
 	}
 	if len(tree.children) > n {

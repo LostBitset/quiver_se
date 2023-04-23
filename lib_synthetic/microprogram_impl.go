@@ -72,17 +72,8 @@ buildUpUprgmTransitionsLoop:
 		} else {
 			n_branches := len(dst_list)
 			tree := PruferEvenFinalRandomTree(gen.P_n_tree_nonleaf, n_branches)
-			for _, leaf := range tree.ComputeLeafReferences() {
-				fmt.Printf("<leaf>.id = %#+v\n", leaf.id)
-			}
 			tree.CoerceToMaxDegree(2)
-			for _, leaf := range tree.ComputeLeafReferences() {
-				fmt.Printf("<leaf-partial-transformed>.id = %#+v\n", leaf.id)
-			}
 			tree.CoerceForbidDegreeOne()
-			for _, leaf := range tree.ComputeLeafReferences() {
-				fmt.Printf("<leaf-transformed>.id = %#+v\n", leaf.id)
-			}
 			dst_states := make([]MicroprogramState, n_branches)
 			for i, dst := range dst_list {
 				if dst == failure_node {
