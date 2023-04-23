@@ -36,7 +36,7 @@ func (uprgm Microprogram) RunDSEContinuously(
 		top_state,
 		no_transition,
 		PC_REC_LIMIT,
-		make(map[MicroprogramState]struct{}),
+		make(map[MicroprogramState]int),
 	)
 	if imm_failure {
 		panic("[bad-input-panic] [bin:dse_impl] Immediate failure. ")
@@ -90,7 +90,7 @@ mainDSESearchAlternativesLoop:
 			top_state,
 			no_transition,
 			PC_REC_LIMIT,
-			make(map[MicroprogramState]struct{}),
+			make(map[MicroprogramState]int),
 		)
 		if emit_pcs {
 			saved_pc := make([]string, len(pc))

@@ -1,6 +1,7 @@
 package libsynthetic
 
 import (
+	"fmt"
 	"math/rand"
 )
 
@@ -27,6 +28,9 @@ func (gen *MicroprogramGenerator) RandomMicroprogram() (uprgm Microprogram) {
 		gen.P_p_transition,
 		gen.P_avg_n_transitions,
 	)
+	fmt.Println("HELLO ANYONE???")
+	fmt.Println(len(base_quiver.adj_list))
+	fmt.Println("ADJLIST ABOVE!!!!")
 	n_nodes := gen.P_n_states + 2
 	node_allocation := gen.AllocateStateIds(n_nodes)
 	// Add a failure node and connections to it with probability p_fallible
@@ -43,6 +47,9 @@ func (gen *MicroprogramGenerator) RandomMicroprogram() (uprgm Microprogram) {
 	for i := 0; i < gen.P_n_entry_samples; i++ {
 		base_quiver.InsertEdge(top_node, rand.Intn(gen.P_n_states))
 	}
+	for _, edge := range base_quiver.adj_list {
+		fmt.Printf("& %v -> %v\n", edge.src, edge.dst)
+	} // DEBUG
 	// Replace edges with random trees of random constraints
 	adj_list_map := base_quiver.ExtractAdjListAsMap(n_nodes)
 	uprgm_transitions := make(map[MicroprogramState][]MicroprogramTransition)

@@ -25,8 +25,8 @@ func BuildEvaluationMicroprogramGenerator() (uprgm_gen MicroprogramGenerator) {
 	constraint_gen.AddVariables(4, var_sorts_distr, 0.75)
 	uprgm_gen = MicroprogramGenerator{
 		P_n_states:          30,
-		P_p_transition:      0.17,
-		P_avg_n_transitions: 40.0,
+		P_p_transition:      0.3,
+		P_avg_n_transitions: 80.0,
 		P_p_fallible:        0.95,
 		P_n_entry_samples:   7,
 		P_n_tree_nonleaf:    3,

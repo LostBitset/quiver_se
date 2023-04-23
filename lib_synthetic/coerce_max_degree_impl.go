@@ -7,7 +7,7 @@ func (tree *SimpleTree) CoerceToMaxDegree(n int) {
 		copy(children_set_aside, tree.children)
 		var zero int
 		tree.children = []*SimpleTree{
-			tree.children[0],
+			tree.children[len(tree.children)-1],
 			// A new node to hold the other children
 			{
 				id:       zero,

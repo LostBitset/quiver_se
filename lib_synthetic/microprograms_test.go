@@ -20,7 +20,7 @@ func TestMicroprogramGenerationOnce(t *testing.T) {
 	uprgm := uprgm_gen.RandomMicroprogram()
 	for k, vList := range uprgm.Transitions {
 		for _, v := range vList {
-			fmt.Printf("| %v -> %v\n", k, v.StateDst)
+			fmt.Printf("| %v -> %v (trxn)\n", k, v.StateDst)
 		}
 	}
 }

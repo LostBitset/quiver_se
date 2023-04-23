@@ -11,6 +11,7 @@ import (
 )
 
 const PC_REC_LIMIT = 15000
+const PC_CYCLE_LIMIT = 10
 
 func (uprgm Microprogram) ExecuteGetPathCondition(
 	model string, no_transition bool,
@@ -24,7 +25,7 @@ func (uprgm Microprogram) ExecuteGetPathCondition(
 		uprgm.StateTop,
 		no_transition,
 		PC_REC_LIMIT,
-		make(map[MicroprogramState]struct{}),
+		make(map[MicroprogramState]int),
 	)
 	return
 }
@@ -34,7 +35,7 @@ func (uprgm Microprogram) ExecuteGetPathConditionFrom(
 	state MicroprogramState,
 	no_transition bool,
 	rec_budget int,
-	seen map[MicroprogramState]struct{},
+	seen map[MicroprogramState]int,
 ) (
 	fails bool,
 	pc []string,
@@ -48,7 +49,7 @@ func (uprgm Microprogram) ExecuteGetPathConditionFrom(
 	if rec_budget == 0 {
 		return
 	}
-	if _, ok := seen[state]; ok {
+	if v, ok := seen[state]; ok && (v > PC_CYCLE_LIMIT) {
 		return
 	}
 	transitions := uprgm.Transitions[state]
@@ -75,11 +76,15 @@ func (uprgm Microprogram) ExecuteGetPathConditionFrom(
 				fails = transition.StateDst == uprgm.StateFail
 				return
 			}
-			updatedSeen := make(map[MicroprogramState]struct{})
+			updatedSeen := make(map[MicroprogramState]int)
 			for key := range seen {
-				updatedSeen[key] = struct{}{}
+				updatedSeen[key] = seen[key]
 			}
-			updatedSeen[state] = struct{}{}
+			if _, ok := updatedSeen[state]; ok {
+				updatedSeen[state] += 1
+			} else {
+				updatedSeen[state] = 1
+			}
 			rec_fails, rec_pc := uprgm.ExecuteGetPathConditionFrom(
 				model,
 				transition.StateDst,
