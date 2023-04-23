@@ -18,7 +18,7 @@ func (tree *SimpleTree) CoerceToMaxDegree(n int) {
 			new_children,
 			// A new node to hold the other children
 			Pto(SimpleTree{
-				id:       0,
+				id:       children_set_aside[0].id,
 				children: children_set_aside,
 			}),
 		)

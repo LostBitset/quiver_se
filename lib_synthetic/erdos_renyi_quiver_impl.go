@@ -38,9 +38,9 @@ func ErdosRenyiQuiver(n int, p float64, r int) (al SimpleQuiverAdjList) {
 // See ErdosRenyiQuiver.
 // Takes in n, p, and r
 func ErdosRenyiQuiverGivenEdges(n int, p float64, r int) (al SimpleQuiverAdjList) {
-	if r == 0 {
+	/*if r == 0 {
 		panic("R MUST NOT BE ZERO!!!!!! CHANGE PARAMETERS FOR GENERATION!!!!!")
-	}
+	}/**/
 	al = ErdosRenyiQuiver(n, p, r)
 	return
 }

@@ -47,6 +47,8 @@ func (gen *MicroprogramGenerator) RandomMicroprogram() (uprgm Microprogram) {
 	for i := 0; i < gen.P_n_entry_samples; i++ {
 		base_quiver.InsertEdge(top_node, rand.Intn(gen.P_n_states))
 	}
+	// Force it to be acyclic since cycles don't add anything to static constraint sets
+	base_quiver.CoerceAcyclic()
 	// Replace edges with random trees of random constraints
 	adj_list_map := base_quiver.ExtractAdjListAsMap(n_nodes)
 	uprgm_transitions := make(map[MicroprogramState][]MicroprogramTransition)

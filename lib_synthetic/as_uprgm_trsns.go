@@ -28,7 +28,7 @@ func (tree SimpleTree) AsMicroprogramTransitionsWithPrefix(
 	if len(tree.children) == 0 {
 		// Leaf case
 		if tree.id >= 0 {
-			panic("Invalid tree. All leafs must be non-negative. This was not the case. ")
+			tree.id = -1
 		}
 		/*fmt.Printf("tree.id = %#+v\n", tree.id)
 		fmt.Printf("dst_states index = %#+v\n", (-tree.id)-1)

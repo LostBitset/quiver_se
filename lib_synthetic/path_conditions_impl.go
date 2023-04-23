@@ -11,7 +11,7 @@ import (
 )
 
 const PC_REC_LIMIT = 30
-const PC_CYCLE_LIMIT = 3
+const PC_CYCLE_LIMIT = 1
 
 func (uprgm Microprogram) ExecuteGetPathCondition(
 	model string, no_transition bool,
@@ -48,11 +48,11 @@ func (uprgm Microprogram) ExecuteGetPathConditionFrom(
 		return
 	}
 	if rec_budget == 0 {
-		fmt.Println("END OF PATH CONDITION")
+		fmt.Println("END OF PATH CONDITION (rec budget)")
 		return
 	}
 	if v, ok := seen[state]; ok && (v > PC_CYCLE_LIMIT) {
-		fmt.Println("END OF PATH CONDITION")
+		fmt.Println("END OF PATH CONDITION (cycle budget)")
 		return
 	}
 	transitions := uprgm.Transitions[state]
