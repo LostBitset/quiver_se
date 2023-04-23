@@ -48,6 +48,9 @@ func (uprgm Microprogram) ExecuteGetPathConditionFrom(
 	if rec_budget == 0 {
 		return
 	}
+	if _, ok := seen[state]; ok {
+		return
+	}
 	transitions := uprgm.Transitions[state]
 	not_taken := make([]string, 0)
 	for _, transition := range transitions {
