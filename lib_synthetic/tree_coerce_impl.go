@@ -1,6 +1,9 @@
 package libsynthetic
 
 func (tree *SimpleTree) CoerceToDegree(n int) {
+	if len(tree.children) == 0 {
+		return
+	}
 	if len(tree.children) > n {
 		// Put all of the other children in their own tree
 		set_aside_len := n - 1
@@ -19,13 +22,23 @@ func (tree *SimpleTree) CoerceToDegree(n int) {
 				children: children_set_aside,
 			}),
 		)
-	} else if len(tree.children) < n {
-		// TODO TODO TODO
-		// somehow? coerce to smaller degree
-		// by like absorbing children
-		// this isnt a horror story sorry about the last two words
 	}
 	for _, child := range tree.children {
 		child.CoerceToDegree(n)
+	}
+}
+
+func (tree *SimpleTree) CoerceForbidDegreeOne() {
+	if len(tree.children) == 1 {
+		children_source := tree.children[0].children
+		new_children := make([]*SimpleTree, len(children_source))
+		for i, child_ref := range children_source {
+			new_children[i] = child_ref
+			(*child_ref).ccount += 1
+		}
+		tree.children = new_children
+	}
+	for _, child := range tree.children {
+		child.CoerceForbidDegreeOne()
 	}
 }
