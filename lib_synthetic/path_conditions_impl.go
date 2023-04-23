@@ -19,12 +19,22 @@ func (uprgm Microprogram) ExecuteGetPathCondition(
 	pc []string,
 ) {
 	fmt.Println("[REPORT] [EVAL-INFO] EXECUTION")
-	fails, pc = uprgm.ExecuteGetPathConditionFrom(model, uprgm.StateTop, no_transition, PC_REC_LIMIT)
+	fails, pc = uprgm.ExecuteGetPathConditionFrom(
+		model,
+		uprgm.StateTop,
+		no_transition,
+		PC_REC_LIMIT,
+		make(map[MicroprogramState]struct{}),
+	)
 	return
 }
 
 func (uprgm Microprogram) ExecuteGetPathConditionFrom(
-	model string, state MicroprogramState, no_transition bool, rec_budget int,
+	model string,
+	state MicroprogramState,
+	no_transition bool,
+	rec_budget int,
+	seen map[MicroprogramState]struct{},
 ) (
 	fails bool,
 	pc []string,
@@ -62,8 +72,17 @@ func (uprgm Microprogram) ExecuteGetPathConditionFrom(
 				fails = transition.StateDst == uprgm.StateFail
 				return
 			}
+			updatedSeen := make(map[MicroprogramState]struct{})
+			for key := range seen {
+				updatedSeen[key] = struct{}{}
+			}
+			updatedSeen[state] = struct{}{}
 			rec_fails, rec_pc := uprgm.ExecuteGetPathConditionFrom(
-				model, transition.StateDst, no_transition, rec_budget-1,
+				model,
+				transition.StateDst,
+				no_transition,
+				rec_budget-1,
+				updatedSeen,
 			)
 			pc = append(pc, rec_pc...)
 			log.Infof(
