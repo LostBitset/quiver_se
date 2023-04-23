@@ -108,6 +108,7 @@ class EvaluationProxy:
     def run_forever(self, **kwargs):
         while True:
             self.run_once(**kwargs)
+            time.sleep(1)
 
 if __name__ == "__main__":
     ep = EvaluationProxy(
