@@ -1,24 +1,27 @@
 package libsynthetic
 
+import "fmt"
+
 func (tree *SimpleTree) CoerceToMaxDegree(n int) {
 	if len(tree.children) == 0 {
+		fmt.Printf("(in CoerceMaxDegree) <subtree which is leaf>.id = %#+v\n", tree.id)
 		return
 	}
 	if len(tree.children) > n {
 		// Put all of the other children in their own tree
-		set_aside_len := n - 1
-		children_set_aside := make([]*SimpleTree, len(tree.children)-set_aside_len)
+		// set aside = moved into new subtree
+		set_aside_len := len(tree.children) - (n + 1)
+		children_set_aside := make([]*SimpleTree, set_aside_len)
 		copy(children_set_aside, tree.children)
-		var zero int
 		new_children := make([]*SimpleTree, 0)
-		for i := 0; i < set_aside_len; i++ {
+		for i := set_aside_len; i < len(tree.children); i++ {
 			new_children = append(new_children, tree.children[i])
 		}
 		new_children = append(
 			new_children,
 			// A new node to hold the other children
 			Pto(SimpleTree{
-				id:       zero,
+				id:       0,
 				children: children_set_aside,
 			}),
 		)

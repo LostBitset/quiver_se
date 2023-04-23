@@ -1,6 +1,7 @@
 package libsynthetic
 
 import (
+	"fmt"
 	"math/rand"
 )
 
@@ -11,6 +12,7 @@ func (gen *MicroprogramGenerator) GetNextStateId() (state MicroprogramState) {
 }
 
 func (gen *MicroprogramGenerator) AllocateStateIds(n int) (start_of_allocation MicroprogramState) {
+	start_of_allocation = gen.next_state_id
 	gen.next_state_id = gen.next_state_id.ShiftBy(n)
 	return
 }
@@ -32,9 +34,11 @@ func (gen *MicroprogramGenerator) RandomMicroprogram() (uprgm Microprogram) {
 	// Add a failure node and connections to it with probability p_fallible
 	failure_node := gen.P_n_states
 	failure_state := node_allocation.ShiftBy(failure_node)
+	fmt.Printf("(fail as node = %#+v, fail as state %#+v)\n", failure_node, failure_state)
 	for i := 0; i < gen.P_n_states; i++ {
 		if rand.Float64() < gen.P_p_fallible {
 			base_quiver.InsertEdge(i, failure_node)
+			fmt.Println("<inserted edge to failure>")
 		}
 	}
 	// Add a top state connected to n_entry_samples random nodes
@@ -54,6 +58,9 @@ buildUpUprgmTransitionsLoop:
 		var new_transitions []MicroprogramTransition
 		src_state := node_allocation.ShiftBy(src)
 		if len(dst_list) == 1 {
+			if dst_list[0] == failure_node {
+				fmt.Println("<copied failure node connection> @ single_case")
+			}
 			new_transitions = []MicroprogramTransition{
 				{
 					StateDst: node_allocation.ShiftBy(dst_list[0]),
@@ -65,13 +72,30 @@ buildUpUprgmTransitionsLoop:
 		} else {
 			n_branches := len(dst_list)
 			tree := PruferEvenFinalRandomTree(gen.P_n_tree_nonleaf, n_branches)
+			for _, leaf := range tree.ComputeLeafReferences() {
+				fmt.Printf("<leaf>.id = %#+v\n", leaf.id)
+			}
 			tree.CoerceToMaxDegree(2)
+			for _, leaf := range tree.ComputeLeafReferences() {
+				fmt.Printf("<leaf-partial-transformed>.id = %#+v\n", leaf.id)
+			}
 			tree.CoerceForbidDegreeOne()
+			for _, leaf := range tree.ComputeLeafReferences() {
+				fmt.Printf("<leaf-transformed>.id = %#+v\n", leaf.id)
+			}
 			dst_states := make([]MicroprogramState, n_branches)
 			for i, dst := range dst_list {
+				if dst == failure_node {
+					fmt.Println("<copied failure node connection> @ multi_case")
+				}
 				dst_states[i] = node_allocation.ShiftBy(dst)
 			}
 			new_transitions = tree.AsMicroprogramTransitions(dst_states, gen.P_constraintgen)
+			for _, trxn := range new_transitions {
+				if trxn.StateDst == failure_state {
+					fmt.Println("<found failure node connection> @ new_transitions @ multi_case")
+				}
+			}
 		}
 		uprgm_transitions[src_state] = append(uprgm_transitions[src_state], new_transitions...)
 	}

@@ -1,8 +1,9 @@
 package libsynthetic
 
 import (
-	qse "github.com/LostBitset/quiver_se/lib"
 	"fmt"
+
+	qse "github.com/LostBitset/quiver_se/lib"
 )
 
 func (tree *SimpleTree) ComputeLeafReferences() (leaf_refs []*SimpleTree) {
@@ -34,12 +35,14 @@ func PruferEvenFinalRandomTree(n_nonleaf int, n_leaves int) (tree SimpleTree) {
 		if i < n_addl_leaf_degree {
 			leaf_degree += 1
 		}
+		fmt.Printf("leaf_degree=%#+v\n", leaf_degree)
 		actual_leaf_values := make([]int, leaf_degree)
 		for j := 0; j < leaf_degree; j++ {
 			actual_leaf_values[j] = -(j + 1)
 		}
 		actual_leaves := make([]*SimpleTree, leaf_degree)
 		for j, value := range actual_leaf_values {
+			fmt.Printf("create leaf with value -> %#+v\n", value)
 			backing_leaf := SimpleTree{
 				id:       value,
 				children: []*SimpleTree{},

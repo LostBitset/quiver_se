@@ -36,6 +36,7 @@ func MicroprogramQuiverDot(uprgm s.Microprogram) (g *dot.Graph) {
 				node_text := fmt.Sprintf("%#+v", state)
 				if state == uprgm.StateTop {
 					node_text = "TOP"
+					fmt.Println("FOUND TOP")
 				}
 				nodes[edge_key.Src] = g.Node(node_text)
 			}
@@ -44,6 +45,7 @@ func MicroprogramQuiverDot(uprgm s.Microprogram) (g *dot.Graph) {
 				node_text := fmt.Sprintf("%#+v", state)
 				if state == uprgm.StateFail {
 					node_text = "FAIL"
+					fmt.Println("FOUND FAIL")
 				}
 				nodes[edge_key.Dst] = g.Node(node_text)
 			}
