@@ -11,7 +11,7 @@ import (
 )
 
 const PC_REC_LIMIT = 15000
-const PC_CYCLE_LIMIT = 3
+const PC_CYCLE_LIMIT = 30
 
 func (uprgm Microprogram) ExecuteGetPathCondition(
 	model string, no_transition bool,
