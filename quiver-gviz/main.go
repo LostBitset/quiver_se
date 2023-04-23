@@ -2,10 +2,12 @@ package main
 
 import (
 	"os"
+
+	synth "github.com/LostBitset/quiver_se/lib_synthetic"
 )
 
 func main() {
-	uprgm := GenerateEvaluationMicroprogram()
+	uprgm := synth.GenerateEvaluationMicroprogram()
 	dot := MicroprogramQuiverDot(uprgm)
 	f, errC := os.Create("reprdigraph.dot")
 	if errC != nil {
