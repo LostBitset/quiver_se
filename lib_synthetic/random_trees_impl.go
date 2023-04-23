@@ -28,9 +28,6 @@ func PruferEvenFinalRandomTree(n_nonleaf int, n_leaves int) (tree SimpleTree) {
 	tree = PruferRandomTree(n_nonleaf - 2)
 	leaf_refs := tree.ComputeLeafReferences()
 	period := len(leaf_refs)
-	fmt.Println("v PERIOD")
-	fmt.Println(period)
-	fmt.Println("^ PERIOD")
 	base_former_leaf_degree := n_leaves / period
 	n_addl_leaf_degree := n_leaves % period
 	for i, leaf_ref := range leaf_refs {
@@ -38,7 +35,7 @@ func PruferEvenFinalRandomTree(n_nonleaf int, n_leaves int) (tree SimpleTree) {
 		if i < n_addl_leaf_degree {
 			leaf_degree += 1
 		}
-		fmt.Printf("leaf_degree=%#+v\n", leaf_degree)
+		//fmt.Printf("leaf_degree=%#+v\n", leaf_degree)
 		actual_leaf_values := make([]int, leaf_degree)
 		for j := 0; j < leaf_degree; j++ {
 			actual_leaf_values[j] = -(j + 1)
