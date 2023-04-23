@@ -44,12 +44,15 @@ func (uprgm Microprogram) ExecuteGetPathConditionFrom(
 	pc = make([]string, 0)
 	fails = state == uprgm.StateFail
 	if fails {
+		fmt.Println("FAIL FAIL FAIL FOUND !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 		return
 	}
 	if rec_budget == 0 {
+		fmt.Println("END OF PATH CONDITION")
 		return
 	}
 	if v, ok := seen[state]; ok && (v > PC_CYCLE_LIMIT) {
+		fmt.Println("END OF PATH CONDITION")
 		return
 	}
 	transitions := uprgm.Transitions[state]
@@ -85,6 +88,8 @@ func (uprgm Microprogram) ExecuteGetPathConditionFrom(
 			} else {
 				updatedSeen[state] = 1
 			}
+			fmt.Println("STATE = " + fmt.Sprintf("%d", state))
+			fmt.Println("STATE_FAIL = " + fmt.Sprintf("%d", uprgm.StateFail))
 			rec_fails, rec_pc := uprgm.ExecuteGetPathConditionFrom(
 				model,
 				transition.StateDst,

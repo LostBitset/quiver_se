@@ -22,10 +22,10 @@ func BuildEvaluationMicroprogramGenerator() (uprgm_gen MicroprogramGenerator) {
 		},
 	}
 	var_sorts_distr := BakeDDistr[Sort](var_sorts)
-	constraint_gen.AddVariables(4, var_sorts_distr, 0.75)
+	constraint_gen.AddVariables(20, var_sorts_distr, 0.75)
 	uprgm_gen = MicroprogramGenerator{
-		P_n_states:        10,
-		P_p_transition:    0.1,
+		P_n_states:        2,
+		P_p_transition:    0.99,
 		P_n_merged_graphs: 1,
 		P_p_fallible:      0.95,
 		P_n_entry_samples: 7,
