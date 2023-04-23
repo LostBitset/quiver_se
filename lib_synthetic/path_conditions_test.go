@@ -91,7 +91,7 @@ func TestSpecificFailureCheck(t *testing.T) {
 	assert.False(t, fails)
 }
 
-func TestModelStatisfiesConstraint(t *testing.T) {
+func TestModelSatisfiesConstraint(t *testing.T) {
 	test_model := `
 	(define-fun x () Real 0.0)
 	`
