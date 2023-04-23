@@ -8,4 +8,5 @@ type PruferSequence struct {
 type SimpleTree struct {
 	id       int
 	children []*SimpleTree
+	ccount   int
 }

@@ -72,7 +72,7 @@ buildUpUprgmTransitionsLoop:
 		} else {
 			n_branches := len(dst_list)
 			tree := PruferEvenFinalRandomTree(gen.P_n_tree_nonleaf, n_branches)
-			tree.CoerceToMaxDegree(2)
+			tree.CoerceToDegree(2)
 			dst_states := make([]MicroprogramState, n_branches)
 			for i, dst := range dst_list {
 				dst_states[i] = node_allocation.ShiftBy(dst)
