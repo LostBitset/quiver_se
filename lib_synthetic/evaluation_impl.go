@@ -7,7 +7,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func main() {
+func RunEvaluationMain() {
 	logrus.SetLevel(logrus.WarnLevel)
 	uprgm_gen := BuildEvaluationMicroprogramGenerator()
 	uprgm := uprgm_gen.RandomMicroprogram()
