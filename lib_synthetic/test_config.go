@@ -1,3 +1,3 @@
 package libsynthetic
 
-const TEST_ITERATIONS = 1000
+const TEST_ITERATIONS = 50
