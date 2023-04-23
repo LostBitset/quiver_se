@@ -11,7 +11,7 @@ import (
 )
 
 const PC_REC_LIMIT = 15000
-const PC_CYCLE_LIMIT = 10
+const PC_CYCLE_LIMIT = 3
 
 func (uprgm Microprogram) ExecuteGetPathCondition(
 	model string, no_transition bool,
@@ -55,9 +55,9 @@ func (uprgm Microprogram) ExecuteGetPathConditionFrom(
 	transitions := uprgm.Transitions[state]
 	not_taken := make([]string, 0)
 	for _, transition := range transitions {
-		if uprgm.ModelSatisfiesConstraints(model, transition.constraints) {
+		if uprgm.ModelSatisfiesConstraints(model, transition.Constraints) {
 			pc = append(pc, not_taken...)
-			pc = append(pc, transition.constraints...)
+			pc = append(pc, transition.Constraints...)
 			if !no_transition {
 				pc = append(
 					pc,
@@ -102,7 +102,7 @@ func (uprgm Microprogram) ExecuteGetPathConditionFrom(
 			}
 			return
 		}
-		for _, not_taken_constraint := range transition.constraints {
+		for _, not_taken_constraint := range transition.Constraints {
 			not_taken = append(
 				not_taken,
 				InvertedConstraintForMicroprogram(not_taken_constraint),

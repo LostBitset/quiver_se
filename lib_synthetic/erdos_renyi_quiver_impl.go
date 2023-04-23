@@ -1,9 +1,5 @@
 package libsynthetic
 
-import (
-	"math"
-)
-
 // Generates a G(n, p) Erdős-Rényi Graph.
 func ErdosRenyiGraph(n int, p float64) (al SimpleQuiverAdjList) {
 	adj_list := make([]SimpleEdgeDesc, 0)
@@ -40,11 +36,8 @@ func ErdosRenyiQuiver(n int, p float64, r int) (al SimpleQuiverAdjList) {
 }
 
 // See ErdosRenyiQuiver.
-// Takes in n, p, and the average number of edges
-func ErdosRenyiQuiverGivenEdges(n int, p float64, avg_ne int) (al SimpleQuiverAdjList) {
-	n_choose_2 := (n * (n + 1)) / 2
-	r_float := float64(avg_ne) / (float64(n_choose_2) * p)
-	r := int(math.Round(r_float))
+// Takes in n, p, and r
+func ErdosRenyiQuiverGivenEdges(n int, p float64, r int) (al SimpleQuiverAdjList) {
 	if r == 0 {
 		panic("R MUST NOT BE ZERO!!!!!! CHANGE PARAMETERS FOR GENERATION!!!!!")
 	}

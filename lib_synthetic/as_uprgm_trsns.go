@@ -32,7 +32,7 @@ func (tree SimpleTree) AsMicroprogramTransitionsWithPrefix(
 		transitions = []MicroprogramTransition{
 			{
 				StateDst:    dst_state,
-				constraints: constraint_prefix,
+				Constraints: constraint_prefix,
 			},
 		}
 		return

@@ -26,11 +26,11 @@ func (gen *MicroprogramGenerator) RandomMicroprogram() (uprgm Microprogram) {
 	base_quiver := ErdosRenyiQuiverGivenEdges(
 		gen.P_n_states,
 		gen.P_p_transition,
-		gen.P_avg_n_transitions,
+		gen.P_n_merged_graphs,
 	)
-	fmt.Println("HELLO ANYONE???")
+	fmt.Println("adj list length:")
 	fmt.Println(len(base_quiver.adj_list))
-	fmt.Println("ADJLIST ABOVE!!!!")
+	//fmt.Println("ADJLIST ABOVE!!!!")
 	n_nodes := gen.P_n_states + 2
 	node_allocation := gen.AllocateStateIds(n_nodes)
 	// Add a failure node and connections to it with probability p_fallible
@@ -64,7 +64,7 @@ buildUpUprgmTransitionsLoop:
 			new_transitions = []MicroprogramTransition{
 				{
 					StateDst: node_allocation.ShiftBy(dst_list[0]),
-					constraints: []string{
+					Constraints: []string{
 						gen.P_constraintgen.Generate(BoolSort),
 					},
 				},

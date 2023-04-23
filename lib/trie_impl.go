@@ -337,6 +337,9 @@ func (t Trie[NODE, LEAF, META]) LookupLeafByNode(leaf_node *TrieLeafNode[NODE, L
 		if node == nil {
 			break
 		}
+		if node.value == nil {
+			panic("PLEASE BE THE PROBLEM")
+		}
 		for itr := node.value.inner.Iterator(); itr.HasElem(); itr.Next() {
 			k_any, _ := itr.Elem()
 			k := k_any.(NODE)

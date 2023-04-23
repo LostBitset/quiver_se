@@ -20,6 +20,9 @@ func MicroprogramQuiverDot(uprgm s.Microprogram) (g *dot.Graph) {
 	nodes := make(map[s.MicroprogramState]dot.Node)
 	for k, v_arr := range uprgm.Transitions {
 		for _, v := range v_arr {
+			if v.Constraints == nil {
+				panic("GOT NIL CONSTRAINT!!!!")
+			}
 			edge_key := GenEdge[s.MicroprogramState]{k, v.StateDst}
 			if _, ok := edges[edge_key]; !ok {
 				edges[edge_key] = 0
