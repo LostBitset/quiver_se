@@ -10,7 +10,7 @@ func (tree *SimpleTree) CoerceToMaxDegree(n int) {
 	if len(tree.children) > n {
 		// Put all of the other children in their own tree
 		// set aside = moved into new subtree
-		set_aside_len := len(tree.children) - (n + 1)
+		set_aside_len := len(tree.children) - (n - 1)
 		children_set_aside := make([]*SimpleTree, set_aside_len)
 		copy(children_set_aside, tree.children)
 		new_children := make([]*SimpleTree, 0)
