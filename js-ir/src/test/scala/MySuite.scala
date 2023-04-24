@@ -457,3 +457,29 @@ class TestSuite extends munit.FunSuite:
       )
     )
   } // */
+
+  test("supports failures") {
+    val text = """
+    |(scope
+    | (.+ {int 1} {int 1})
+    | (._crash))
+    """.stripMargin
+    val expr = SeirParser(text).takeExpr.get
+    val result = evalSeir(expr)
+    assertEquals(result.repr, ())
+  } // */
+
+  test("supports failure reporting in spc") {
+    val text = """
+    |(scope
+    | (._crash))
+    """.stripMargin
+    val expr = SeirParser(text).takeExpr.get
+    val evaluator = SeirEvaluator()
+    val result = evaluator.evalSeir(expr)
+    assertEquals(result.repr, ())
+    val spc = extractSPC(evaluator)
+    assert(
+      spc.segments.map(_.callback) contains SeirCallbackRef.ForEvent("__seirevr_FAIL")
+    )
+  } // */

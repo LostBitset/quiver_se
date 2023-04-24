@@ -62,6 +62,12 @@ case class SeirEvaluator(
     val shadowHandles: ShadowHandles,
 ):
     def eval(expr: SeirExpr, arguments: List[SeirVal] = List()): SeirVal =
+        try
+            evalCanFail(expr, arguments)
+        catch
+            case _: SeirProgramReportsFailure => SeirVal(())
+
+    def evalCanFail(expr: SeirExpr, arguments: List[SeirVal] = List()): SeirVal =
         lazy val rec = { eval(_, arguments) }
         expr match
             case SeirExpr.Re(value) =>
