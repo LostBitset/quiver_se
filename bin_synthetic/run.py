@@ -111,10 +111,11 @@ class EvaluationProxy:
         while True:
             self.run_once(**kwargs)
             os.system("rm /tmp/temp_qse-*")
-            os.system("rm /tmp/go-build* -r")
+            os.system("rm/tmp/go-build* -r")
 
 if __name__ == "__main__":
     ep = EvaluationProxy(
         CsvWriter(f"eval_log-{int(time.time()*50)}.csv")
     )
     ep.run_forever(display=True)
+
