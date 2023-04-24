@@ -31,12 +31,9 @@ func (uprgm SeirPrgm) RunDSEContinuously(
 	var backing_idsrc qse.IdSource
 	idsrc := &backing_idsrc
 	model := uprgm.UnitializedAssignment()
-	imm_failure, imm_pc := uprgm.ExecuteGetPathConditionFrom(
+	imm_failure, imm_pc := uprgm.ExecuteGetPathCondition(
 		model,
-		top_state,
 		no_transition,
-		PC_REC_LIMIT,
-		make(map[SeirEventState]int),
 	)
 	if imm_failure {
 		panic("[bad-input-panic] [bin:dse_impl] Immediate failure. ")
@@ -85,12 +82,9 @@ mainDSESearchAlternativesLoop:
 			continue mainDSESearchAlternativesLoop
 		}
 		new_model := FilterModelFromZ3(*new_model_ptr)
-		fails, pc := uprgm.ExecuteGetPathConditionFrom(
+		fails, pc := uprgm.ExecuteGetPathCondition(
 			new_model,
-			top_state,
 			no_transition,
-			PC_REC_LIMIT,
-			make(map[SeirEventState]int),
 		)
 		if emit_pcs {
 			saved_pc := make([]string, len(pc))
