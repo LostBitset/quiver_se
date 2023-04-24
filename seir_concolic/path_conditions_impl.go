@@ -1,61 +1,10 @@
 package main
 
 import (
-	"fmt"
 	"strings"
 
 	qse "github.com/LostBitset/quiver_se/lib"
-
-	log "github.com/sirupsen/logrus"
 )
-
-const PC_REC_LIMIT = 30
-const PC_CYCLE_LIMIT = 1
-
-func (uprgm SeirPrgm) ExecuteGetPathCondition(
-	model string, no_transition bool,
-) (
-	fails bool,
-	pc []string,
-) {
-	fmt.Println("[REPORT] [EVAL-INFO] EXECUTION")
-	fails, pc = uprgm.ExecuteGetPathConditionFrom(
-		model,
-		SeirStateTop(),
-		no_transition,
-		PC_REC_LIMIT,
-		make(map[SeirEventState]int),
-	)
-	return
-}
-
-func (uprgm SeirPrgm) ExecuteGetPathConditionFrom(
-	model string,
-	state SeirEventState,
-	no_transition bool,
-	rec_budget int,
-	seen map[SeirEventState]int,
-) (
-	fails bool,
-	pc []string,
-) {
-	log.Info("[bin:path_conditions] Microprogram entered state: " + state.Name)
-	fails = state == SeirStateFail()
-	if fails {
-		fmt.Println("FAIL - FAIL FOUND !!")
-		return
-	}
-	if rec_budget == 0 {
-		fmt.Println("END OF PATH CONDITION (rec budget)")
-		return
-	}
-	if v, ok := seen[state]; ok && (v > PC_CYCLE_LIMIT) {
-		fmt.Println("END OF PATH CONDITION (cycle budget)")
-		return
-	}
-	panic("TODO TODO TODO")
-	return
-}
 
 func StringConstraintToIdLiteral(
 	constraint_raw string, idsrc *qse.IdSource,
