@@ -1,4 +1,4 @@
-package libsynthetic
+package main
 
 type PathConditionResult struct {
 	pc    []string

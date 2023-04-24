@@ -1,4 +1,4 @@
-package libsynthetic
+package main
 
 import (
 	"fmt"

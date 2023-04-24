@@ -1,4 +1,4 @@
-package libsynthetic
+package main
 
 import qse "github.com/LostBitset/quiver_se/lib"
 
