@@ -4,11 +4,7 @@ import typing as t
 import time
 from tabulate import tabulate
 
-print("running go build...")
 os.system("go build")
-print("running go build...done")
-time.sleep(0.5)
-os.system("clear")
 
 class CsvWriter:
     class TwoHeadingsException(BaseException): pass
