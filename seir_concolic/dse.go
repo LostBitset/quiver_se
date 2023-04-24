@@ -1,19 +1,29 @@
 package main
 
+import (
+	qse "github.com/LostBitset/quiver_se/lib"
+)
+
 type PathConditionResult struct {
 	pc    []string
 	fails bool
 }
 
-func SeirTopEventState() (top SeirEventState) {
-	top = SeirEventState{"__top__reserved"}
+func SeirStateTop() (top SeirEventState) {
+	top = SeirEventState{"#reserved__top__"}
+	return
+}
+
+func SeirStateFail() (fail SeirEventState) {
+	fail = SeirEventState{"#reserved__fail__"}
 	return
 }
 
 type SeirEventState struct {
-	name string
+	Name string
 }
 
 type SeirPrgm struct {
-	source string
+	source        string
+	smt_free_funs []qse.SMTFreeFun[string, string]
 }

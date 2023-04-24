@@ -12,7 +12,7 @@ func (uprgm SeirPrgm) RunDSE() (n_bugs int) {
 	n_bugs = 0
 	bug_signal := make(chan uint32)
 	go uprgm.RunDSEContinuously(
-		bug_signal, false, nil, false, -1, uprgm.StateTop,
+		bug_signal, false, nil, false, -1, SeirStateFail(),
 	)
 	for range bug_signal {
 		n_bugs++
@@ -59,7 +59,7 @@ setupAltStackAndPathLoop:
 		alt_stack = append(alt_stack, uint(stack_setup_index))
 		desired_path = append(
 			desired_path,
-			MicroprogramConstraintToIdLiteral(
+			StringConstraintToIdLiteral(
 				constraint,
 				idsrc,
 			))
@@ -113,7 +113,7 @@ mainDSESearchAlternativesLoop:
 		}
 		desired_path = make([]qse.IdLiteral[string], len(pc))
 		for i, path_condition_elem := range pc {
-			desired_path[i] = MicroprogramConstraintToIdLiteral(
+			desired_path[i] = StringConstraintToIdLiteral(
 				path_condition_elem,
 				idsrc,
 			)
