@@ -8,7 +8,7 @@ import (
 	qse "github.com/LostBitset/quiver_se/lib"
 )
 
-func (uprgm Microprogram) RunDSE() (n_bugs int) {
+func (uprgm SeirPrgm) RunDSE() (n_bugs int) {
 	n_bugs = 0
 	bug_signal := make(chan uint32)
 	go uprgm.RunDSEContinuously(
@@ -20,13 +20,13 @@ func (uprgm Microprogram) RunDSE() (n_bugs int) {
 	return
 }
 
-func (uprgm Microprogram) RunDSEContinuously(
+func (uprgm SeirPrgm) RunDSEContinuously(
 	bug_signal chan uint32,
 	emit_pcs bool,
 	out_pcs *chan PathConditionResult,
 	no_transition bool,
 	max_iters int, // -1 for no limit
-	top_state MicroprogramState,
+	top_state SeirEventState,
 ) {
 	var backing_idsrc qse.IdSource
 	idsrc := &backing_idsrc
@@ -36,7 +36,7 @@ func (uprgm Microprogram) RunDSEContinuously(
 		top_state,
 		no_transition,
 		PC_REC_LIMIT,
-		make(map[MicroprogramState]int),
+		make(map[SeirEventState]int),
 	)
 	if imm_failure {
 		panic("[bad-input-panic] [bin:dse_impl] Immediate failure. ")
@@ -90,7 +90,7 @@ mainDSESearchAlternativesLoop:
 			top_state,
 			no_transition,
 			PC_REC_LIMIT,
-			make(map[MicroprogramState]int),
+			make(map[SeirEventState]int),
 		)
 		if emit_pcs {
 			saved_pc := make([]string, len(pc))
@@ -134,7 +134,7 @@ mainDSESearchAlternativesLoop:
 	return
 }
 
-func (uprgm Microprogram) SolveForInputZ3(
+func (uprgm SeirPrgm) SolveForInputZ3(
 	constraints []qse.IdLiteral[string],
 	idsrc *qse.IdSource,
 ) (

@@ -13,7 +13,7 @@ import (
 const PC_REC_LIMIT = 30
 const PC_CYCLE_LIMIT = 1
 
-func (uprgm Microprogram) ExecuteGetPathCondition(
+func (uprgm SeirPrgm) ExecuteGetPathCondition(
 	model string, no_transition bool,
 ) (
 	fails bool,
@@ -25,17 +25,17 @@ func (uprgm Microprogram) ExecuteGetPathCondition(
 		uprgm.StateTop,
 		no_transition,
 		PC_REC_LIMIT,
-		make(map[MicroprogramState]int),
+		make(map[SeirEventState]int),
 	)
 	return
 }
 
-func (uprgm Microprogram) ExecuteGetPathConditionFrom(
+func (uprgm SeirPrgm) ExecuteGetPathConditionFrom(
 	model string,
-	state MicroprogramState,
+	state SeirEventState,
 	no_transition bool,
 	rec_budget int,
-	seen map[MicroprogramState]int,
+	seen map[SeirEventState]int,
 ) (
 	fails bool,
 	pc []string,
@@ -79,7 +79,7 @@ func (uprgm Microprogram) ExecuteGetPathConditionFrom(
 				fails = transition.StateDst == uprgm.StateFail
 				return
 			}
-			updatedSeen := make(map[MicroprogramState]int)
+			updatedSeen := make(map[SeirEventState]int)
 			for key := range seen {
 				updatedSeen[key] = seen[key]
 			}
@@ -118,7 +118,7 @@ func (uprgm Microprogram) ExecuteGetPathConditionFrom(
 	return
 }
 
-func (uprgm Microprogram) ModelSatisfiesConstraints(model string, constraints []string) (does bool) {
+func (uprgm SeirPrgm) ModelSatisfiesConstraints(model string, constraints []string) (does bool) {
 	complete_query := make([]string, len(constraints)+1)
 	for i := range complete_query {
 		if i == 0 {
@@ -176,7 +176,7 @@ func MicroprogramConstraintToIdLiteral(
 	return
 }
 
-func (uprgm Microprogram) UnitializedAssignment() (model string) {
+func (uprgm SeirPrgm) UnitializedAssignment() (model string) {
 	sort_values_uninit := map[string]string{
 		"Real": "0.0",
 		"Bool": "false",
@@ -185,7 +185,7 @@ func (uprgm Microprogram) UnitializedAssignment() (model string) {
 	return
 }
 
-func (uprgm Microprogram) UniformAssignmentOfSMTFreeFuns(
+func (uprgm SeirPrgm) UniformAssignmentOfSMTFreeFuns(
 	sort_values map[string]string,
 ) (
 	model string,
