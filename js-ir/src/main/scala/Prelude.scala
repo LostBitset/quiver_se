@@ -1,21 +1,21 @@
 given SeirPrelude = SeirPrelude(
-    prelude_define_failure ++ List(
-        SeirExpr.Decl("+"),
-        SeirExpr.Def("+", SeirExpr.Re(SeirVal({
+    prelude_DefNoTransformine_failure ++ List(
+        SeirExpr.DeclNoTransform("+"),
+        SeirExpr.DefNoTransform("+", SeirExpr.Re(SeirVal({
             case List(SeirVal(a : Int, _), SeirVal(b : Int, _)) =>
                 SeirVal(a + b)
         } : SeirFnRepr))),
-        SeirExpr.Decl("if"),
-        SeirExpr.Def("if", SeirExpr.Re(SeirVal({
+        SeirExpr.DeclNoTransform("if"),
+        SeirExpr.DefNoTransform("if", SeirExpr.Re(SeirVal({
             case List(SeirVal(c : Boolean, _), SeirVal(t, _), SeirVal(f, _)) =>
                 SeirVal(if c then t else f)
         } : SeirFnRepr))),
-        SeirExpr.Decl("true"),
-        SeirExpr.Def("true", SeirExpr.Re(SeirVal(true))),
-        SeirExpr.Decl("false"),
-        SeirExpr.Def("false", SeirExpr.Re(SeirVal(false))),
-        SeirExpr.Decl("int="),
-        SeirExpr.Def("int=", SeirExpr.Re(SeirVal({
+        SeirExpr.DeclNoTransform("true"),
+        SeirExpr.DefNoTransform("true", SeirExpr.Re(SeirVal(true))),
+        SeirExpr.DeclNoTransform("false"),
+        SeirExpr.DefNoTransform("false", SeirExpr.Re(SeirVal(false))),
+        SeirExpr.DeclNoTransform("int="),
+        SeirExpr.DefNoTransform("int=", SeirExpr.Re(SeirVal({
             case List(SeirVal(a : Int, _), SeirVal(b: Int, _)) =>
                 SeirVal(a == b)
         } : SeirFnRepr)))
@@ -25,23 +25,23 @@ given SeirPrelude = SeirPrelude(
 class SeirProgramReportsFailure()
     extends Exception("UNHANDLED SEIR PROGRAM FAILURE")
 
-val prelude_define_failure = List(
-    SeirExpr.Decl("_crash"),
-    SeirExpr.Def("_crash", SeirExpr.Capture(
+val prelude_DefNoTransformine_failure = List(
+    SeirExpr.DeclNoTransform("_crash"),
+    SeirExpr.DefNoTransform("_crash", SeirExpr.Capture(
         SeirExpr.Call(
             SeirExpr.Var("__seirevr_FAIL"),
             List()
         )
     )),
-    SeirExpr.Decl("__seirevr_FAIL"),
-    SeirExpr.DefEvent("__seirevr_FAIL", SeirExpr.Capture(
+    SeirExpr.DeclNoTransform("__seirevr_FAIL"),
+    SeirExpr.DefEventNoTransform("__seirevr_FAIL", SeirExpr.Capture(
         SeirExpr.Call(
             SeirExpr.Var("__seirvrr_FAILNOTRACE"),
             List()
         )
     )),
-    SeirExpr.Decl("__seirvrr_FAILNOTRACE"),
-    SeirExpr.Def("__seirvrr_FAILNOTRACE", SeirExpr.Re(SeirVal({
+    SeirExpr.DeclNoTransform("__seirvrr_FAILNOTRACE"),
+    SeirExpr.DefNoTransform("__seirvrr_FAILNOTRACE", SeirExpr.Re(SeirVal({
         case List() =>
             throw SeirProgramReportsFailure()
     } : SeirFnRepr)))

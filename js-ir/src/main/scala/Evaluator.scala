@@ -103,6 +103,17 @@ case class SeirEvaluator(
                 )
                 env.define(name, toVal)
                 SeirVal(())
+            case SeirExpr.DefEventNoTransform(name, callback) =>
+                val cap = rec(callback)
+                val toVal = SeirVal(
+                    SeirBoundEvent(
+                        cap.repr.asInstanceOf[QuotedCapture],
+                        name
+                    ),
+                    cap.shadows
+                )
+                env.define(name, toVal, collapseSMT = false)
+                SeirVal(())
             case SeirExpr.Var(name) =>
                 val base = env(name)
                 SeirVal(

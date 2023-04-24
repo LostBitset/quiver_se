@@ -13,6 +13,7 @@ enum SeirExpr:
   case Def(name: SeirIdent, to: SeirExpr)
   case DefNoTransform(name: SeirIdent, to: SeirExpr)
   case DefEvent(name: SeirIdent, callback: SeirExpr)
+  case DefEventNoTransform(name: SeirIdent, callback: SeirExpr)
   case Var(name: SeirIdent)
   case Call(f: SeirExpr, args: List[SeirExpr])
   case Hidden(str: String)
