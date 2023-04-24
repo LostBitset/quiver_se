@@ -4,6 +4,8 @@ import typing as t
 import time
 from tabulate import tabulate
 
+os.system("go build")
+
 class CsvWriter:
     class TwoHeadingsException(BaseException): pass
     class NoHeadingException(BaseException): pass
@@ -90,7 +92,7 @@ class EvaluationProxy:
         csv_writer.write_heading([ full_name for (_, full_name) in algnames ])
     
     def run_once(self, display: bool = False):
-        cmd = "go run ."
+        cmd = "./bin_synthetic"
         output = None
         try:
             output_bytes = subprocess.check_output(cmd, shell=True)
@@ -108,6 +110,8 @@ class EvaluationProxy:
     def run_forever(self, **kwargs):
         while True:
             self.run_once(**kwargs)
+            os.system("rm /tmp/temp_qse-*")
+            os.system("rm /tmp/go-build* -r")
 
 if __name__ == "__main__":
     ep = EvaluationProxy(
