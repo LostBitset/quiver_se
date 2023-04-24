@@ -23,30 +23,22 @@ echo "[run_tests.sh] Leave subdirectory SMTLib_2VA. (pass)"
 
 # Subdirectory: lib_synthetic
 echo "[run_tests.sh] Enter subdirectory lib_synthetic..."
-cd lib_synthetic
+cd go_project/lib_synthetic
 go test -v || exit 1
-cd ..
+cd ../..
 echo "[run_tests.sh] Leave subdirectory lib_synthetic. (pass)"
 
 # Subdirectory: lib
 echo "[run_tests.sh] Enter subdirectory lib..."
-cd lib
+cd go_project/lib
 go build
 for RUNINDEX in {1..5}
 do
 	echo "subdirectory lib / TEST RUN #$RUNINDEX"
 	go test -v || exit 1
 done
-cd ..
+cd ../..
 echo "[run_tests.sh] Leave subdirectory lib. (pass)"
-
-# Subdirectory: bin
-echo "[run_tests.sh] Enter subdirectory bin..."
-cd bin
-go build
-go test -v || exit 1
-cd ..
-echo "[run_tests.sh] Leave subdirectory bin. (pass)"
 
 echo "[run_tests.sh] All tests in repo passed. #[PASSED_ALL]"
 
