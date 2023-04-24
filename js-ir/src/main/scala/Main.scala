@@ -9,3 +9,4 @@ import scala.language.implicitConversions
     val resultJson = Json.toJson(result)
     val outputW = JsonWriter(Console.out)
     outputW.write(resultJson.asInstanceOf[JsonObject])
+    println()
