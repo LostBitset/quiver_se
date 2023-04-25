@@ -26,3 +26,11 @@ func UninitializedValueForSMTSort(sort string) (value_repr string) {
 	}
 	return
 }
+
+func (sp SeirPrgm) UninitializedAssignment() (assignment []AssignedSMTValue) {
+	assignment = make([]AssignedSMTValue, len(sp.smt_free_funs))
+	for i, sff := range sp.smt_free_funs {
+		assignment[i] = UninitializedAssignedSFF(sff)
+	}
+	return
+}

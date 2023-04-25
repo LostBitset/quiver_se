@@ -1,5 +1,7 @@
 package main
 
+import "encoding/json"
+
 func (sp SeirPrgm) MakeQuery(smt []AssignedSMTValue) (obj any) {
 	vars := make([]map[string]any, 0)
 	for _, av := range smt {
@@ -23,5 +25,14 @@ func (sp SeirPrgm) MakeQuery(smt []AssignedSMTValue) (obj any) {
 		"source": sp.source,
 		"vars":   vars,
 	}
+	return
+}
+
+func (sp SeirPrgm) MakeQueryJson(smt []AssignedSMTValue) (jsonstr []byte) {
+	json_string, err := json.Marshal(sp.MakeQuery(smt))
+	if err != nil {
+		panic(err)
+	}
+	jsonstr = json_string
 	return
 }
