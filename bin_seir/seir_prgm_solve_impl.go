@@ -11,11 +11,12 @@ func (sp SeirPrgm) SolveForAssignmentsZ3(
 ) (
 	assignments_ptr *[]AssignedSMTValue,
 ) {
+	fmt.Println(constraints)
 	var idsrc qse.IdSource
 	sys := qse.SMTLib2VAStringSystem{Idsrc: idsrc}
 	sctx := sys.CheckSat(constraints, sp.smt_free_funs)
 	is_sat_ptr := sctx.IsSat()
-	if is_sat_ptr != nil && *&is_sat_ptr {
+	if is_sat_ptr != nil && *is_sat_ptr {
 		model_ptr := sctx.GetModel()
 		model := *model_ptr
 		fmt.Println("::: GOT MODEL :::")

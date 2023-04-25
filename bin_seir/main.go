@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"os"
 
 	qse "github.com/LostBitset/quiver_se/lib"
@@ -23,8 +22,5 @@ func main() {
 			return "symb_" + smt_name
 		},
 	}
-	spc, fails := prgm.PerformQuery(prgm.UninitializedAssignment())
-	pc := FlattenSpc(spc)
-	fmt.Printf("%#+v\n", pc)
-	fmt.Printf("fails=%v\n", fails)
+	prgm.RunDSE(false, -1)
 }
