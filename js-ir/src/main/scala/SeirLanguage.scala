@@ -201,6 +201,16 @@ class SeirParser(var text: String):
                       ))
                   case bad =>
                     mkFailure(s"unexpected name for defev \"$bad\"")
+              case "defevnt" =>
+                takeToken match
+                  case SeirTok.IdentLike(name) =>
+                    takeExpr
+                      .flatMap(expr => takeTokenRequire(
+                        SeirTok.RParen,
+                        SeirExpr.DefEventNoTransform(name, expr)
+                      ))
+                  case bad =>
+                    mkFailure(s"unexpected name for defev \"$bad\"")
               case "hidden" =>
                 takeToken match
                   case SeirTok.Hidden(text) => takeTokenRequire(
