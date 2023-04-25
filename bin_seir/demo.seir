@@ -4,11 +4,11 @@
     (defevnt ea
         ~(.
             (.if symb_A
-                eb
                 ~(scope
                     (def target
                         (.+ target {int 1}))
-                    {int 20}))))
+                    (.eb))
+                ~{int 20})))
     (defevnt eb
         ~(.
             (.if (.int= symb_B target)
