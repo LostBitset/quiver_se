@@ -8,7 +8,6 @@ import (
 )
 
 func (sp SeirPrgm) RunDSE(
-	no_transition bool,
 	max_iters int, // for no limit, use -1
 ) {
 	assignment := sp.UninitializedAssignment()

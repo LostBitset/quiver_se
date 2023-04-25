@@ -22,5 +22,5 @@ func main() {
 			return "symb_" + smt_name
 		},
 	}
-	prgm.RunDSE(false, -1)
+	prgm.RunDSE(-1)
 }
