@@ -25,7 +25,9 @@ setupAltStackAndPathLoop:
 		if strings.HasPrefix(item.Value.Value, "@__RAW__;;@") {
 			continue setupAltStackAndPathLoop
 		}
-		alt_stack = append(alt_stack, stack_setup_index)
+		if !strings.HasPrefix(item.Value.Value, "@__RAW__") {
+			alt_stack = append(alt_stack, stack_setup_index)
+		}
 		desired_path = append(desired_path, item)
 		stack_setup_index++
 	}
@@ -59,7 +61,7 @@ mainDSESearchAlternativesLoop:
 	updateAltStackGivenDiscoveredPathLoop:
 		for i := inv_index + 1; i < uint(len(desired_path)); i++ {
 			curr_path_item := desired_path[i]
-			if strings.HasPrefix(curr_path_item.Value.Value, "@__RAW__;;@") {
+			if strings.HasPrefix(curr_path_item.Value.Value, "@__RAW__") {
 				continue updateAltStackGivenDiscoveredPathLoop
 			}
 			alt_stack = append(alt_stack, i)
