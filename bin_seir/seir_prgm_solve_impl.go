@@ -12,6 +12,11 @@ func (sp SeirPrgm) SolveForAssignmentsZ3(
 ) (
 	assignments_ptr *[]AssignedSMTValue,
 ) {
+	fmt.Println("::: GOT CONSTRAINTS :::")
+	for _, constraint := range constraints {
+		fmt.Println(constraint)
+	}
+	fmt.Println("::: END CONSTRAINTS :::")
 	var idsrc qse.IdSource
 	sys := qse.SMTLib2VAStringSystem{Idsrc: idsrc}
 	sctx := sys.CheckSat(constraints, sp.smt_free_funs)
@@ -29,6 +34,8 @@ func (sp SeirPrgm) SolveForAssignmentsZ3(
 		}
 		fmt.Println("::: END ASSIGNMENTS :::")
 		assignments_ptr = &assignments
+	} else {
+		fmt.Println("UNSAT UNSAT UNSAT")
 	}
 	return
 }
