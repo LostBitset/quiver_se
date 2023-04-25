@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 
 	qse "github.com/LostBitset/quiver_se/lib"
@@ -22,5 +23,6 @@ func main() {
 			return "symb_" + smt_name
 		},
 	}
-	prgm.PerformQuery(prgm.UninitializedAssignment())
+	resp := prgm.PerformQuery(prgm.UninitializedAssignment())
+	fmt.Println(string(resp))
 }
