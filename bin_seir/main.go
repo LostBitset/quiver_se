@@ -26,5 +26,5 @@ func main() {
 	spc, fails := prgm.PerformQuery(prgm.UninitializedAssignment())
 	pc := FlattenSpc(spc)
 	fmt.Printf("%#+v\n", pc)
-	fmt.Printf("fails=%v", fails)
+	fmt.Printf("fails=%v\n", fails)
 }
