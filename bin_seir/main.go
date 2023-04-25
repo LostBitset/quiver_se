@@ -1,9 +1,26 @@
 package main
 
 import (
-	"fmt"
+	"os"
+
+	qse "github.com/LostBitset/quiver_se/lib"
 )
 
 func main() {
-	fmt.Println("Nothing here yet.")
+	seirBytes, errOpen := os.ReadFile("demo.seir")
+	if errOpen != nil {
+		panic(errOpen)
+	}
+	source := string(seirBytes)
+	prgm := SeirPrgm{
+		source: source,
+		smt_free_funs: []qse.SMTFreeFun[string, string]{
+			{Name: "A", Args: []string{}, Ret: "Bool"},
+			{Name: "B", Args: []string{}, Ret: "Int"},
+		},
+		names_source_symb: func(smt_name string) string {
+			return "symb_" + smt_name
+		},
+	}
+	prgm.PerformQuery(prgm.UninitializedAssignment())
 }
