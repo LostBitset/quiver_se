@@ -9,8 +9,8 @@
                 {int 20})
             (.eb)))
     (defevnt eb
-        ~(.if (.= symb_B target)
-            (.if (.= symb_B {int 4})
+        ~(.if (.int= symb_B target)
+            (.if (.int= symb_B {int 4})
                 {int 21}
                 (._crash))
             {int 22}))
