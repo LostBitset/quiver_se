@@ -8,6 +8,7 @@ import (
 )
 
 func (sp SeirPrgm) RunDSE(
+	pc_chan chan FlatPc,
 	max_iters int, // for no limit, use -1
 ) {
 	assignment := sp.UninitializedAssignment()
@@ -16,6 +17,7 @@ func (sp SeirPrgm) RunDSE(
 	if imm_failure {
 		panic("Something went wrong, program failed on uninitialized assignment.")
 	}
+	pc_chan <- imm_pc
 	alt_stack := make([]uint, 0)
 	desired_path := make([]qse.IdLiteral[string], 0)
 	stack_setup_index := uint(0)
@@ -53,6 +55,7 @@ mainDSESearchAlternativesLoop:
 			fmt.Println("FOUND A BUG!!!!!!")
 		}
 		pc := FlattenSpc(spc)
+		pc_chan <- pc
 		desired_path = make([]qse.IdLiteral[string], len(pc.items))
 		for i, item := range pc.items {
 			desired_path[i] = item
@@ -66,4 +69,5 @@ mainDSESearchAlternativesLoop:
 			alt_stack = append(alt_stack, i)
 		}
 	}
+	close(pc_chan)
 }

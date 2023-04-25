@@ -22,5 +22,5 @@ func main() {
 			return "symb_" + smt_name
 		},
 	}
-	prgm.RunDSE(-1)
+	prgm.RunDSE(BlackHoleChannel[FlatPc](), -1)
 }
