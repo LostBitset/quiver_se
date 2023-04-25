@@ -1,0 +1,19 @@
+(scope
+    (declnt ea)
+    (declnt eb)
+    (defevnt ea
+        ~(scope
+            (.if symb_A
+                (def target
+                    (.+ target {int 1}))
+                {int 20})
+            (.eb)))
+    (defevnt eb
+        ~(.if (.= symb_B target)
+            (.if (.= symb_B {int 4})
+                {int 21}
+                (._crash))
+            {int 22}))
+    (decl target)
+    (def target {int 4})
+    (.ea))
