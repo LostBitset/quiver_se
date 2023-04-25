@@ -1,6 +1,8 @@
 package main
 
 import (
+	"hash/fnv"
+
 	qse "github.com/LostBitset/quiver_se/lib"
 )
 
@@ -10,12 +12,12 @@ func FlattenSpc(spc []PathCondSegment) (pc FlatPc) {
 		var trxn_pc_item PathCondItem
 		if segm.Event == nil {
 			trxn_pc_item = PathCondItem{
-				"@__RAW__;;@RICHPC:was-segment __top__",
+				"@__RAW__;;@RICHPC:bgn-segment __top__",
 				true,
 			}
 		} else {
 			trxn_pc_item = PathCondItem{
-				"@__RAW__;;@RICHPC:was-segment " + *segm.Event,
+				"@__RAW__;;@RICHPC:bgn-segment " + *segm.Event,
 				true,
 			}
 		}
@@ -27,5 +29,29 @@ func FlattenSpc(spc []PathCondSegment) (pc FlatPc) {
 	pc = FlatPc{
 		items: items,
 	}
+	return
+}
+
+func (item PathCondItem) AsIdLiteral() (idlit qse.IdLiteral[string]) {
+	hasher := fnv.New32a()
+	hasher.Write([]byte(item.Constraint))
+	hash32_constraint := hasher.Sum32()
+	var idlit_raw qse.Literal[qse.WithId_H[string]]
+	if item.Followed {
+		idlit_raw = qse.BufferingLiteral(
+			qse.WithId_H[string]{
+				Value: item.Constraint,
+				Id:    qse.NumericId(hash32_constraint),
+			},
+		)
+	} else {
+		idlit_raw = qse.InvertingLiteral(
+			qse.WithId_H[string]{
+				Value: item.Constraint,
+				Id:    qse.NumericId(hash32_constraint),
+			},
+		)
+	}
+	idlit = qse.IdLiteral[string](idlit_raw)
 	return
 }

@@ -23,6 +23,7 @@ func main() {
 			return "symb_" + smt_name
 		},
 	}
-	resp := prgm.PerformQuery(prgm.UninitializedAssignment())
-	fmt.Printf("%#+v\n", resp)
+	spc := prgm.PerformQuery(prgm.UninitializedAssignment())
+	pc := FlattenSpc(spc)
+	fmt.Printf("%#+v\n", pc)
 }
