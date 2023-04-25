@@ -19,4 +19,5 @@ func (sp SeirPrgm) SolveForAssignmentsZ3(
 		assignments := ParseZ3ModelString(model)
 		assignments_ptr = &assignments
 	}
+	return
 }
