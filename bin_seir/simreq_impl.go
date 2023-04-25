@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strings"
 
 	qse "github.com/LostBitset/quiver_se/lib"
 )
@@ -41,5 +42,42 @@ func (sp SeirPrgm) SiMReQProcessPCs(in_pcs chan FlatPc) {
 			}
 		}
 	}()
-	panic("TODO TODO TODO")
+	seen_events := make(map[string]struct{})
+	seen_events["__top__"] = struct{}{}
+	seen_events[SEIR_RESERVED_FAILURE_EVENT] = struct{}{}
+	// Process path conditions received
+	for pc := range in_pcs {
+		// Group the segmented path condition into segments
+		grouped_by_trxn := make([]SiMReQConstrainedTrxn, 0)
+		prev_event := "__top__"
+		current_trxn_constraints := make([]qse.IdLiteral[string], 0)
+	groupPcSegmentsLoop:
+		for _, item := range pc.items {
+			constraint := item.Value.Value
+			if strings.HasPrefix(constraint, "@__RAW__;;@RICHPC:") {
+				if strings.HasPrefix(constraint, PATHCOND_FLATTENING_BEGIN_SEGMENT) {
+					event, _ := strings.CutPrefix(constraint, PATHCOND_FLATTENING_BEGIN_SEGMENT)
+					if event == "__top__" {
+						continue groupPcSegmentsLoop
+					}
+					new_constraints := make([]qse.IdLiteral[string], len(current_trxn_constraints))
+					copy(new_constraints, current_trxn_constraints)
+					grouped_by_trxn = append(
+						grouped_by_trxn,
+						SiMReQConstrainedTrxn{
+							src_event:   prev_event,
+							dst_event:   event,
+							constraints: new_constraints,
+						},
+					)
+				} else {
+					panic("Unknown rich path condition marker.")
+				}
+			} else {
+				current_trxn_constraints = append(current_trxn_constraints, item)
+			}
+		}
+		// Send the updates to SiMReQ
+		panic("TODO TODO TODO")
+	}
 }

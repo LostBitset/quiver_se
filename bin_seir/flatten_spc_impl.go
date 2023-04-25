@@ -6,18 +6,20 @@ import (
 	qse "github.com/LostBitset/quiver_se/lib"
 )
 
+const PATHCOND_FLATTENING_BEGIN_SEGMENT = "@__RAW__;;@RICHPC:bgn-segment "
+
 func FlattenSpc(spc []PathCondSegment) (pc FlatPc) {
 	items := make([]qse.IdLiteral[string], 0)
 	for _, segm := range spc {
 		var trxn_pc_item PathCondItem
 		if segm.Event == nil {
 			trxn_pc_item = PathCondItem{
-				"@__RAW__;;@RICHPC:bgn-segment __top__",
+				PATHCOND_FLATTENING_BEGIN_SEGMENT + "__top__",
 				true,
 			}
 		} else {
 			trxn_pc_item = PathCondItem{
-				"@__RAW__;;@RICHPC:bgn-segment " + *segm.Event,
+				PATHCOND_FLATTENING_BEGIN_SEGMENT + *segm.Event,
 				true,
 			}
 		}
