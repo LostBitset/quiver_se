@@ -70,6 +70,12 @@ func (sp SeirPrgm) SiMReQProcessPCs(in_pcs chan FlatPc) {
 							constraints: new_constraints,
 						},
 					)
+					prev_event = event
+					if _, ok := seen_events[event]; !ok {
+						update_dmt := qse.NewDMT[qse.WithId_H[string], qse.QuiverIndex]()
+						added_node_index := dmtq.InsertNode(event, &update_dmt)
+						callback_nodes[event] = added_node_index
+					}
 				} else {
 					panic("Unknown rich path condition marker.")
 				}
