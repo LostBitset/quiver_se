@@ -124,3 +124,9 @@ func SliceToPHashMapSet[T qse.Hashable](slice []T) (set qse.PHashMap[T, struct{}
 	set = qse.StdlibMapToPHashMap(SliceToSet(slice))
 	return
 }
+
+func (sp SeirPrgm) RunSiMReQ(dse_max_iters int) {
+	pc_chan := make(chan FlatPc)
+	go sp.RunDSE(pc_chan, dse_max_iters)
+	sp.SiMReQProcessPCs(pc_chan)
+}
