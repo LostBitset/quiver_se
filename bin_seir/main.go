@@ -24,5 +24,5 @@ func main() {
 		},
 	}
 	resp := prgm.PerformQuery(prgm.UninitializedAssignment())
-	fmt.Println(string(resp))
+	fmt.Printf("%#+v\n", resp)
 }

@@ -6,7 +6,7 @@ import (
 	"os/exec"
 )
 
-func (sp SeirPrgm) PerformQuery(smt []AssignedSMTValue) (jsonresp []byte) {
+func (sp SeirPrgm) PerformQueryJson(smt []AssignedSMTValue) (jsonresp []byte) {
 	query := sp.MakeQueryJson(smt)
 	jsonresp = PerformSeirQuery(query)
 	return
