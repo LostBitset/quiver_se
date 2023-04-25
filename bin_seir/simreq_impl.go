@@ -79,6 +79,13 @@ func (sp SeirPrgm) SiMReQProcessPCs(in_pcs chan FlatPc) {
 		}
 		// Send the updates to SiMReQ
 		for _, ctrxn := range grouped_by_trxn {
+			constraints := make([]qse.Literal[qse.WithId_H[string]], len(ctrxn.constraints))
+			for i, constraint := range ctrxn.constraints {
+				constraints[i] = qse.Literal[qse.WithId_H[string]]{
+					Value: constraint.Value,
+					Eq:    constraint.Eq,
+				}
+			}
 			update := qse.Augmented[
 				qse.QuiverUpdate[
 					string,
@@ -95,7 +102,7 @@ func (sp SeirPrgm) SiMReQProcessPCs(in_pcs chan FlatPc) {
 					Src: callback_nodes[ctrxn.src_event],
 					Dst: dmtq.ParameterizeIndex(callback_nodes[ctrxn.dst_event]),
 					Edge: Pto(SliceToPHashMapSet(
-						ctrxn.constraints,
+						constraints,
 					)),
 				},
 				Augment: sp.smt_free_funs,
