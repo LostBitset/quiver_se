@@ -78,6 +78,42 @@ func (sp SeirPrgm) SiMReQProcessPCs(in_pcs chan FlatPc) {
 			}
 		}
 		// Send the updates to SiMReQ
-		panic("TODO TODO TODO")
+		for _, ctrxn := range grouped_by_trxn {
+			update := qse.Augmented[
+				qse.QuiverUpdate[
+					string,
+					qse.PHashMap[qse.Literal[qse.WithId_H[string]], struct{}],
+					*qse.DMT[qse.WithId_H[string], qse.QuiverIndex],
+				],
+				[]qse.SMTFreeFun[string, string],
+			]{
+				Value: qse.QuiverUpdate[
+					string,
+					qse.PHashMap[qse.Literal[qse.WithId_H[string]], struct{}],
+					*qse.DMT[qse.WithId_H[string], qse.QuiverIndex],
+				]{
+					Src: callback_nodes[ctrxn.src_event],
+					Dst: dmtq.ParameterizeIndex(callback_nodes[ctrxn.dst_event]),
+					Edge: Pto(SliceToPHashMapSet(
+						ctrxn.constraints,
+					)),
+				},
+				Augment: sp.smt_free_funs,
+			}
+			in_updates <- update
+		}
 	}
+}
+
+func SliceToSet[T comparable](slice []T) (set map[T]struct{}) {
+	set = make(map[T]struct{})
+	for _, elem := range slice {
+		set[elem] = struct{}{}
+	}
+	return
+}
+
+func SliceToPHashMapSet[T qse.Hashable](slice []T) (set qse.PHashMap[T, struct{}]) {
+	set = qse.StdlibMapToPHashMap(SliceToSet(slice))
+	return
 }
