@@ -18,7 +18,7 @@ func (sp SeirPrgm) SiMReQProcessPCs(in_pcs chan FlatPc) {
 	])
 	out_models := make(chan string)
 	var idsrc qse.IdSource
-	sys := qse.SMTLib2VAStringSystem{idsrc}
+	sys := qse.SMTLib2VAStringSystem{Idsrc: idsrc}
 	// Start SiMReQ
 	dmtq, top_node, fail_node, _ := qse.StartSiMReQ[
 		string, string, string, string, string, qse.SMTLib2VAStringSolvedCtx,
