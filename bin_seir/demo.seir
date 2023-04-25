@@ -2,18 +2,20 @@
     (declnt ea)
     (declnt eb)
     (defevnt ea
-        ~(scope
+        ~(.
             (.if symb_A
-                (def target
-                    (.+ target {int 1}))
-                {int 20})
-            (.eb)))
+                eb
+                ~(scope
+                    (def target
+                        (.+ target {int 1}))
+                    {int 20}))))
     (defevnt eb
-        ~(.if (.int= symb_B target)
-            (.if (.int= symb_B {int 4})
-                {int 21}
-                (._crash))
-            {int 22}))
+        ~(.
+            (.if (.int= symb_B target)
+                (.if (.int= symb_B {int 4})
+                    ~(scope {int 21})
+                    _crash)
+                ~(scope {int 22}))))
     (decl target)
     (def target {int 4})
     (.ea))
