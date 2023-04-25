@@ -23,7 +23,8 @@ func main() {
 			return "symb_" + smt_name
 		},
 	}
-	spc := prgm.PerformQuery(prgm.UninitializedAssignment())
+	spc, fails := prgm.PerformQuery(prgm.UninitializedAssignment())
 	pc := FlattenSpc(spc)
 	fmt.Printf("%#+v\n", pc)
+	fmt.Printf("fails=%v", fails)
 }
