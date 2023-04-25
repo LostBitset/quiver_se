@@ -43,11 +43,11 @@ mainDSESearchAlternativesLoop:
 			Value: orig_expr.Value,
 			Eq:    !orig_expr.Eq,
 		})
-		new_model_ptr := sp.SolveForAssignmentsZ3(desired_path)
-		if new_model_ptr == nil {
+		new_assignments_ptr := sp.SolveForAssignmentsZ3(desired_path)
+		if new_assignments_ptr == nil {
 			continue mainDSESearchAlternativesLoop
 		}
-		spc, fails := sp.PerformQuery(*new_model_ptr)
+		spc, fails := sp.PerformQuery(*new_assignments_ptr)
 		if fails {
 			fmt.Println("FOUND A BUG!!!!!!")
 		}
